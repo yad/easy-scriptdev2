@@ -7,10 +7,6 @@
 //battlegrounds
 extern void AddSC_battleground();
 
-//custom
-extern void AddSC_npc_arena_honor();
-extern void AddSC_mob_teleguy();
-
 //examples
 extern void AddSC_example_creature();
 extern void AddSC_example_escort();
@@ -511,10 +507,6 @@ void AddScripts()
 {
     //battlegrounds
     AddSC_battleground();
-
-    //custom
-    AddSC_npc_arena_honor();
-    AddSC_mob_teleguy();
 
     //examples
     AddSC_example_creature();

@@ -1775,12 +1775,6 @@
     <ClCompile Include="..\scripts\northrend\crusaders_coliseum\trial_of_the_champion\trial_of_the_champion.cpp">
       <Filter>scripts\northrend\crusaders_coliseum\trial_of_the_champion</Filter>
     </ClCompile>
-    <ClCompile Include="..\scripts\custom\npc_arena_honor.cpp">
-      <Filter>scripts\custom</Filter>
-    </ClCompile>
-    <ClCompile Include="..\scripts\custom\teleguy.cpp">
-      <Filter>scripts\custom</Filter>
-    </ClCompile>
     <ClCompile Include="..\base\BSW_ai.cpp">
       <Filter>base</Filter>
     </ClCompile>
