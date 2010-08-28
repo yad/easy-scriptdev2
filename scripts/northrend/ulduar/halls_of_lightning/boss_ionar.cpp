@@ -162,7 +162,7 @@ struct MANGOS_DLL_DECL boss_ionarAI : public ScriptedAI
 
         for(std::list<uint64>::iterator itr = m_lSparkGUIDList.begin(); itr != m_lSparkGUIDList.end(); ++itr)
         {
-            if (Creature* pTemp = (Creature*)Unit::GetUnit(*m_creature, *itr))
+            if (Creature* pTemp = m_creature->GetMap()->GetCreature(*itr))
             {
                 if (pTemp->isAlive())
                     pTemp->ForcedDespawn();
@@ -181,12 +181,14 @@ struct MANGOS_DLL_DECL boss_ionarAI : public ScriptedAI
 
         for(std::list<uint64>::iterator itr = m_lSparkGUIDList.begin(); itr != m_lSparkGUIDList.end(); ++itr)
         {
-            if (Creature* pSpark = (Creature*)Unit::GetUnit(*m_creature, *itr))
+            if (Creature* pSpark = m_creature->GetMap()->GetCreature(*itr))
             {
                 if (pSpark->isAlive())
                 {
                     if (pSpark->GetMotionMaster()->GetCurrentMovementGeneratorType() == CHASE_MOTION_TYPE)
                         pSpark->GetMotionMaster()->MovementExpired();
+
+                    pSpark->SetSpeedRate(MOVE_RUN,2);
 
                     pSpark->GetMotionMaster()->MovePoint(POINT_CALLBACK, m_creature->GetPositionX(), m_creature->GetPositionY(), m_creature->GetPositionZ());
                 }
@@ -236,7 +238,7 @@ struct MANGOS_DLL_DECL boss_ionarAI : public ScriptedAI
                     m_bIsSplitPhase = false;
                 }
                 // Lightning effect and restore Ionar
-                else if (m_uiSparkAtHomeCount == MAX_SPARKS)
+                else 
                 {
                     m_creature->SetVisibility(VISIBILITY_ON);
                     m_creature->CastSpell(m_creature, SPELL_SPARK_DESPAWN, false);

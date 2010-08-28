@@ -12,6 +12,10 @@ INSERT INTO scripted_areatrigger VALUES
 (4871,'at_warsong_farms'),
 (4872,'at_warsong_farms'),
 (4873,'at_warsong_farms');
+DELETE FROM scripted_areatrigger WHERE entry IN (5046, 5047);
+INSERT INTO scripted_areatrigger VALUES
+(5046, 'at_waygate'),
+(5047, 'at_waygate');
 DELETE FROM scripted_areatrigger WHERE entry BETWEEN 5284 AND 5287;
 INSERT INTO scripted_areatrigger VALUES
 (5284,'at_aldurthar_gate'),
@@ -24,18 +28,12 @@ DELETE FROM scripted_areatrigger WHERE entry=5108;
 INSERT INTO scripted_areatrigger VALUES (5108,'at_stormwright_shelf');
 DELETE FROM scripted_areatrigger WHERE entry IN (3546, 3547, 3548, 3549, 3550, 3552);
 INSERT INTO scripted_areatrigger VALUES
--- Darnassian bank
-(3546, 'at_childrens_week_spot'),
--- Undercity - thone room
-(3547, 'at_childrens_week_spot'),
--- Stonewrought Dam
-(3548, 'at_childrens_week_spot'),
--- The Mor'shan Rampart
-(3549, 'at_childrens_week_spot'),
--- Ratchet Docks
-(3550, 'at_childrens_week_spot'),
--- Westfall Lighthouse
-(3552, 'at_childrens_week_spot');
+(3546, 'at_childrens_week_spot'), -- Darnassian bank
+(3547, 'at_childrens_week_spot'), -- Undercity - thone room
+(3548, 'at_childrens_week_spot'), -- Stonewrought Dam
+(3549, 'at_childrens_week_spot'), -- The Mor'shan Rampart
+(3550, 'at_childrens_week_spot'), -- Ratchet Docks
+(3552, 'at_childrens_week_spot'); -- Westfall Lighthouse
 DELETE FROM scripted_areatrigger WHERE entry IN (2026, 2046);
 INSERT INTO scripted_areatrigger VALUES
 (2026, 'at_blackrock_spire'),
@@ -75,6 +73,8 @@ UPDATE gameobject_template SET ScriptName='go_tablet_of_the_seven' WHERE entry=1
 UPDATE gameobject_template SET ScriptName='go_tele_to_dalaran_crystal' WHERE entry=191230;
 UPDATE gameobject_template SET ScriptName='go_tele_to_violet_stand' WHERE entry=191229;
 UPDATE gameobject_template SET ScriptName='go_blood_filled_orb' WHERE entry=182024;
+UPDATE gameobject_template SET ScriptName='go_beacon_torch' WHERE entry=176093;
+UPDATE gameobject_template SET ScriptName='go_scourge_enclosure' WHERE entry=191548;
 
 /* GUARD */
 UPDATE creature_template SET ScriptName='guard_azuremyst' WHERE entry=18038;
@@ -533,10 +533,14 @@ UPDATE creature_template SET ScriptName='npc_prospector_anvilward' WHERE entry=1
 UPDATE creature_template SET ScriptName='npc_apprentice_mirveda' WHERE entry=15402;
 
 /* FELWOOD */
+DELETE FROM scripted_event_id WHERE id=8328;
+INSERT INTO scripted_event_id VALUES
+(8328, 'npc_kroshius');
 UPDATE creature_template SET ScriptName='npc_kitten' WHERE entry=9937;
 UPDATE creature_template SET ScriptName='npc_corrupt_saber' WHERE entry=10042;
 UPDATE creature_template SET ScriptName='npcs_riverbreeze_and_silversky' WHERE entry IN (9528,9529);
 UPDATE creature_template SET ScriptName='npc_niby_the_almighty' WHERE entry=14469;
+UPDATE creature_template SET ScriptName='npc_kroshius' WHERE entry=14467;
 
 /* FERALAS */
 UPDATE creature_template SET ScriptName='npc_gregan_brewspewer' WHERE entry=7775;
@@ -820,6 +824,7 @@ UPDATE creature_template SET ScriptName='mob_acolyte_of_shadron' WHERE entry=312
 UPDATE creature_template SET ScriptName='mob_acolyte_of_vesperon' WHERE entry=31219;
 
 /* ONYXIA'S LAIR */
+UPDATE instance_template SET ScriptName='instance_onyxias_lair' WHERE map=249;
 UPDATE creature_template SET ScriptName='boss_onyxia' WHERE entry=10184;
 
 /* ORGRIMMAR */
@@ -1097,10 +1102,15 @@ UPDATE gameobject_template SET ScriptName='go_mausoleum_door' WHERE entry=176594
 UPDATE creature_template SET ScriptName='npc_calvin_montague' WHERE entry=6784;
 
 /* ULDAMAN */
+DELETE FROM scripted_event_id WHERE id IN (2228,2268);
+INSERT INTO scripted_event_id VALUES
+(2228,'event_spell_altar_boss_aggro'),
+(2268,'event_spell_altar_boss_aggro');
+UPDATE creature_template SET ScriptName='boss_archaedas' WHERE entry=2748;
+UPDATE creature_template SET ScriptName='mob_archaeras_add' WHERE entry IN (7309,7076,7077,10120);
 UPDATE creature_template SET ScriptName='boss_ironaya' WHERE entry=7228;
 UPDATE creature_template SET ScriptName='mob_jadespine_basilisk' WHERE entry=4863;
 UPDATE creature_template SET ScriptName='npc_lore_keeper_of_norgannon' WHERE entry=7172;
-UPDATE gameobject_template SET ScriptName='go_altar_of_keepers' WHERE entry=130511;
 UPDATE instance_template SET ScriptName='instance_uldaman' WHERE map=70;
 
 /*  */

@@ -7,6 +7,7 @@
 
 #include "Common.h"
 #include "DBCStructure.h"
+#include "Database/DatabaseEnv.h"
 
 class Player;
 class Creature;
@@ -73,7 +74,10 @@ struct Script
 };
 
 //Generic scripting text function
-void DoScriptText(int32 textEntry, WorldObject* pSource, Unit* target = NULL);
+void DoScriptText(int32 iTextEntry, WorldObject* pSource, Unit* pTarget = NULL);
+
+//DB query
+QueryResult* strSD2Pquery(char*);
 
 #if COMPILER == COMPILER_GNU
 #define FUNC_PTR(name,callconvention,returntype,parameters)    typedef returntype(*name)parameters __attribute__ ((callconvention));

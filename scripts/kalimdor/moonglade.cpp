@@ -72,6 +72,7 @@ bool GossipHello_npc_bunthen_plainswind(Player* pPlayer, Creature* pCreature)
 
 bool GossipSelect_npc_bunthen_plainswind(Player* pPlayer, Creature* pCreature, uint32 uiSender, uint32 uiAction)
 {
+    pPlayer->PlayerTalkClass->ClearMenus();
     switch(uiAction)
     {
         case GOSSIP_ACTION_INFO_DEF + 1:
@@ -219,7 +220,8 @@ bool EffectDummyCreature_npc_clintar_dw_spirit(Unit *pCaster, uint32 spellId, Sp
             return true;
 
         //done here, escort can start
-        ((npc_clintar_dw_spiritAI*)pCreatureTarget->AI())->DoStart(pCaster->GetGUID());
+        if (npc_clintar_dw_spiritAI* pSpiritAI = dynamic_cast<npc_clintar_dw_spiritAI*>(pCreatureTarget->AI()))
+            pSpiritAI->DoStart(pCaster->GetGUID());
 
         //always return true when we are handling this spell and effect
         return true;
@@ -252,6 +254,7 @@ bool GossipHello_npc_great_bear_spirit(Player* pPlayer, Creature* pCreature)
 
 bool GossipSelect_npc_great_bear_spirit(Player* pPlayer, Creature* pCreature, uint32 uiSender, uint32 uiAction)
 {
+    pPlayer->PlayerTalkClass->ClearMenus();
     switch(uiAction)
     {
         case GOSSIP_ACTION_INFO_DEF:
@@ -309,6 +312,7 @@ bool GossipHello_npc_silva_filnaveth(Player* pPlayer, Creature* pCreature)
 
 bool GossipSelect_npc_silva_filnaveth(Player* pPlayer, Creature* pCreature, uint32 uiSender, uint32 uiAction)
 {
+    pPlayer->PlayerTalkClass->ClearMenus();
     switch(uiAction)
     {
         case GOSSIP_ACTION_INFO_DEF + 1:

@@ -1,4 +1,4 @@
-/* Copyright (C) 2006 - 2010 ScriptDev2 <https://scriptdev2.svn.sourceforge.net/>
+/* Copyright (C) 2006 - 2009 ScriptDev2 <https://scriptdev2.svn.sourceforge.net/>
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -33,6 +33,7 @@ struct MANGOS_DLL_DECL instance_ahnkahet : public ScriptedInstance
 
     uint64 m_uiElderNadoxGUID;
     uint64 m_uiJedogaShadowseekerGUID;
+    uint64 m_uiTaldaramGUID;
     uint64 m_uiTaldaramDoorGUID;
     uint64 m_uiTaldaramVortexGUID;
     uint8 m_uiDevicesActivated;
@@ -43,6 +44,7 @@ struct MANGOS_DLL_DECL instance_ahnkahet : public ScriptedInstance
 
         m_uiElderNadoxGUID = 0;
         m_uiJedogaShadowseekerGUID = 0;
+        m_uiTaldaramGUID = 0;
         m_uiTaldaramDoorGUID = 0;
         m_uiTaldaramVortexGUID = 0;
         m_uiDevicesActivated = 0;
@@ -54,6 +56,7 @@ struct MANGOS_DLL_DECL instance_ahnkahet : public ScriptedInstance
         {
             case NPC_ELDER_NADOX:         m_uiElderNadoxGUID = pCreature->GetGUID();         break;
             case NPC_JEDOGA_SHADOWSEEKER: m_uiJedogaShadowseekerGUID = pCreature->GetGUID(); break;
+            case NPC_TALDARAM:            m_uiTaldaramGUID = pCreature->GetGUID(); break;
         }
     }
 
@@ -81,7 +84,7 @@ struct MANGOS_DLL_DECL instance_ahnkahet : public ScriptedInstance
                 break;
         }
     }
-    
+
     void SetData(uint32 uiType, uint32 uiData)
     {
         debug_log("SD2: Instance Ahn'Kahet: SetData received for type %u with data %u",uiType,uiData);
@@ -169,10 +172,16 @@ struct MANGOS_DLL_DECL instance_ahnkahet : public ScriptedInstance
     {
         switch(uiType)
         {
-            case TYPE_TALDARAM:
+            case TYPE_NADOX:
                 return m_auiEncounter[0];
-            case TYPE_JEDOGA:
+            case TYPE_TALDARAM:
                 return m_auiEncounter[1];
+            case TYPE_JEDOGA:
+                return m_auiEncounter[2];
+            case TYPE_VOLAZJ:
+                return m_auiEncounter[3];
+            case TYPE_AMANITAR:
+                return m_auiEncounter[4];
         }
         return 0;
     }

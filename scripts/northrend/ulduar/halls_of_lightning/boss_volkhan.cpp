@@ -87,9 +87,9 @@ struct MANGOS_DLL_DECL boss_volkhanAI : public ScriptedAI
     bool m_bHasTemper;
     bool m_bIsStriking;
     bool m_bCanShatterGolem;
+    bool m_bHasShattered;
 
     uint32 m_uiPause_Timer;
-    uint32 m_uiShatteringStomp_Timer;
     uint32 m_uiShatter_Timer;
 
     uint32 m_uiHealthAmountModifier;
@@ -99,9 +99,9 @@ struct MANGOS_DLL_DECL boss_volkhanAI : public ScriptedAI
         m_bIsStriking = false;
         m_bHasTemper = false;
         m_bCanShatterGolem = false;
+        m_bHasShattered = false;
 
         m_uiPause_Timer = 3500;
-        m_uiShatteringStomp_Timer = 0;
         m_uiShatter_Timer = 5000;
 
         m_uiHealthAmountModifier = 1;
@@ -160,7 +160,7 @@ struct MANGOS_DLL_DECL boss_volkhanAI : public ScriptedAI
 
         for(std::list<uint64>::iterator itr = m_lGolemGUIDList.begin(); itr != m_lGolemGUIDList.end(); ++itr)
         {
-            if (Creature* pTemp = (Creature*)Unit::GetUnit(*m_creature, *itr))
+            if (Creature* pTemp = m_creature->GetMap()->GetCreature(*itr))
             {
                 if (pTemp->isAlive())
                     pTemp->ForcedDespawn();
@@ -177,7 +177,7 @@ struct MANGOS_DLL_DECL boss_volkhanAI : public ScriptedAI
 
         for(std::list<uint64>::iterator itr = m_lGolemGUIDList.begin(); itr != m_lGolemGUIDList.end(); ++itr)
         {
-            if (Creature* pTemp = (Creature*)Unit::GetUnit(*m_creature, *itr))
+            if (Creature* pTemp = m_creature->GetMap()->GetCreature(*itr))
             {
                  // only shatter brittle golems
                 if (pTemp->isAlive() && pTemp->GetEntry() == NPC_BRITTLE_GOLEM)
@@ -232,24 +232,17 @@ struct MANGOS_DLL_DECL boss_volkhanAI : public ScriptedAI
             return;
         }
 
-        // When to start shatter? After 60, 40 or 20% hp?
-        if (!m_bHasTemper && m_uiHealthAmountModifier >= 3)
+        // he shatters only one time, at 20%
+        if (m_creature->GetHealthPercent() <= 20.0f && !m_bHasShattered)
         {
-            if (m_uiShatteringStomp_Timer < uiDiff)
+            // should he stomp even if he has no brittle golem to shatter? <-yes!
+            if (DoCastSpellIfCan(m_creature, m_bIsRegularMode ? SPELL_SHATTERING_STOMP_N : SPELL_SHATTERING_STOMP_H) == CAST_OK)
             {
-                //should he stomp even if he has no brittle golem to shatter?
-
                 DoScriptText(urand(0, 1) ? SAY_STOMP_1 : SAY_STOMP_2, m_creature);
-
-                DoCastSpellIfCan(m_creature, m_bIsRegularMode ? SPELL_SHATTERING_STOMP_N : SPELL_SHATTERING_STOMP_H);
-
                 DoScriptText(EMOTE_SHATTER, m_creature);
-
-                m_uiShatteringStomp_Timer = 30000;
                 m_bCanShatterGolem = true;
+                m_bHasShattered = true;
             }
-            else
-                m_uiShatteringStomp_Timer -= uiDiff;
         }
 
         // Shatter Golems 3 seconds after Shattering Stomp
@@ -336,8 +329,7 @@ bool EffectDummyCreature_npc_volkhan_anvil(Unit* pCaster, uint32 uiSpellId, Spel
         if (pCaster->GetMotionMaster()->GetCurrentMovementGeneratorType() == CHASE_MOTION_TYPE)
             pCaster->GetMotionMaster()->MovementExpired();
 
-        ((Creature*)pCaster)->GetMap()->CreatureRelocation((Creature*)pCaster, fX, fY, fZ, pCreatureTarget->GetOrientation());
-        ((Creature*)pCaster)->SendMonsterMove(fX, fY, fZ, SPLINETYPE_NORMAL, ((Creature*)pCaster)->GetSplineFlags(), 1);
+        ((Creature*)pCaster)->MonsterMove(fX, fY, fZ, 1);
 
         pCreatureTarget->CastSpell(pCaster, SPELL_TEMPER_DUMMY, false);
 
