@@ -240,6 +240,7 @@ extern void AddSC_boss_infinite_corruptor();
 extern void AddSC_culling_of_stratholme();
 extern void AddSC_culling_of_stratholmeAI();
 extern void AddSC_instance_culling_of_stratholme();
+extern void AddSC_trash_culling_of_stratholme();
 
 extern void AddSC_ashenvale();
 extern void AddSC_azshara();
@@ -991,6 +992,7 @@ void AddScripts()
     AddSC_culling_of_stratholme();
     AddSC_culling_of_stratholmeAI();
     AddSC_instance_culling_of_stratholme();
+    AddSC_trash_culling_of_stratholme();
 
     AddSC_blades_edge_mountains();
     AddSC_boss_doomlordkazzak();
