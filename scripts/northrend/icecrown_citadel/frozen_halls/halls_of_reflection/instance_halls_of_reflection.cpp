@@ -115,6 +115,7 @@ struct MANGOS_DLL_DECL instance_halls_of_reflection : public ScriptedInstance
         ALLIANCE_CONTROL_PHASE_SHIFT_1 = 55774,
         ALLIANCE_CONTROL_PHASE_SHIFT_2 = 60027,
     };
+
         switch (pPlayer->GetTeam())
         {
             case ALLIANCE:

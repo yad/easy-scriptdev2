@@ -395,6 +395,7 @@
     <ClCompile Include="..\scripts\kalimdor\caverns_of_time\culling_of_stratholme\boss_meathook.cpp" />
     <ClCompile Include="..\scripts\kalimdor\caverns_of_time\culling_of_stratholme\boss_salramm.cpp" />
     <ClCompile Include="..\scripts\kalimdor\caverns_of_time\culling_of_stratholme\culling_of_stratholmeai.cpp" />
+    <ClCompile Include="..\scripts\kalimdor\caverns_of_time\culling_of_stratholme\trash_culling_of_stratholme.cpp" />
     <ClCompile Include="..\scripts\kalimdor\darkshore.cpp" />
     <ClCompile Include="..\scripts\kalimdor\desolace.cpp" />
     <ClCompile Include="..\scripts\kalimdor\dustwallow_marsh.cpp" />

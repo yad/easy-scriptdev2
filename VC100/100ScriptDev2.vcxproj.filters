@@ -1781,6 +1781,9 @@
     <ClCompile Include="..\base\BSW_instance.cpp">
       <Filter>base</Filter>
     </ClCompile>
+    <ClCompile Include="..\scripts\kalimdor\caverns_of_time\culling_of_stratholme\trash_culling_of_stratholme.cpp">
+      <Filter>scripts\kalimdor\caverns_of_time\culling_of_stratholme</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\base\escort_ai.h">
