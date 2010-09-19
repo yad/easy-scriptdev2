@@ -1227,22 +1227,13 @@
     <ClCompile Include="..\scripts\northrend\ulduar\halls_of_stone\instance_halls_of_stone.cpp">
       <Filter>scripts\northrend\ulduar\halls_of_stone</Filter>
     </ClCompile>
-    <ClCompile Include="..\scripts\northrend\ulduar\ulduar\assembly_of_iron.cpp">
-      <Filter>scripts\northrend\ulduar\ulduar</Filter>
-    </ClCompile>
     <ClCompile Include="..\scripts\northrend\ulduar\ulduar\boss_algalon.cpp">
       <Filter>scripts\northrend\ulduar\ulduar</Filter>
     </ClCompile>
     <ClCompile Include="..\scripts\northrend\ulduar\ulduar\boss_auriaya.cpp">
       <Filter>scripts\northrend\ulduar\ulduar</Filter>
     </ClCompile>
-    <ClCompile Include="..\scripts\northrend\ulduar\ulduar\boss_flame_leviathan.cpp">
-      <Filter>scripts\northrend\ulduar\ulduar</Filter>
-    </ClCompile>
     <ClCompile Include="..\scripts\northrend\ulduar\ulduar\boss_freya.cpp">
-      <Filter>scripts\northrend\ulduar\ulduar</Filter>
-    </ClCompile>
-    <ClCompile Include="..\scripts\northrend\ulduar\ulduar\boss_general_vezax.cpp">
       <Filter>scripts\northrend\ulduar\ulduar</Filter>
     </ClCompile>
     <ClCompile Include="..\scripts\northrend\ulduar\ulduar\boss_hodir.cpp">
@@ -1261,9 +1252,6 @@
       <Filter>scripts\northrend\ulduar\ulduar</Filter>
     </ClCompile>
     <ClCompile Include="..\scripts\northrend\ulduar\ulduar\boss_thorim.cpp">
-      <Filter>scripts\northrend\ulduar\ulduar</Filter>
-    </ClCompile>
-    <ClCompile Include="..\scripts\northrend\ulduar\ulduar\boss_xt_002.cpp">
       <Filter>scripts\northrend\ulduar\ulduar</Filter>
     </ClCompile>
     <ClCompile Include="..\scripts\northrend\ulduar\ulduar\boss_yogg_saron.cpp">
