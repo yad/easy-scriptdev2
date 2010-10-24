@@ -44,6 +44,7 @@ enum BossSpells
 
         NPC_SWARMING_SHADOWS                    = 38163,
         SPELL_SWARMING_SHADOWS_VISUAL           = 71267,
+        QUEST_24756                             = 72934,
 };
 
 static Locations SpawnLoc[]=
@@ -150,6 +151,14 @@ struct MANGOS_DLL_DECL boss_blood_queen_lanathelAI : public BSWScriptedAI
         DoScriptText(-1631333,m_creature,killer);
         m_creature->SetUInt32Value(UNIT_FIELD_BYTES_0, 0);
         m_creature->SetUInt32Value(UNIT_FIELD_BYTES_1, 0);
+        for (uint8 i = 0; i < 5; ++i)
+        {
+             if (Unit* pPlayer = doSelectRandomPlayer(SPELL_ESSENCE_OF_BLOOD_QWEEN, true, 100.0f))
+             {
+                 doCast(QUEST_24756, pPlayer);
+                 doRemove(SPELL_ESSENCE_OF_BLOOD_QWEEN, pPlayer);
+             }
+        }
     }
 
     void doPactOfDarkfallen(bool command)
@@ -297,6 +306,8 @@ struct MANGOS_DLL_DECL boss_blood_queen_lanathelAI : public BSWScriptedAI
                     if (timedQuery(SPELL_PACT_OF_DARKFALLEN, diff))
                         doPactOfDarkfallen(true);
 
+                    timedCast(SPELL_SWARMING_SHADOWS, diff);
+
                     if (timedQuery(SPELL_VAMPIRIC_BITE,diff))
                         {
                            switch (urand(0,1)) {
@@ -311,9 +322,9 @@ struct MANGOS_DLL_DECL boss_blood_queen_lanathelAI : public BSWScriptedAI
                         }
 
                     if (timedQuery(SPELL_BLOODBOLT_WHIRL,diff) && m_creature->GetHealthPercent() > 10.0f)
-                        {
-                            stage = 1;
-                        };
+                    {
+                        stage = 1;
+                    };
 
                     doBloodMirror(true);
 
@@ -333,24 +344,18 @@ struct MANGOS_DLL_DECL boss_blood_queen_lanathelAI : public BSWScriptedAI
             case 2:
                     if (movementstarted) return;
                     DoScriptText(-1631327,m_creature);
-                    stage = 3;
                     doCast(SPELL_BLOODBOLT_WHIRL);
+                    stage = 3;
                     return;
             case 3:
-//                    if (timedQuery(SPELL_TWILIGHT_BLOODBOLT, diff)) bloodbolts = 5;
-
-                    if (timedQuery(SPELL_TWILIGHT_BLOODBOLT, diff)) doCast(SPELL_BLOODBOLT_WHIRL);
-
-                    if (timedQuery(SPELL_PACT_OF_DARKFALLEN, diff))
-                        doPactOfDarkfallen(true);
-
-                    timedCast(SPELL_SWARMING_SHADOWS, diff);
-
-                    if (timedQuery(SPELL_BLOODBOLT_WHIRL,diff) || m_creature->GetHealthPercent() < 10.0f)
-                        {
-                            stage = 4;
-                            DoScriptText(-1631325,m_creature);
-                        };
+                    if (m_creature->IsNonMeleeSpellCasted(false))
+                        return;
+                    if (timedQuery(SPELL_TWILIGHT_BLOODBOLT,diff) || m_creature->GetHealthPercent() < 10.0f)
+                    {
+                        stage = 4;
+                        DoScriptText(-1631325,m_creature);
+                        bloodbolts = 3;
+                    };
                     break;
             case 4:             // Go in grownd phase
                     m_creature->AttackStop();
@@ -376,15 +381,16 @@ struct MANGOS_DLL_DECL boss_blood_queen_lanathelAI : public BSWScriptedAI
         doMirrorDamage();
 
         if (bloodbolts > 0)
-            {
-                doCast(SPELL_TWILIGHT_BLOODBOLT);
-                --bloodbolts;
-            };
+        {
+            doCast(SPELL_TWILIGHT_BLOODBOLT);
+            --bloodbolts;
+        };
 
-        if (timedQuery(SPELL_BERSERK, diff)){
-                 doCast(SPELL_BERSERK);
-                 DoScriptText(-1631332,m_creature);
-                 };
+        if (timedQuery(SPELL_BERSERK, diff))
+        {
+             doCast(SPELL_BERSERK);
+             DoScriptText(-1631332,m_creature);
+        };
 
     }
 };
