@@ -16,11 +16,10 @@
 
 /* ScriptData
 SDName: boss_lord_marrowgar
-SD%Complete: 80%
+SD%Complete: 85%
 SDComment: by /dev/rsa
 SDCategory: Icecrown Citadel
 EndScriptData */
-// Need implement properly traectory for cold flames
 #include "precompiled.h"
 #include "def_spire.h"
 enum
@@ -77,7 +76,7 @@ struct MANGOS_DLL_DECL boss_lord_marrowgarAI : public BSWScriptedAI
     void JustSummoned(Creature* summoned)
     {
         if(!pInstance || !summoned) return;
-        summoned->SetCreatorGUID(m_creature->GetGUID());
+        summoned->SetCreatorGuid(m_creature->GetObjectGuid());
     }
 
     void JustReachedHome()
@@ -115,9 +114,9 @@ struct MANGOS_DLL_DECL boss_lord_marrowgarAI : public BSWScriptedAI
         if (!pTarget || !pTarget->isAlive()) return;
         float fPosX, fPosY, fPosZ;
         pTarget->GetPosition(fPosX, fPosY, fPosZ);
-        if (Unit* pSpike = doSummon(NPC_BONE_SPIKE, fPosX, fPosY, fPosZ))
+        if (Unit* pSpike = doSummon(NPC_BONE_SPIKE, fPosX, fPosY, fPosZ + 0.5f))
         {
-            pSpike->SetOwnerGUID(m_creature->GetGUID());
+            pSpike->SetOwnerGuid(m_creature->GetObjectGuid());
             pSpike->SetInCombatWith(pTarget);
             pSpike->AddThreat(pTarget, 1000.0f);
         }
@@ -262,7 +261,7 @@ struct MANGOS_DLL_DECL mob_coldflameAI : public BSWScriptedAI
     void JustSummoned(Creature* summoned)
     {
         if(!m_pInstance || !summoned) return;
-        summoned->SetCreatorGUID(m_creature->GetGUID());
+        summoned->SetCreatorGuid(m_creature->GetObjectGuid());
     }
 
     void UpdateAI(const uint32 uiDiff)
@@ -272,11 +271,11 @@ struct MANGOS_DLL_DECL mob_coldflameAI : public BSWScriptedAI
             m_creature->ForcedDespawn();
         }
 
-        if (!m_creature->GetCreatorGUID()) return;
+        if (m_creature->GetCreatorGuid().IsEmpty()) return;
 
         if (!isCreator)
         {
-            if (m_creature->GetCreatorGUID() == m_pInstance->GetData64(NPC_LORD_MARROWGAR))
+            if (m_creature->GetCreatorGuid() == m_pInstance->GetData64(NPC_LORD_MARROWGAR))
             {
                 isFirst = true;
                 uint32 m_tmpDirection = m_pInstance->GetData(DATA_DIRECTION);
@@ -330,30 +329,31 @@ struct MANGOS_DLL_DECL mob_bone_spikeAI : public BSWScriptedAI
     }
 
     ScriptedInstance* m_pInstance;
-    uint64 victimGUID;
+    ObjectGuid victimGuid;
 
     void Reset()
     {
+        SetCombatMovement(false);
         m_creature->SetRespawnDelay(7*DAY);
-        victimGUID = 0;
+        victimGuid = ObjectGuid();
         m_creature->SetInCombatWithZone();
     }
 
     void Aggro(Unit* pWho)
     {
-        if (!victimGUID && pWho && pWho->GetTypeId() == TYPEID_PLAYER)
+        if (victimGuid.IsEmpty() && pWho && pWho->GetTypeId() == TYPEID_PLAYER)
         {
-            victimGUID = pWho->GetGUID();
+            victimGuid = pWho->GetObjectGuid();
             m_creature->SetInCombatWith(pWho);
-            m_creature->SetSpeedRate(MOVE_RUN, 5.0f);
-            m_creature->GetMotionMaster()->MoveChase(pWho);
+            doCast(SPELL_BONE_STRIKE_IMPALE,pWho);
+            doCast(SPELL_VEHICLE_HARDCODED,pWho);
         }
     }
 
     void DamageTaken(Unit* pDoneBy, uint32 &uiDamage)
     {
         if (uiDamage > m_creature->GetHealth())
-            if (Player* pVictim = m_creature->GetMap()->GetPlayer(victimGUID))
+            if (Player* pVictim = m_creature->GetMap()->GetPlayer(victimGuid))
                 doRemove(SPELL_BONE_STRIKE_IMPALE,pVictim);
     }
 
@@ -363,14 +363,14 @@ struct MANGOS_DLL_DECL mob_bone_spikeAI : public BSWScriptedAI
 
     void KilledUnit(Unit* _Victim)
     {
-        if (Player* pVictim = m_creature->GetMap()->GetPlayer(victimGUID))
-            if (pVictim->GetGUID() == victimGUID)
+        if (Player* pVictim = m_creature->GetMap()->GetPlayer(victimGuid))
+            if (pVictim->GetObjectGuid() == victimGuid)
                 doRemove(SPELL_BONE_STRIKE_IMPALE,pVictim);
     }
 
     void JustDied(Unit* Killer)
     {
-        if (Player* pVictim = m_creature->GetMap()->GetPlayer(victimGUID))
+        if (Player* pVictim = m_creature->GetMap()->GetPlayer(victimGuid))
             doRemove(SPELL_BONE_STRIKE_IMPALE,pVictim);
     }
 
@@ -378,31 +378,21 @@ struct MANGOS_DLL_DECL mob_bone_spikeAI : public BSWScriptedAI
     {
         if(m_pInstance && m_pInstance->GetData(TYPE_MARROWGAR) != IN_PROGRESS)
         {
-            if (Player* pVictim = m_creature->GetMap()->GetPlayer(victimGUID))
+            if (Player* pVictim = m_creature->GetMap()->GetPlayer(victimGuid))
                 doRemove(SPELL_BONE_STRIKE_IMPALE,pVictim);
             m_creature->ForcedDespawn();
         }
 
-        if (!victimGUID)
+        if (victimGuid.IsEmpty())
             return;
 
-        if (Player* pVictim = m_creature->GetMap()->GetPlayer(victimGUID))
+        if (Player* pVictim = m_creature->GetMap()->GetPlayer(victimGuid))
         {
             if(!pVictim->isAlive())
                 m_creature->ForcedDespawn();
-
-            if ( pVictim
-                && !hasAura(SPELL_BONE_STRIKE_IMPALE, pVictim)
-                && pVictim->IsInMap(m_creature)
-                && m_creature->IsWithinDistInMap(pVictim, 1.0f)
-                && pVictim->isAlive())
-                {
-                    m_creature->GetMotionMaster()->Clear();
-                    SetCombatMovement(false);
-                    doCast(SPELL_BONE_STRIKE_IMPALE,pVictim);
-                    doCast(SPELL_VEHICLE_HARDCODED,pVictim);
-                }
         }
+        else
+            m_creature->ForcedDespawn();
     }
 };
 

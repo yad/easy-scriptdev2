@@ -22,7 +22,7 @@ SDCategory: Pit of Saron
 EndScriptData */
 
 #include "precompiled.h"
-#include "def_pit.h"
+#include "pit_of_saron.h"
 enum
 {
     //common
@@ -95,17 +95,14 @@ struct MANGOS_DLL_DECL boss_ickAI : public ScriptedAI
 
     void Reset()
     {
-        if(pInstance) pInstance->SetData(TYPE_ICK, NOT_STARTED);
     }
 
     void Aggro(Unit *who) 
     {
-        if(pInstance) pInstance->SetData(TYPE_ICK, IN_PROGRESS);
     }
 
     void JustDied(Unit *killer)
     {
-        if(pInstance) pInstance->SetData(TYPE_ICK, DONE);
     }
 
     void UpdateAI(const uint32 diff)
@@ -169,7 +166,36 @@ CreatureAI* GetAI_mob_exploding_orb(Creature* pCreature)
 }
 
 
-void AddSC_boss_krick()
+enum
+{
+    SAY_AGGRO                           = -1658024,
+    SAY_SLAY_1                          = -1658025,
+    SAY_SLAY_2                          = -1658026,
+    SAY_ORDER_STOP                      = -1658027,
+    SAY_ORDER_BLOW                      = -1658028,
+    SAY_TARGET_1                        = -1658029,
+    SAY_TARGET_2                        = -1658030,
+    SAY_TARGET_3                        = -1658031,
+
+    EMOTE_KRICK_MINES                   = -1658032,
+    EMOTE_ICK_POISON                    = -1658033,
+    EMOTE_ICK_CHASING                   = -1658034,
+
+    SAY_OUTRO_1                         = -1658035,
+    SAY_JAINA_KRICK_1                   = -1658036,
+    SAY_SYLVANAS_KRICK_1                = -1658037,
+    SAY_OUTRO_2                         = -1658038,
+    SAY_JAINA_KRICK_2                   = -1658039,
+    SAY_SYLVANAS_KRICK_2                = -1658040,
+    SAY_OUTRO_3                         = -1658041,
+    SAY_TYRANNUS_KRICK_1                = -1658042,
+    SAY_OUTRO_4                         = -1658043,
+    SAY_TYRANNUS_KRICK_2                = -1658044,
+    SAY_JAINA_KRICK_3                   = -1658045,
+    SAY_SYLVANAS_KRICK_3                = -1658046,
+};
+
+void AddSC_boss_krick_and_ick()
 {
     Script *newscript;
     newscript = new Script;
@@ -186,4 +212,5 @@ void AddSC_boss_krick()
     newscript->Name = "mob_exploding_orb";
     newscript->GetAI = &GetAI_mob_exploding_orb;
     newscript->RegisterSelf();
+
 }

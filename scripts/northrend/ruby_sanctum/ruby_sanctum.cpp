@@ -21,7 +21,7 @@ SDCategory: ruby_sanctum
 EndScriptData */
 
 #include "precompiled.h"
-#include "def_ruby_sanctum.h"
+#include "ruby_sanctum.h"
 
 static Locations SpawnLoc[]=
 {
@@ -188,7 +188,7 @@ struct MANGOS_DLL_DECL mob_xerestraszaAI : public ScriptedAI
                               if (pHalion && !pHalion->isAlive())
                                   pHalion->Respawn();
                               if (pHalion)
-                                  pHalion->SetCreatorGUID(0);
+                                  pHalion->SetCreatorGuid(ObjectGuid());
                               }
                           }
                           UpdateTimer = 4000;
