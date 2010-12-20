@@ -3,9 +3,8 @@ UPDATE `areatrigger_teleport` SET `required_level` = '80' WHERE `areatrigger_tel
 
 UPDATE `creature` SET `spawntimesecs` = 7200 WHERE `map` = 631 AND (`spawntimesecs` BETWEEN 200 AND 7100 );
 
-DELETE FROM `gameobject` WHERE `guid` = 913334;
-INSERT INTO `gameobject` (`guid`, `id`, `map`, `spawnMask`, `phaseMask`, `position_x`, `position_y`, `position_z`, `orientation`, `rotation0`, `rotation1`, `rotation2`, `rotation3`, `spawntimesecs`, `animprogress`, `state`) VALUES
-(913334, 202244, 631, 3, 1, -209.5, 2211.91, 199.97, 3.07661, 0, 0, 0.999472, 0.0324833, 0, 0, 1);
+INSERT INTO `gameobject` (`id`, `map`, `spawnMask`, `phaseMask`, `position_x`, `position_y`, `position_z`, `orientation`, `rotation0`, `rotation1`, `rotation2`, `rotation3`, `spawntimesecs`, `animprogress`, `state`) VALUES
+(202244, 631, 3, 1, -209.5, 2211.91, 199.97, 3.07661, 0, 0, 0.999472, 0.0324833, 0, 0, 1);
 
 UPDATE `gameobject_template` SET `flags` = 0, `ScriptName` = 'go_icecrown_teleporter' WHERE `entry`  IN (202242,202243,202244,202245,202235,202223,202246);
 UPDATE `gameobject` SET `phaseMask` = 1 WHERE `id`  IN (202242,202243,202244,202245,202235,202223,202246);
@@ -17,7 +16,6 @@ DELETE FROM `locales_npc_text` WHERE `entry` = 99322;
 DELETE FROM `npc_text` WHERE `ID` = 99322;
 DELETE FROM `locales_npc_text` WHERE `entry` = 99323;
 DELETE FROM `npc_text` WHERE `ID` = 99323;
-DELETE FROM `gameobject` WHERE `guid` IN (913334);
 
 UPDATE `instance_template` SET `ScriptName`='instance_icecrown_spire' WHERE `map`=631;
 
@@ -48,7 +46,6 @@ UPDATE `creature_template` SET `ScriptName`='mob_cult_fanatic', `AIName`='' WHER
 -- Marrowgar
 UPDATE `creature_template` SET `ScriptName`='boss_lord_marrowgar' WHERE `entry`= 36612;
 UPDATE `gameobject_template` SET `faction` = '114',`data0` = '0' WHERE `gameobject_template`.`entry` IN (201910,201911);
-UPDATE `gameobject` SET `state` = '1' WHERE `guid` IN (72526,72525);
 UPDATE `creature_template` SET `ScriptName`='mob_coldflame', `minlevel` = 82, `maxlevel` = 82, `modelid_1` = 11686, `modelid_2` = 11686, `modelid_3` = 11686, `modelid_4` = 11686, `faction_A` = 14, `faction_H` = 14  WHERE `entry`= 36672;
 UPDATE `creature_template` SET `ScriptName`='mob_bone_spike' WHERE `entry`= 38711;
 
@@ -57,20 +54,19 @@ UPDATE `creature_template` SET `ScriptName`='mob_spire_frostwyrm', `AIName`='' W
 DELETE FROM `creature_ai_scripts` WHERE `creature_id` = 37230;
 UPDATE `creature_template` SET `ScriptName`='mob_frost_giant', `AIName`='' WHERE `entry` IN (38490, 38494) ;
 DELETE FROM `creature_ai_scripts` WHERE `creature_id` IN (38490, 38494);
-DELETE FROM `creature` WHERE `guid` = 94094 AND `id` = 38490;
 
 -- Gunship armory (override)
 DELETE FROM `gameobject` WHERE `id` IN (201872,201873,201874,201875,202177,202178,202179,202180);
 UPDATE `gameobject_template` SET `flags` = 0 WHERE `gameobject_template`.`entry` IN (201872,201873,201874,201875,202177,202178,202179,202180);
-INSERT INTO `gameobject` (`guid`, `id`, `map`, `spawnMask`, `phaseMask`, `position_x`, `position_y`, `position_z`, `orientation`, `rotation0`, `rotation1`, `rotation2`, `rotation3`, `spawntimesecs`, `animprogress`, `state`) VALUES
-(972541, 201872, 631, 1, 1, -428.141, 2421.34, 191.233, 3.10389, 0, 0, 0.999822, 0.0188489, -604800, 100, 1),
-(972543, 201873, 631, 2, 1, -428.141, 2421.34, 191.233, 3.10389, 0, 0, 0.999822, 0.0188489, -604800, 100, 1),
-(972545, 201874, 631, 4, 1, -428.141, 2421.34, 191.233, 3.10389, 0, 0, 0.999822, 0.0188489, -604800, 100, 1),
-(972547, 201875, 631, 8, 1, -428.141, 2421.34, 191.233, 3.10389, 0, 0, 0.999822, 0.0188489, -604800, 100, 1),
-(972551, 202177, 631, 1, 1, -447.493, 2003.5, 191.235, 0.153939, 0, 0, 0.0768933, 0.997039, -604800, 100, 1),
-(972553, 202178, 631, 2, 1, -447.493, 2003.5, 191.235, 0.153939, 0, 0, 0.0768933, 0.997039, -604800, 100, 1),
-(972555, 202179, 631, 4, 1, -447.493, 2003.5, 191.235, 0.153939, 0, 0, 0.0768933, 0.997039, -604800, 100, 1),
-(972557, 202180, 631, 8, 1, -447.493, 2003.5, 191.235, 0.153939, 0, 0, 0.0768933, 0.997039, -604800, 100, 1);
+INSERT INTO `gameobject` (`id`, `map`, `spawnMask`, `phaseMask`, `position_x`, `position_y`, `position_z`, `orientation`, `rotation0`, `rotation1`, `rotation2`, `rotation3`, `spawntimesecs`, `animprogress`, `state`) VALUES
+(201872, 631, 1, 1, -428.141, 2421.34, 191.233, 3.10389, 0, 0, 0.999822, 0.0188489, -604800, 100, 1),
+(201873, 631, 2, 1, -428.141, 2421.34, 191.233, 3.10389, 0, 0, 0.999822, 0.0188489, -604800, 100, 1),
+(201874, 631, 4, 1, -428.141, 2421.34, 191.233, 3.10389, 0, 0, 0.999822, 0.0188489, -604800, 100, 1),
+(201875, 631, 8, 1, -428.141, 2421.34, 191.233, 3.10389, 0, 0, 0.999822, 0.0188489, -604800, 100, 1),
+(202177, 631, 1, 1, -447.493, 2003.5, 191.235, 0.153939, 0, 0, 0.0768933, 0.997039, -604800, 100, 1),
+(202178, 631, 2, 1, -447.493, 2003.5, 191.235, 0.153939, 0, 0, 0.0768933, 0.997039, -604800, 100, 1),
+(202179, 631, 4, 1, -447.493, 2003.5, 191.235, 0.153939, 0, 0, 0.0768933, 0.997039, -604800, 100, 1),
+(202180, 631, 8, 1, -447.493, 2003.5, 191.235, 0.153939, 0, 0, 0.0768933, 0.997039, -604800, 100, 1);
 
 -- Plague wing
 -- Rotface
@@ -96,7 +92,7 @@ UPDATE `gameobject` SET `state` = '0' WHERE `id` IN (201371);
 UPDATE `creature_template` SET `ScriptName`='mob_vile_gas_stalker', `AIName`=''  WHERE `entry`= 38548;
 UPDATE `creature_template` SET `faction_A` = 14, `faction_H` = 14,  `ScriptName`='', `AIName`='' WHERE `entry`= 36659;
 -- original auras from YTDB
--- INSERT INTO `creature_template_addon` (`entry`, `mount`, `bytes1`, `bytes2`, `emote`, `moveflags`, `auras`) VALUES
+-- INSERT INTO `creature_template_addon` (`entry`, `mount`, `bytes1`, `b2_0_sheath`, `emote`, `moveflags`, `auras`) VALUES
 -- (36659, 0, 0, 1, 0, 0, '69126 0 69152 0 69154 0');
 -- DELETE FROM `creature_template_addon` WHERE `entry` = 36659;
 -- Visual effect mobs from Timmit
@@ -163,7 +159,6 @@ UPDATE `creature_template` SET `faction_A` = 35, `faction_H` = 35, `ScriptName`=
 UPDATE `creature_template` SET `faction_A` = 35, `faction_H` = 35 WHERE `entry`= 38174;
 UPDATE `creature_template` SET `faction_A` = 14, `faction_H` = 14, `ScriptName`='mob_nightmare_portal', `AIName`='' WHERE `entry`= 38429;
 UPDATE `creature_template` SET `ScriptName`='mob_mana_void', `AIName`='' WHERE `entry`= 38068;
-DELETE FROM `creature` WHERE `guid` = 47738 AND `id` = 38589;
 
 UPDATE `gameobject_template` SET `faction` = '0',`data0` = '0' WHERE `gameobject_template`.`entry` IN (201375,201373);
 UPDATE `gameobject_template` SET `faction` = '114',`data0` = '0' WHERE `gameobject_template`.`entry` IN (201374);

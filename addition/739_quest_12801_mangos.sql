@@ -40,6 +40,5 @@ INSERT INTO `creature_ai_scripts` VALUES ('90083', '29181', '0', '0', '100', '3'
 INSERT INTO `creature_ai_scripts` VALUES ('90084', '29181', '0', '0', '100', '3', '10000', '20000', '10000', '20000', '11', '21807', '1', '0', '0', '0', '0', '0', '0', '0', '0', '0', 'Rayne - SPELL_WRATH');
 
 -- YTDB cleanup
-DELETE FROM `creature` WHERE `map` = 609 AND `guid` IN (116863);
 DELETE FROM `creature` WHERE `map` = 609 AND `id` IN (29219,29206,29190);
 

@@ -17,8 +17,6 @@ UPDATE creature_template SET mechanic_immune_mask=617299803, scriptname='boss_ra
 -- original x=587.547, y= -174.927, z = 391.517; make the boss fly before encounter starts
 UPDATE creature SET position_x = 590.346741, position_y = -226.947647, position_z = 442.897583 WHERE id = 33186;
 UPDATE gameobject_template SET flags= 6553648, ScriptName='go_broken_harpoon' WHERE entry = 194565;
--- only 2 harpoons for 10 man
-UPDATE gameobject SET spawnMask = 2 WHERE guid IN (73595, 73592);
 -- mole machines & adds
 UPDATE creature_template SET ScriptName = 'mob_mole_machine' WHERE entry = 33245;
 UPDATE creature_template SET ScriptName = 'mob_dark_rune_watcher' WHERE entry = 33453;
@@ -143,10 +141,9 @@ UPDATE `creature_template` SET `mechanic_immune_mask` = 619397115 WHERE `entry` 
 DELETE FROM creature_equip_template WHERE entry = 103000;
 INSERT INTO creature_equip_template values (103000, 45315, 0, 0);
 -- 2 more defenders for 25 man
-DELETE FROM creature WHERE guid IN (800010, 800011);
-INSERT INTO `creature` (`guid`,`id`,`map`,`spawnMask`,`phaseMask`,`modelid`,`equipment_id`,`position_x`,`position_y`,`position_z`,`orientation`,`spawntimesecs`,`spawndist`,`currentwaypoint`,`curhealth`,`curmana`,`DeathState`,`MovementType`) VALUES
-(800010, 34014, 603, 2, 65535, 0, 0, 1945.2, 37.2442, 411.356, 3.62107, 7200, 0, 0, 334680, 0, 0, 0),
-(800011, 34014, 603, 2, 65535, 0, 0, 1936.11, 49.8233, 411.352, 3.85276, 7200, 0, 0, 334680, 0, 0, 0);
+INSERT INTO `creature` (`id`,`map`,`spawnMask`,`phaseMask`,`modelid`,`equipment_id`,`position_x`,`position_y`,`position_z`,`orientation`,`spawntimesecs`,`spawndist`,`currentwaypoint`,`curhealth`,`curmana`,`DeathState`,`MovementType`) VALUES
+(34014, 603, 2, 65535, 0, 0, 1945.2, 37.2442, 411.356, 3.62107, 7200, 0, 0, 334680, 0, 0, 0),
+(34014, 603, 2, 65535, 0, 0, 1936.11, 49.8233, 411.352, 3.85276, 7200, 0, 0, 334680, 0, 0, 0);
 DELETE FROM `creature_movement` WHERE `id`=94378;
 INSERT INTO `creature_movement` (`id`,`point`,`position_x`,`position_y`,`position_z`,`waittime`,`textid1`,`textid2`,`textid3`,`textid4`,`textid5`,`emote`,`spell`,`wpguid`,`orientation`,`model1`,`model2`) VALUES
 -- UPDATED CREATURE MOVEMENT FOR AURIAYA, SHOULD MOVE AROUND THE CENTER SPIRE
@@ -200,15 +197,15 @@ REPLACE INTO `spell_script_target` (`entry`, `type`, `targetEntry`) VALUES ('623
 
 -- Added hack for Freya's gift
 DELETE FROM `gameobject` WHERE `id` IN (194324, 194325,194326,194327,194328,194329,194330,194331);
-INSERT INTO `gameobject` (`guid`, `id`, `map`, `spawnMask`, `phaseMask`, `position_x`, `position_y`, `position_z`, `orientation`, `rotation0`, `rotation1`, `rotation2`, `rotation3`, `spawntimesecs`, `animprogress`, `state`) VALUES
-(733324, 194324, 603, 1, 65535, 2374.876221, -78.512665, 425.073608, 3.260976, 0, 0, 0.706026, 0.708186, -604800, 100, 1),
-(733325, 194325, 603, 1, 65535, 2374.876221, -78.512665, 425.073608, 3.260976, 0, 0, 0.706026, 0.708186, -604800, 100, 1),
-(733326, 194326, 603, 1, 65535, 2374.876221, -78.512665, 425.073608, 3.260976, 0, 0, 0.706026, 0.708186, -604800, 100, 1),
-(733327, 194327, 603, 1, 65535, 2374.876221, -78.512665, 425.073608, 3.260976, 0, 0, 0.706026, 0.708186, -604800, 100, 1),
-(733328, 194328, 603, 2, 65535, 2374.876221, -78.512665, 425.073608, 3.260976, 0, 0, 0.706026, 0.708186, -604800, 100, 1),
-(733329, 194329, 603, 2, 65535, 2374.876221, -78.512665, 425.073608, 3.260976, 0, 0, 0.706026, 0.708186, -604800, 100, 1),
-(733330, 194330, 603, 2, 65535, 2374.876221, -78.512665, 425.073608, 3.260976, 0, 0, 0.706026, 0.708186, -604800, 100, 1),
-(733331, 194331, 603, 2, 65535, 2374.876221, -78.512665, 425.073608, 3.260976, 0, 0, 0.706026, 0.708186, -604800, 100, 1);
+INSERT INTO `gameobject` (`id`, `map`, `spawnMask`, `phaseMask`, `position_x`, `position_y`, `position_z`, `orientation`, `rotation0`, `rotation1`, `rotation2`, `rotation3`, `spawntimesecs`, `animprogress`, `state`) VALUES
+(194324, 603, 1, 65535, 2374.876221, -78.512665, 425.073608, 3.260976, 0, 0, 0.706026, 0.708186, -604800, 100, 1),
+(194325, 603, 1, 65535, 2374.876221, -78.512665, 425.073608, 3.260976, 0, 0, 0.706026, 0.708186, -604800, 100, 1),
+(194326, 603, 1, 65535, 2374.876221, -78.512665, 425.073608, 3.260976, 0, 0, 0.706026, 0.708186, -604800, 100, 1),
+(194327, 603, 1, 65535, 2374.876221, -78.512665, 425.073608, 3.260976, 0, 0, 0.706026, 0.708186, -604800, 100, 1),
+(194328, 603, 2, 65535, 2374.876221, -78.512665, 425.073608, 3.260976, 0, 0, 0.706026, 0.708186, -604800, 100, 1),
+(194329, 603, 2, 65535, 2374.876221, -78.512665, 425.073608, 3.260976, 0, 0, 0.706026, 0.708186, -604800, 100, 1),
+(194330, 603, 2, 65535, 2374.876221, -78.512665, 425.073608, 3.260976, 0, 0, 0.706026, 0.708186, -604800, 100, 1),
+(194331, 603, 2, 65535, 2374.876221, -78.512665, 425.073608, 3.260976, 0, 0, 0.706026, 0.708186, -604800, 100, 1);
 -- Delete bugged spell from mobs
 DELETE FROM `creature_ai_scripts` WHERE `creature_id` IN (33430,33732) AND `action1_param1` = 63007;
 
@@ -226,45 +223,6 @@ UPDATE creature_template SET ScriptName = 'npc_hodir_priest' WHERE entry IN (328
 UPDATE creature_template SET ScriptName = 'npc_hodir_druid' WHERE entry IN (33325, 32901, 32941, 33333);
 UPDATE creature_template SET ScriptName = 'npc_hodir_shaman' WHERE entry IN (33328, 32900, 33332, 32950);
 UPDATE creature_template SET ScriptName = 'npc_hodir_mage' WHERE entry IN (32893, 33327, 33331, 32946);
-
--- FIXED SOME POSITIONING FOR THE FRIENDLY NPCS, Besides this the freeze aura should also be fixed.
--- fixed npc positioning and added 4 extra flashfreeze for them.
--- 10 man: 
--- mage
-UPDATE creature SET position_x = 2000.9, position_y = -231.232 WHERE guid = 131930;
--- priest
-UPDATE creature SET position_x = 2009.06, position_y = -244.058 WHERE guid = 131933;
-DELETE FROM creature WHERE guid IN (800005);
-INSERT INTO creature VALUES
-(800005, 32897, 603, 3, 128,0,0, 2009.06, -244.058, 432.687, 1.68485, 7200,0,0, 5647, 0, 0, 0);		-- aly priest 
--- shaman
-UPDATE creature SET position_x = 1983.75, position_y = -243.358 WHERE id = 33328;
-UPDATE creature SET position_x = 1983.75, position_y = -243.358 WHERE id = 33332;
--- druid
-UPDATE creature SET position_x = 2021.12, position_y = -236.648 WHERE id = 32941;
-UPDATE creature SET position_x = 2021.12, position_y = -236.648 WHERE id = 33325;
--- 25 man:
--- druid
-UPDATE creature SET position_x = 2013.5, position_y = -240.338 WHERE id = 32901;
-DELETE FROM creature WHERE guid IN (800006);
-INSERT INTO creature VALUES
-(800006, 32938, 603, 2, 1,0,0, 2013.5, -240.338, 432.687, 1.68485, 7200,0,0, 5647, 0, 0, 0);
--- shaman:
-UPDATE creature SET position_x = 2011.48, position_y = -232.79 WHERE id = 32900;
-UPDATE creature SET position_x = 2011.48, position_y = -232.79 WHERE id = 32950;
-DELETE FROM creature WHERE guid IN (800007);
-INSERT INTO creature VALUES
-(800007, 32938, 603, 2, 1,0,0, 2011.48, -232.79, 432.687, 1.68485, 7200,0,0, 5647, 0, 0, 0);
--- mage:
-DELETE FROM creature WHERE guid IN (800008, 800010);
-INSERT INTO creature VALUES
-(800008, 33327, 603, 2, 128,0,0, 1978.49, -241.476, 432.687, 1.68485, 7200,0,0, 5647, 0, 0, 0), -- aly mage
-(800010, 32938, 603, 2, 1,0,0, 1978.49, -241.476, 432.687, 1.68485, 7200,0,0, 5647, 0, 0, 0);
--- priest
-UPDATE creature SET position_x = 1997.88, position_y = -239.394 WHERE id = 33330;
-DELETE FROM creature WHERE guid IN (800009);
-INSERT INTO creature VALUES
-(800009, 32938, 603, 2, 1,0,0, 1997.88, -239.394, 432.687, 1.68485, 7200,0,0, 5647, 0, 0, 0);
 
 -- Mimiron
 UPDATE `gameobject_template` SET `data0` = '60000' WHERE `entry` =194675;
@@ -295,10 +253,10 @@ REPLACE INTO `spell_script_target` (`entry`, `type`, `targetEntry`) VALUES ('651
 -- mimiron loot fix:
 -- INSERT two new boxes
 DELETE FROM `gameobject` WHERE `id` IN (194957, 194958);
-INSERT INTO `gameobject` (`guid`,`id`,`map`,`spawnMask`,`phaseMask`,`position_x`,`position_y`,`position_z`,`orientation`,`rotation0`,`rotation1`,`rotation2`,`rotation3`,`spawntimesecs`,`animprogress`,`state`) VALUES
-(110004, 194957, 603, 1, 65535, 2734.73, 2568.98, 364.314, 0.0139475, 0, 0, 0.00697369, 0.999976, -604800, 100, 1);
-INSERT INTO `gameobject` (`guid`,`id`,`map`,`spawnMask`,`phaseMask`,`position_x`,`position_y`,`position_z`,`orientation`,`rotation0`,`rotation1`,`rotation2`,`rotation3`,`spawntimesecs`,`animprogress`,`state`) VALUES
-(110005, 194958, 603, 2, 65535, 2734.73, 2568.98, 364.314, 0.0139475, 0, 0, 0.00697369, 0.999976, -604800, 100, 1);
+INSERT INTO `gameobject` (`id`,`map`,`spawnMask`,`phaseMask`,`position_x`,`position_y`,`position_z`,`orientation`,`rotation0`,`rotation1`,`rotation2`,`rotation3`,`spawntimesecs`,`animprogress`,`state`) VALUES
+(194957, 603, 1, 65535, 2734.73, 2568.98, 364.314, 0.0139475, 0, 0, 0.00697369, 0.999976, -604800, 100, 1);
+INSERT INTO `gameobject` (`id`,`map`,`spawnMask`,`phaseMask`,`position_x`,`position_y`,`position_z`,`orientation`,`rotation0`,`rotation1`,`rotation2`,`rotation3`,`spawntimesecs`,`animprogress`,`state`) VALUES
+(194958, 603, 2, 65535, 2734.73, 2568.98, 364.314, 0.0139475, 0, 0, 0.00697369, 0.999976, -604800, 100, 1);
 -- 10 man hard:
 DELETE FROM `gameobject_loot_template` WHERE (`entry`=194957);
 INSERT INTO `gameobject_loot_template` VALUES 
@@ -410,13 +368,6 @@ UPDATE creature_template SET ScriptName = 'keeper_hodir' WHERE entry = 33213;
 UPDATE creature_template SET ScriptName = 'keeper_freya' WHERE entry = 33241;
 UPDATE creature_template SET ScriptName = 'keeper_thorim' WHERE entry = 33242;
 UPDATE creature_template SET ScriptName = 'keeper_mimiron' WHERE entry = 33244;
--- INSERT doors & yoggs brain INTO the brain room
-DELETE FROM gameobject WHERE id IN (194635);
-INSERT INTO gameobject VALUES (110000,194635,603,3,65535,2022.490,-25.389,261.961,0,0,0,0,0,604800,0,1);
-DELETE FROM gameobject WHERE guid = 110001;
-INSERT INTO gameobject VALUES (110001,194462,603,3,65535,2104.555, -25.635,242.646,0,0,0,0,0,604800,100,1);
-DELETE FROM creature WHERE id IN (33890);
-INSERT INTO creature VALUES (800000,33890,603,3,65535,0,0,1981.422,-22.442,255.011,0,604800,0,0,1371428,0,0,0);
 
 -- Algalon
 UPDATE creature_template SET ScriptName = 'boss_algalon' WHERE entry = 32871;
@@ -436,13 +387,6 @@ UPDATE creature_template SET `npcflag` = 1, `unit_flags` = 2, ScriptName = 'hodi
 UPDATE creature_template SET `npcflag` = 1, `unit_flags` = 2, ScriptName = 'freya_image' WHERE entry = 33410;
 UPDATE creature_template SET `npcflag` = 1, `unit_flags` = 2, ScriptName = 'thorim_image' WHERE entry = 33413;
 UPDATE creature_template SET `npcflag` = 1, `unit_flags` = 2, ScriptName = 'mimiron_image' WHERE entry = 33412;
--- INSERT keepers imagees INTO the db
-DELETE FROM creature WHERE guid IN (800001, 800002, 800003, 800004);
-INSERT INTO creature VALUES
-(800001, 33410, 603, 3, 65535,0,0, 2036.892, 25.621, 411.358, 3.83, 604800,0,0, 5647, 0, 0, 0),		-- Freya 
-(800002, 33412, 603, 3, 65535,0,0, 1939.215, 42.677, 411.355, 5.31, 604800,0,0, 5647, 0, 0, 0),		-- Mimiron
-(800003, 33411, 603, 3, 65535,0,0, 1939.195, -90.662, 411.357, 1.06, 604800,0,0, 5647, 0, 0, 0), 	-- Hodir
-(800004, 33413, 603, 3, 65535,0,0, 2036.674, -73.814, 411.355, 2.51, 604800,0,0, 5647, 0, 0, 0); 	-- Thorim
 
 -- Doors 
 UPDATE gameobject_template SET faction = 114 WHERE entry IN (194553, 194554, 194556, 194148, 194634, 194635, 194905, 194441,
