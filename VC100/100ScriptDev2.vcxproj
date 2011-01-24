@@ -475,6 +475,7 @@
     <ClCompile Include="..\scripts\kalimdor\zulfarrak\boss_zumrah.cpp" />
     <ClCompile Include="..\scripts\kalimdor\zulfarrak\instance_zulfarrak.cpp" />
     <ClCompile Include="..\scripts\kalimdor\zulfarrak\zulfarrak.cpp" />
+    <ClCompile Include="..\scripts\northrend\nexus\eye_of_eternity\instance_eye_of_eternity.cpp" />
     <ClCompile Include="..\scripts\northrend\zuldrak.cpp" />
     <ClCompile Include="..\scripts\northrend\azjol-nerub\ahnkahet\boss_jedoga.cpp" />
     <ClCompile Include="..\scripts\northrend\azjol-nerub\ahnkahet\boss_nadox.cpp" />
