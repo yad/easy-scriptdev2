@@ -12,6 +12,7 @@
 #include "ProgressBar.h"
 #include "../system/ScriptLoader.h"
 #include "../system/system.h"
+#include "../../../game/ScriptMgr.h"
 
 int num_sc_scripts;
 Script *m_scripts[MAX_SCRIPTS];

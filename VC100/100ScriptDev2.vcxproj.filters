@@ -1053,6 +1053,9 @@
     <ClCompile Include="..\scripts\kalimdor\wailing_caverns\instance_wailing_caverns.cpp">
       <Filter>scripts\kalimdor\wailing_caverns</Filter>
     </ClCompile>
+    <ClCompile Include="..\scripts\kalimdor\wailing_caverns\wailing_caverns.cpp">
+      <Filter>scripts\kalimdor\wailing_caverns</Filter>
+    </ClCompile>
     <ClCompile Include="..\scripts\kalimdor\zulfarrak\boss_zumrah.cpp">
       <Filter>scripts\kalimdor\zulfarrak</Filter>
     </ClCompile>
@@ -1777,6 +1780,9 @@
     <ClCompile Include="..\scripts\northrend\naxxramas\boss_patchwerk.cpp">
       <Filter>scripts\northrend\naxxramas</Filter>
     </ClCompile>
+    <ClCompile Include="..\scripts\outland\auchindoun\sethekk_halls\boss_talon_king_ikiss.cpp">
+      <Filter>scripts\outland\auchindoun\sethekk_halls</Filter>
+    </ClCompile>
     <ClCompile Include="..\scripts\northrend\naxxramas\boss_razuvious.cpp">
       <Filter>scripts\northrend\naxxramas</Filter>
     </ClCompile>
@@ -2023,6 +2029,12 @@
     <ClCompile Include="..\scripts\kalimdor\caverns_of_time\culling_of_stratholme\boss_lord_epoch.cpp">
       <Filter>scripts\kalimdor\caverns_of_time\culling_of_stratholme</Filter>
     </ClCompile>
+    <ClCompile Include="..\system\MangosdRev.cpp">
+      <Filter>system</Filter>
+    </ClCompile>
+    <ClCompile Include="..\system\ScriptLoader.cpp">
+      <Filter>system</Filter>
+    </ClCompile>
     <ClCompile Include="..\scripts\kalimdor\caverns_of_time\culling_of_stratholme\boss_malganis.cpp">
       <Filter>scripts\kalimdor\caverns_of_time\culling_of_stratholme</Filter>
     </ClCompile>
@@ -2063,7 +2075,7 @@
       <Filter>scripts\eastern_kingdoms\blackrock_depths</Filter>
     </ClInclude>
     <ClInclude Include="..\scripts\eastern_kingdoms\blackrock_spire\blackrock_spire.h">
-      <Filter>scripts\eastern_kingdoms\blackrock_depths</Filter>
+      <Filter>scripts\eastern_kingdoms\blackrock_spire</Filter>
     </ClInclude>
     <ClInclude Include="..\scripts\eastern_kingdoms\blackwing_lair\blackwing_lair.h">
       <Filter>scripts\eastern_kingdoms\blackwing_lair</Filter>
@@ -2167,9 +2179,6 @@
     <ClInclude Include="..\scripts\northrend\gundrak\gundrak.h">
       <Filter>scripts\northrend\gundrak</Filter>
     </ClInclude>
-    <ClInclude Include="..\scripts\northrend\icecrown_citadel\icecrown_citadel\icecrown_citadel.h">
-      <Filter>scripts\northrend\icecrown_citadel\icecrown_citadel</Filter>
-    </ClInclude>
     <ClInclude Include="..\scripts\northrend\icecrown_citadel\frozen_halls\forge_of_souls\forge_of_souls.h">
       <Filter>scripts\northrend\icecrown_citadel\frozen_halls\forge_of_souls</Filter>
     </ClInclude>
@@ -2178,6 +2187,9 @@
     </ClInclude>
     <ClInclude Include="..\scripts\northrend\icecrown_citadel\frozen_halls\pit_of_saron\pit_of_saron.h">
       <Filter>scripts\northrend\icecrown_citadel\frozen_halls\pit_of_saron</Filter>
+    </ClInclude>
+    <ClInclude Include="..\scripts\northrend\icecrown_citadel\icecrown_citadel\icecrown_citadel.h">
+      <Filter>scripts\northrend\icecrown_citadel\icecrown_citadel</Filter>
     </ClInclude>
     <ClInclude Include="..\scripts\northrend\naxxramas\naxxramas.h">
       <Filter>scripts\northrend\naxxramas</Filter>

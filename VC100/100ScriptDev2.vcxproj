@@ -472,10 +472,18 @@
     <ClCompile Include="..\scripts\kalimdor\temple_of_ahnqiraj\instance_temple_of_ahnqiraj.cpp" />
     <ClCompile Include="..\scripts\kalimdor\temple_of_ahnqiraj\mob_anubisath_sentinel.cpp" />
     <ClCompile Include="..\scripts\kalimdor\wailing_caverns\instance_wailing_caverns.cpp" />
+    <ClCompile Include="..\scripts\kalimdor\wailing_caverns\wailing_caverns.cpp" />
     <ClCompile Include="..\scripts\kalimdor\zulfarrak\boss_zumrah.cpp" />
     <ClCompile Include="..\scripts\kalimdor\zulfarrak\instance_zulfarrak.cpp" />
     <ClCompile Include="..\scripts\kalimdor\zulfarrak\zulfarrak.cpp" />
-    <ClCompile Include="..\scripts\northrend\nexus\eye_of_eternity\instance_eye_of_eternity.cpp" />
+    <ClCompile Include="..\scripts\northrend\borean_tundra.cpp" />
+    <ClCompile Include="..\scripts\northrend\dalaran.cpp" />
+    <ClCompile Include="..\scripts\northrend\dragonblight.cpp" />
+    <ClCompile Include="..\scripts\northrend\grizzly_hills.cpp" />
+    <ClCompile Include="..\scripts\northrend\howling_fjord.cpp" />
+    <ClCompile Include="..\scripts\northrend\icecrown.cpp" />
+    <ClCompile Include="..\scripts\northrend\sholazar_basin.cpp" />
+    <ClCompile Include="..\scripts\northrend\storm_peaks.cpp" />
     <ClCompile Include="..\scripts\northrend\zuldrak.cpp" />
     <ClCompile Include="..\scripts\northrend\azjol-nerub\ahnkahet\boss_jedoga.cpp" />
     <ClCompile Include="..\scripts\northrend\azjol-nerub\ahnkahet\boss_nadox.cpp" />
@@ -651,7 +659,7 @@
     <ClCompile Include="..\scripts\outland\auchindoun\mana_tombs\boss_pandemonius.cpp" />
     <ClCompile Include="..\scripts\outland\auchindoun\sethekk_halls\boss_anzu.cpp" />
     <ClCompile Include="..\scripts\outland\auchindoun\sethekk_halls\boss_darkweaver_syth.cpp" />
-    <ClCompile Include="..\scripts\outland\auchindoun\sethekk_halls\boss_tailonking_ikiss.cpp" />
+    <ClCompile Include="..\scripts\outland\auchindoun\sethekk_halls\boss_talon_king_ikiss.cpp" />
     <ClCompile Include="..\scripts\outland\auchindoun\sethekk_halls\instance_sethekk_halls.cpp" />
     <ClCompile Include="..\scripts\outland\auchindoun\shadow_labyrinth\boss_ambassador_hellmaw.cpp" />
     <ClCompile Include="..\scripts\outland\auchindoun\shadow_labyrinth\boss_blackheart_the_inciter.cpp" />
@@ -735,6 +743,9 @@
     <ClCompile Include="..\include\sc_creature.cpp" />
     <ClCompile Include="..\include\sc_grid_searchers.cpp" />
     <ClCompile Include="..\include\sc_instance.cpp" />
+    <ClCompile Include="..\system\MangosdRev.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="..\system\ScriptLoader.cpp" />
     <ClCompile Include="..\system\system.cpp" />
     <ClCompile Include="..\ScriptMgr.cpp" />
