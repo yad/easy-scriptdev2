@@ -217,7 +217,6 @@
     <ClCompile Include="..\base\guard_ai.cpp" />
     <ClCompile Include="..\base\pet_ai.cpp" />
     <ClCompile Include="..\scripts\battlegrounds\battleground.cpp" />
-    <ClCompile Include="..\scripts\custom\npc_arena_honor.cpp" />
     <ClCompile Include="..\scripts\custom\teleguy.cpp" />
     <ClCompile Include="..\scripts\eastern_kingdoms\alterac_mountains.cpp" />
     <ClCompile Include="..\scripts\eastern_kingdoms\arathi_highlands.cpp" />
@@ -330,8 +329,15 @@
     <ClCompile Include="..\scripts\eastern_kingdoms\scarlet_monastery\instance_scarlet_monastery.cpp" />
     <ClCompile Include="..\scripts\eastern_kingdoms\scholomance\boss_darkmaster_gandling.cpp" />
     <ClCompile Include="..\scripts\eastern_kingdoms\scholomance\boss_death_knight_darkreaver.cpp" />
+    <ClCompile Include="..\scripts\eastern_kingdoms\scholomance\boss_doctor_theolen_krastinov.cpp" />
+    <ClCompile Include="..\scripts\eastern_kingdoms\scholomance\boss_illucia_barov.cpp" />
+    <ClCompile Include="..\scripts\eastern_kingdoms\scholomance\boss_instructor_malicia.cpp" />
     <ClCompile Include="..\scripts\eastern_kingdoms\scholomance\boss_jandice_barov.cpp" />
     <ClCompile Include="..\scripts\eastern_kingdoms\scholomance\boss_kormok.cpp" />
+    <ClCompile Include="..\scripts\eastern_kingdoms\scholomance\boss_lord_alexei_barov.cpp" />
+    <ClCompile Include="..\scripts\eastern_kingdoms\scholomance\boss_lorekeeper_polkelt.cpp" />
+    <ClCompile Include="..\scripts\eastern_kingdoms\scholomance\boss_ras_frostwhisper.cpp" />
+    <ClCompile Include="..\scripts\eastern_kingdoms\scholomance\boss_the_ravenian.cpp" />
     <ClCompile Include="..\scripts\eastern_kingdoms\scholomance\boss_vectus.cpp" />
     <ClCompile Include="..\scripts\eastern_kingdoms\scholomance\instance_scholomance.cpp" />
     <ClCompile Include="..\scripts\eastern_kingdoms\shadowfang_keep\boss_hummel.cpp" />
@@ -475,6 +481,7 @@
     <ClCompile Include="..\scripts\northrend\grizzly_hills.cpp" />
     <ClCompile Include="..\scripts\northrend\howling_fjord.cpp" />
     <ClCompile Include="..\scripts\northrend\icecrown.cpp" />
+    <ClCompile Include="..\scripts\northrend\nexus\eye_of_eternity\instance_eye_of_eternity.cpp" />
     <ClCompile Include="..\scripts\northrend\sholazar_basin.cpp" />
     <ClCompile Include="..\scripts\northrend\storm_peaks.cpp" />
     <ClCompile Include="..\scripts\northrend\zuldrak.cpp" />

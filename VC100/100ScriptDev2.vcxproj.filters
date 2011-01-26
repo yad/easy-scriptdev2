@@ -1086,9 +1086,6 @@
     <ClCompile Include="..\scripts\outland\auchindoun\sethekk_halls\boss_darkweaver_syth.cpp">
       <Filter>scripts\outland\auchindoun\sethekk_halls</Filter>
     </ClCompile>
-    <ClCompile Include="..\scripts\outland\auchindoun\sethekk_halls\boss_tailonking_ikiss.cpp">
-      <Filter>scripts\outland\auchindoun\sethekk_halls</Filter>
-    </ClCompile>
     <ClCompile Include="..\scripts\outland\auchindoun\sethekk_halls\instance_sethekk_halls.cpp">
       <Filter>scripts\outland\auchindoun\sethekk_halls</Filter>
     </ClCompile>
@@ -1996,9 +1993,6 @@
     <ClCompile Include="..\base\BSW_instance.cpp">
       <Filter>base</Filter>
     </ClCompile>
-    <ClCompile Include="..\scripts\custom\npc_arena_honor.cpp">
-      <Filter>scripts\custom</Filter>
-    </ClCompile>
     <ClCompile Include="..\scripts\custom\teleguy.cpp">
       <Filter>scripts\custom</Filter>
     </ClCompile>
@@ -2033,8 +2027,23 @@
       <Filter>scripts\northrend\ruby_sanctum</Filter>
     </ClCompile>
     <ClCompile Include="..\scripts\northrend\icecrown_citadel\icecrown_citadel\icecrown_spire.cpp" />
+    <ClCompile Include="..\scripts\eastern_kingdoms\scholomance\boss_doctor_theolen_krastinov.cpp" />
+    <ClCompile Include="..\scripts\eastern_kingdoms\scholomance\boss_illucia_barov.cpp" />
+    <ClCompile Include="..\scripts\eastern_kingdoms\scholomance\boss_instructor_malicia.cpp" />
+    <ClCompile Include="..\scripts\eastern_kingdoms\scholomance\boss_lord_alexei_barov.cpp" />
+    <ClCompile Include="..\scripts\eastern_kingdoms\scholomance\boss_lorekeeper_polkelt.cpp" />
+    <ClCompile Include="..\scripts\eastern_kingdoms\scholomance\boss_ras_frostwhisper.cpp" />
+    <ClCompile Include="..\scripts\eastern_kingdoms\scholomance\boss_the_ravenian.cpp" />
+    <ClCompile Include="..\scripts\northrend\borean_tundra.cpp" />
+    <ClCompile Include="..\scripts\northrend\dalaran.cpp" />
+    <ClCompile Include="..\scripts\northrend\dragonblight.cpp" />
+    <ClCompile Include="..\scripts\northrend\grizzly_hills.cpp" />
+    <ClCompile Include="..\scripts\northrend\howling_fjord.cpp" />
+    <ClCompile Include="..\scripts\northrend\icecrown.cpp" />
+    <ClCompile Include="..\scripts\northrend\sholazar_basin.cpp" />
+    <ClCompile Include="..\scripts\northrend\storm_peaks.cpp" />
     <ClCompile Include="..\scripts\northrend\nexus\eye_of_eternity\instance_eye_of_eternity.cpp">
-      <Filter>scripts\northrend\nexus</Filter>
+      <Filter>scripts\northrend\nexus\eye_of_eternity</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
