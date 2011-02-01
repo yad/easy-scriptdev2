@@ -1206,7 +1206,7 @@ struct MANGOS_DLL_DECL npc_eye_of_acherusAI : public ScriptedAI
             if (ownerGuid.IsEmpty())
                 ownerGuid = m_creature->GetCharmerOrOwner()->GetObjectGuid();
 
-            if (StartTimer < uiDiff && !Active)
+            if (StartTimer < (int)uiDiff && !Active)
             {
                 m_creature->CastSpell(m_creature, 70889, true);
                 m_creature->CastSpell(m_creature, 51892, true);
@@ -1221,7 +1221,7 @@ struct MANGOS_DLL_DECL npc_eye_of_acherusAI : public ScriptedAI
         }
         else
         {
-            if (StartTimer < uiDiff)
+            if (StartTimer < (int)uiDiff)
             {
                 m_creature->ForcedDespawn();
                 /*if (Player* owner = ObjectAccessor::FindPlayer(ownerGuid))
