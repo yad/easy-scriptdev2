@@ -2045,14 +2045,6 @@
       <Filter>scripts\northrend\ruby_sanctum</Filter>
     </ClCompile>
     <ClCompile Include="..\scripts\northrend\icecrown_citadel\icecrown_citadel\icecrown_spire.cpp" />
-    <ClCompile Include="..\scripts\northrend\borean_tundra.cpp" />
-    <ClCompile Include="..\scripts\northrend\dalaran.cpp" />
-    <ClCompile Include="..\scripts\northrend\dragonblight.cpp" />
-    <ClCompile Include="..\scripts\northrend\grizzly_hills.cpp" />
-    <ClCompile Include="..\scripts\northrend\howling_fjord.cpp" />
-    <ClCompile Include="..\scripts\northrend\icecrown.cpp" />
-    <ClCompile Include="..\scripts\northrend\sholazar_basin.cpp" />
-    <ClCompile Include="..\scripts\northrend\storm_peaks.cpp" />
     <ClCompile Include="..\scripts\northrend\nexus\eye_of_eternity\instance_eye_of_eternity.cpp">
       <Filter>scripts\northrend\nexus\eye_of_eternity</Filter>
     </ClCompile>

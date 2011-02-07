@@ -272,6 +272,9 @@ struct MANGOS_DLL_DECL boss_malchezaarAI : public ScriptedAI
 
         //damage
         const CreatureInfo *cinfo = m_creature->GetCreatureInfo();
+		if (!cinfo)
+			return;
+
         m_creature->SetBaseWeaponDamage(BASE_ATTACK, MINDAMAGE, cinfo->mindmg);
         m_creature->SetBaseWeaponDamage(BASE_ATTACK, MAXDAMAGE, cinfo->maxdmg);
         m_creature->UpdateDamagePhysical(BASE_ATTACK);

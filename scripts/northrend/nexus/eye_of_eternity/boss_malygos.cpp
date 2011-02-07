@@ -400,8 +400,6 @@ struct MANGOS_DLL_DECL boss_malygosAI : public ScriptedAI
                 pDisk->CastSpell(pDisk, SPELL_FLIGHT, true);
                 if (uiEntry == NPC_NEXUS_LORD)
                     pDisk->SetSpeedRate(MOVE_WALK, 1.5f);
-                if (VehicleKit* pDiskVehicle = pDisk->GetVehicleKit())
-                    pSummoned->EnterVehicle(pDiskVehicle, 0);
             }
             pSummoned->SetInCombatWithZone();
         }
@@ -826,20 +824,6 @@ struct MANGOS_DLL_DECL boss_malygosAI : public ScriptedAI
                     m_uiTimer = 6000;
                 }
 
-                Map* pMap = m_creature->GetMap();
-                if (pMap)
-                {
-                    Map::PlayerList const &lPlayers = pMap->GetPlayers();
-                    for (Map::PlayerList::const_iterator itr = lPlayers.begin(); itr != lPlayers.end(); ++itr)
-                    {
-                        Player* pPlayer = itr->getSource();
-                        if (pPlayer->GetVehicle() && m_uiPhase == PHASE_ADDS)
-                            pPlayer->ApplySpellImmune(0, IMMUNITY_SCHOOL, SPELL_SCHOOL_MASK_ARCANE, true);
-                        else
-                            pPlayer->ApplySpellImmune(0, IMMUNITY_SCHOOL, SPELL_SCHOOL_MASK_ARCANE, false);
-                    }
-                }
-
                 if (m_uiPhase == PHASE_DRAGONS)
                     return;
 
@@ -1168,48 +1152,6 @@ struct MANGOS_DLL_DECL npc_nexus_lordAI : public ScriptedAI
         if (!m_creature->SelectHostileTarget() || !m_creature->getVictim())
             return;
 
-        if (VehicleKit* pDiskVehicle = m_creature->GetVehicle())
-        {
-            if (Unit* pDiskUnit = pDiskVehicle->GetBase())
-            {
-                Creature* pDisk = (Creature*)pDiskUnit;
-
-                float fX = pDisk->GetPositionX();
-                float fY = pDisk->GetPositionY();
-
-                if (fX != m_fVehicleOldX || fY != m_fVehicleOldY)
-                    m_creature->Relocate(fX, fY, pDisk->GetPositionZ(), 0);
-
-                m_fVehicleOldX = fX;
-                m_fVehicleOldY = fY;
-
-                Unit* pTarget = m_creature->getVictim();
-                if (m_creature->IsWithinDistInMap(pTarget, 4.0f))
-                {
-                    pDisk->GetMotionMaster()->Clear();
-                    pDisk->StopMoving();
-                }
-                else
-                {
-                    if (m_uiCheckTimer <= uiDiff)
-                    {
-                        float fX = pTarget->GetPositionX();
-                        float fY = pTarget->GetPositionY();
-                        if (abs(fX - m_fTargetOldX) > 1.0f || abs(fY-m_fTargetOldY) > 1.0f)
-                        {
-                            pDisk->GetMotionMaster()->Clear();
-                            pDisk->GetMotionMaster()->MovePoint(0, pTarget->GetPositionX(), pTarget->GetPositionY(), pTarget->GetPositionZ());
-                        }
-                        m_fTargetOldX = fX;
-                        m_fTargetOldY = fY;
-                        m_uiCheckTimer = 100;
-                    }
-                    else
-                        m_uiCheckTimer -= uiDiff;
-                }
-            }
-        }
-
         if (m_uiArcaneShockTimer <= uiDiff)
         {
             DoCast(m_creature->getVictim(), m_bIsRegularMode ? SPELL_ARCANE_SHOCK : SPELL_ARCANE_SHOCK_H);
@@ -1255,21 +1197,6 @@ struct MANGOS_DLL_DECL npc_scion_of_eternityAI : public ScriptedAI
         if (!m_creature->SelectHostileTarget() || !m_creature->getVictim())
             return;
 
-        if (m_uiArcaneBarrageTimer <= uiDiff)
-        {
-            if (Unit* pTarget = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM, 0))
-            {
-                if (!pTarget->GetVehicle())
-                {
-                    int32 uiDmg = m_bIsRegularMode ? urand(14138, 15862) : urand(16965, 19035);
-                    m_creature->CastCustomSpell(pTarget, SPELL_ARCANE_BARRAGE, &uiDmg, 0, 0, true);
-                    m_uiArcaneBarrageTimer = urand(4000, 12000);
-                }
-            }
-        }
-        else
-            m_uiArcaneBarrageTimer -= uiDiff;
-
         DoMeleeAttackIfReady();
     }
 }; 
@@ -1308,23 +1235,15 @@ struct MANGOS_DLL_DECL npc_hover_diskAI : public ScriptedAI
     {
         if (m_uiCheckTimer <= uiDiff)
         {
-            if (m_creature->GetVehicleKit()->GetPassenger(0) && !m_bPassengerHere)
+            if (!m_bMoved && m_bPassengerHere)
             {
-                m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
-                m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
-                m_bMoved = false;
-                m_bPassengerHere = true;
+                m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+                m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+                m_creature->GetMap()->CreatureRelocation(m_creature, m_creature->GetPositionX(), m_creature->GetPositionY(), FLOOR_Z+1.5f, 0);
+                m_creature->SendMonsterMove(m_creature->GetPositionX(), m_creature->GetPositionY(), FLOOR_Z+1.5f, SPLINETYPE_NORMAL , m_creature->GetSplineFlags(), 4000);
+                m_bMoved = true;
+                m_bPassengerHere = false;
             }
-            else
-                if (!m_bMoved && m_bPassengerHere)
-                {
-                    m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
-                    m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
-                    m_creature->GetMap()->CreatureRelocation(m_creature, m_creature->GetPositionX(), m_creature->GetPositionY(), FLOOR_Z+1.5f, 0);
-                    m_creature->SendMonsterMove(m_creature->GetPositionX(), m_creature->GetPositionY(), FLOOR_Z+1.5f, SPLINETYPE_NORMAL , m_creature->GetSplineFlags(), 4000);
-                    m_bMoved = true;
-                    m_bPassengerHere = false;
-                }
             m_uiCheckTimer = 500;
         }
         else
