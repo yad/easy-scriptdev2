@@ -1090,7 +1090,6 @@ struct MANGOS_DLL_DECL instance_ulduar : public ScriptedInstance
            case TYPE_XT002_HARD:
                break;
         }
-        return true;
     }
 
     uint32 GetData(uint32 uiType)

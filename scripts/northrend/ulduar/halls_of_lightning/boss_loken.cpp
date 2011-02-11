@@ -24,11 +24,6 @@ EndScriptData */
 #include "precompiled.h"
 #include "halls_of_lightning.h"
 
-inline double round( double d )
-{
-    return floor( d + 0.5 );
-}
-
 enum
 {
     SAY_AGGRO                           = -1602018,

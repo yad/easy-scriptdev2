@@ -20,24 +20,29 @@ SD%Complete: 100%
 SDComment: by tempura, corrected by /dev/rsa
 SDCategory: custom
 EndScriptData */
-
 #include "precompiled.h"
 #include "sc_creature.h"
 #include "sc_gossip.h"
-//#include "Player.h"
 
-#define GOSSIP_ITEM_ARENA_TO_HONOR "Change 50 Arena to 1000 Honor"
-#define GOSSIP_ITEM_HONOR_TO_ARENA "Change 1000 Honor to 50 Arena"
+#define GOSSIP_ITEM_ARENA_TO_HONOR  -3000770
+#define GOSSIP_ITEM_ARENA_TO_HONOR1 -3000771
+#define GOSSIP_ITEM_HONOR_TO_ARENA  -3000772
+#define GOSSIP_ITEM_HONOR_TO_ARENA1 -3000773
 
-bool GossipHello_npc_arena_honor(Player *player, Creature *_Creature)
+#define UNSUCCESSFUL_HONOR  -1001007
+#define UNSUCCESSFUL_ARENA  -1001008
+
+bool GossipHello_npc_arena_honor(Player* pPlayer, Creature *pCreature)
 {
-    player->ADD_GOSSIP_ITEM(0, GOSSIP_ITEM_HONOR_TO_ARENA, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
-    player->ADD_GOSSIP_ITEM(0, GOSSIP_ITEM_ARENA_TO_HONOR, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 2);
-    player->SEND_GOSSIP_MENU(3961,_Creature->GetGUID());
-	return true;
+    pPlayer->ADD_GOSSIP_ITEM_ID(GOSSIP_ICON_CHAT, GOSSIP_ITEM_HONOR_TO_ARENA, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
+    pPlayer->ADD_GOSSIP_ITEM_ID(GOSSIP_ICON_CHAT, GOSSIP_ITEM_HONOR_TO_ARENA1, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 2);
+    pPlayer->ADD_GOSSIP_ITEM_ID(GOSSIP_ICON_CHAT, GOSSIP_ITEM_ARENA_TO_HONOR, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 3);
+    pPlayer->ADD_GOSSIP_ITEM_ID(GOSSIP_ICON_CHAT, GOSSIP_ITEM_ARENA_TO_HONOR1, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 4);
+    pPlayer->SEND_GOSSIP_MENU(3961,pCreature->GetGUID());
+    return true;
 }
 
-bool GossipSelect_npc_arena_honor(Player *player, Creature *_Creature, uint32 sender, uint32 action)
+bool GossipSelect_npc_arena_honor(Player *pPlayer, Creature *pCreature, uint32 sender, uint32 action)
 {
     if (action == GOSSIP_ACTION_INFO_DEF + 1)
     {
@@ -61,21 +66,25 @@ bool GossipSelect_npc_arena_honor(Player *player, Creature *_Creature, uint32 se
     }
     if (action == GOSSIP_ACTION_INFO_DEF + 3)
     {
-		if (player->GetHonorPoints() >= 1000)
+        if (pPlayer->GetArenaPoints() >= 100)
         {
             pPlayer->ModifyArenaPoints(-100);
             pPlayer->ModifyHonorPoints(+2000);
         }
+        else
+            DoScriptText(UNSUCCESSFUL_ARENA, pCreature);
     }
-    else if (action == GOSSIP_ACTION_INFO_DEF + 2)
+    if (action == GOSSIP_ACTION_INFO_DEF + 4)
     {
-        if (player->GetArenaPoints() >= 50 && player->GetHonorPoints() <= 74000)
+        if (pPlayer->GetArenaPoints() >= 1000)
         {
             pPlayer->ModifyArenaPoints(-1000);
             pPlayer->ModifyHonorPoints(+20000);
         }
+        else
+            DoScriptText(UNSUCCESSFUL_ARENA, pCreature);
     }
-    player->CLOSE_GOSSIP_MENU();
+    pPlayer->CLOSE_GOSSIP_MENU();
     return true;
 }
 

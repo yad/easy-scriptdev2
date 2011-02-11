@@ -170,6 +170,9 @@ static Locations SpawnLoc[]=
         ALLIANCE_CONTROL_PHASE_SHIFT_2 = 60027,
     };
 /*
+
+        if (!sWorld.getConfig(CONFIG_BOOL_ALLOW_TWO_SIDE_INTERACTION_GROUP)) return;
+
         switch (pPlayer->GetTeam())
         {
             case ALLIANCE:

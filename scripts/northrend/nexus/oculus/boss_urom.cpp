@@ -177,6 +177,7 @@ struct MANGOS_DLL_DECL boss_uromAI : public BSWScriptedAI
         if(pWho->GetTypeId() == TYPEID_PLAYER
            && !((Player*)pWho)->isGameMaster()
            && m_creature->IsWithinDistInMap(pWho, 30.0f)
+           && !pWho->GetVehicle()
            && m_pInstance->GetData(TYPE_VAROS) == DONE
            && !m_bIsTalk)
         {
@@ -277,6 +278,20 @@ struct MANGOS_DLL_DECL boss_uromAI : public BSWScriptedAI
 
     void CheckVehicle()
     {
+        Map *map = m_creature->GetMap();
+        if(map->IsDungeon())
+        {
+           Map::PlayerList const &PlayerList = map->GetPlayers();
+
+           if(PlayerList.isEmpty())
+              return;
+
+           for(Map::PlayerList::const_iterator i = PlayerList.begin(); i != PlayerList.end(); ++i)
+           {
+              if(i->getSource()->isAlive() && i->getSource()->GetVehicle())
+                 EnterEvadeMode();
+           }
+        }
     }
 
     void UpdateAI(const uint32 uiDiff)

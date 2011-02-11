@@ -108,6 +108,7 @@ struct MANGOS_DLL_DECL boss_eregosAI : public ScriptedAI
            && m_creature->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE)
            && !((Player*)pWho)->isGameMaster()
            && m_creature->IsWithinDistInMap(pWho, 100.0f)
+           && pWho->GetVehicle()
            && m_pInstance->GetData(TYPE_UROM) == DONE)
         {
               m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
