@@ -171,8 +171,6 @@ static Locations SpawnLoc[]=
     };
 /*
 
-        if (!sWorld.getConfig(CONFIG_BOOL_ALLOW_TWO_SIDE_INTERACTION_GROUP)) return;
-
         switch (pPlayer->GetTeam())
         {
             case ALLIANCE:
