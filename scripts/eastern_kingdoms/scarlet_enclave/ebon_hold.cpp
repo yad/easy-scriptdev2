@@ -1178,12 +1178,12 @@ struct MANGOS_DLL_DECL npc_eye_of_acherusAI : public ScriptedAI
 
         m_creature->RemoveAurasDueToSpell(530);
 
-        Unit* owner = m_creature->GetCharmerOrOwner();
+        /*Unit* owner = m_creature->GetCharmerOrOwner();
         if(!owner || owner->GetTypeId() != TYPEID_PLAYER)
              return;
  
         owner->RemoveAurasDueToSpell(51923);
-        owner->RemoveAurasDueToSpell(51852);
+        owner->RemoveAurasDueToSpell(51852);*/
     }
 
     void MovementInform(uint32 uiType, uint32 uiPointId)
@@ -1223,12 +1223,12 @@ struct MANGOS_DLL_DECL npc_eye_of_acherusAI : public ScriptedAI
             if (StartTimer < (int)uiDiff)
             {
                 m_creature->ForcedDespawn();
-                Unit* owner = m_creature->GetCharmerOrOwner();
+                /*Unit* owner = m_creature->GetCharmerOrOwner();
                 if(!owner || owner->GetTypeId() != TYPEID_PLAYER)
                     return;
  
                 owner->RemoveAurasDueToSpell(51852);
-                owner->RemoveAurasDueToSpell(51923);
+                owner->RemoveAurasDueToSpell(51923);*/
             }
         }
     }
