@@ -3,7 +3,7 @@
 --
 
 DELETE FROM sd2_db_version;
-INSERT INTO sd2_db_version (version) VALUES ('ScriptDev2 (for MaNGOS 11126+) ');
+INSERT INTO sd2_db_version (version) VALUES ('ScriptDev2 (for MaNGOS 11167+) ');
 
 --
 -- Below contains data for table `script_texts` mainly used in C++ parts.
@@ -584,9 +584,9 @@ INSERT INTO script_texts (entry,content_default,sound,type,language,emote,commen
 (-1000559,'I\'d rather die fighting than live like a slave.',0,0,0,0,'exhausted vrykul SAY_RAND_ATTACK2'),
 (-1000560,'Enough! I will teach you some manners, wench!',0,0,0,0,'exhausted vrykul SAY_RAND_ATTACK3'),
 
-(-1000561,'My wounds are grave. Forgive my slow pace but my injuries won''t allow me to walk any faster.',0,0,0,0,'SAY_CORPORAL_KEESHAN_1'),
+(-1000561,'My wounds are grave. Forgive my slow pace but my injuries won\'t allow me to walk any faster.',0,0,0,0,'SAY_CORPORAL_KEESHAN_1'),
 (-1000562,'Ah, fresh air, at last! I need a moment to rest.',0,0,0,0,'SAY_CORPORAL_KEESHAN_2'),
-(-1000563,'The Blackrock infestation is thick in these parts. I will do my best to keep the pace. Let''s go!',0,0,0,0,'SAY_CORPORAL_KEESHAN_3'),
+(-1000563,'The Blackrock infestation is thick in these parts. I will do my best to keep the pace. Let\'s go!',0,0,0,0,'SAY_CORPORAL_KEESHAN_3'),
 (-1000564,'Marshal Marris, sir. Corporal Keeshan of the 12th Sabre Regiment returned from battle and reporting for duty!',0,0,0,0,'SAY_CORPORAL_KEESHAN_4'),
 (-1000565,'Brave adventurer, thank you for rescuing me! I am sure Marshal Marris will reward your kind deed.',0,0,0,0,'SAY_CORPORAL_KEESHAN_5'),
 
@@ -674,10 +674,21 @@ INSERT INTO script_texts (entry,content_default,sound,type,language,emote,commen
 
 (-1000629,'<cough> <cough> Damsel in distress over here!',0,0,0,0,'isla starmane - SAY_ISLA_PERIODIC_1'),
 (-1000630,'Hello? Help?',0,0,0,0,'isla starmane - SAY_ISLA_PERIODIC_2'),
-(-1000631,'Don''t leave me in here! Cause if you do I will find you!',0,0,0,0,'isla starmane - SAY_ISLA_PERIODIC_3'),
-(-1000632,'Ok, let''s get out of here!',0,0,0,0,'isla starmane - SAY_ISLA_START'),
-(-1000633,'You sure you''re ready? Take a moment.',0,0,0,0,'isla starmane - SAY_ISLA_WAITING'),
-(-1000634,'Alright, let''s do this!',0,0,0,0,'isla starmane - SAY_ISLA_LEAVE_BUILDING');
+(-1000631,'Don\'t leave me in here! Cause if you do I will find you!',0,0,0,0,'isla starmane - SAY_ISLA_PERIODIC_3'),
+(-1000632,'Ok, let\'s get out of here!',0,0,0,0,'isla starmane - SAY_ISLA_START'),
+(-1000633,'You sure you\'re ready? Take a moment.',0,0,0,0,'isla starmane - SAY_ISLA_WAITING'),
+(-1000634,'Alright, let\'s do this!',0,0,0,0,'isla starmane - SAY_ISLA_LEAVE_BUILDING'),
+
+(-1000635,'So then we too are cursed?',0,0,0,0,'ancient vrykul SAY_VRYKUL_CURSED'),
+(-1000636,'%s points to the infant.',0,2,0,0,'ancient vrykul EMOTE_VRYKUL_POINT'),
+(-1000637,'%s sobs.',0,2,0,0,'ancient vrykul EMOTE_VRYKUL_SOB'),
+(-1000638,'The gods have forsaken us! We must dispose of it before Ymiron is notified!',0,0,0,0,'ancient vrykul SAY_VRYKUL_DISPOSE'),
+(-1000639,'NO! You cannot! I beg of you! It is our child!',0,0,0,0,'ancient vrykul SAY_VRYKUL_BEG'),
+(-1000640,'Then what are we to do, wife? The others cannot find out. Should they learn of this aberration, we will all be executed.',0,0,0,0,'ancient vrykul SAY_VRYKUL_WHAT'),
+(-1000641,'I... I will hide it. I will hide it until I find it a home, far away from here...',0,0,0,0,'ancient vrykul SAY_VRYKUL_HIDE'),
+
+(-1000642,'It\'s a female.',0,5,0,0,'leopard icepaw SAY_ITS_FEMALE'),
+(-1000643,'It\'s an angry male!',0,5,0,0,'leopard icepaw SAY_ITS_MALE');
 
 -- -1 033 000 SHADOWFANG KEEP
 INSERT INTO script_texts (entry,content_default,sound,type,language,emote,comment) VALUES
@@ -720,14 +731,14 @@ INSERT INTO script_texts (entry,content_default,sound,type,language,emote,commen
 (-1043002,'These caverns were once a temple of promise for regrowth in the Barrens. Now, they are the halls of nightmares.',0,0,0,0,'Disciple of Naralex - SAY_FIRST_CORNER'),
 (-1043003,'Come. We must continue. There is much to be done before we can pull Naralex from his nightmare.',0,0,0,0,'Disciple of Naralex - SAY_CONTINUE'),
 (-1043004,'Within this circle of fire I must cast the spell to banish the spirits of the slain Fanglords.',0,0,0,0,'Disciple of Naralex - SAY_CIRCLE_BANISH'),
-(-1043005,'The caverns have been purified. To Naralex''s chamber we go!',0,0,0,0,'Disciple of Naralex - SAY_PURIFIED'),
+(-1043005,'The caverns have been purified. To Naralex\'s chamber we go!',0,0,0,0,'Disciple of Naralex - SAY_PURIFIED'),
 (-1043006,'Beyond this corridor, Naralex lies in fitful sleep. Let us go awaken him before it is too late.',0,0,0,0,'Disciple of Naralex - SAY_NARALEX_CHAMBER'),
 (-1043007,'Protect me brave souls as I delve into the Emerald Dream to rescue Naralex and put an end to this corruption!',0,1,0,0,'Disciple of Naralex - SAY_BEGIN_RITUAL'),
 (-1043008,'%s begins to perform the awakening ritual on Naralex.',0,2,0,0,'Disciple of Naralex - EMOTE_RITUAL_BEGIN'),
 (-1043009,'%s tosses fitfully in troubled sleep.',0,2,0,0,'Naralex - EMOTE_NARALEX_AWAKE'),
 (-1043010,'%s writhes in agony. The Disciple seems to be breaking through.',0,2,0,0,'Naralex - EMOTE_BREAK_THROUGH'),
 (-1043011,'%s dreams up a horrendous vision. Something stirs beneath the murky waters.',0,2,0,0,'Naralex - EMOTE_VISION'),
-(-1043012,'This $N is a minin from Naralex\'s nightmare no doubt!.',0,0,0,0,'Disciple of Naralex - SAY_MUTANUS'),
+(-1043012,'This $N is a minion from Naralex\'s nightmare no doubt!.',0,0,0,0,'Disciple of Naralex - SAY_MUTANUS'),
 (-1043013,'I AM AWAKE, AT LAST!',5789,1,0,0,'Naralex - SAY_NARALEX_AWAKE'),
 (-1043014,'At last! Naralex awakes from the nightmare.',0,0,0,0,'Disciple of Naralex - SAY_AWAKE'),
 (-1043015,'Ah, to be pulled from the dreaded nightmare! I thank you, my loyal Disciple, along with your brave companions.',0,0,0,0,'Naralex - SAY_NARALEX_THANKYOU'),
@@ -943,8 +954,8 @@ INSERT INTO script_texts (entry,content_default,sound,type,language,emote,commen
 
 (-1309020,'PRIDE HERALDS THE END OF YOUR WORLD. COME, MORTALS! FACE THE WRATH OF THE SOULFLAYER!',8414,1,0,0,'hakkar SAY_AGGRO'),
 (-1309021,'Fleeing will do you no good, mortals!',0,1,0,0,'hakkar SAY_FLEEING'),
-(-1309022,'You dare set foot upon Hakkari holy ground? Minions of Hakkar, destroy the infidels!',0,1,0,0,'hakkar SAY_MINION_DESTROY'),
-(-1309023,'Minions of Hakkar, hear your God. The sanctity of this temple has been compromised. Invaders encroach upon holy ground! The Altar of Blood must be protected. Kill them all!',0,1,0,0,'hakkar SAY_PROTECT_ALTAR'),
+(-1309022,'You dare set foot upon Hakkari holy ground? Minions of Hakkar, destroy the infidels!',0,6,0,0,'hakkar SAY_MINION_DESTROY'),
+(-1309023,'Minions of Hakkar, hear your God. The sanctity of this temple has been compromised. Invaders encroach upon holy ground! The Altar of Blood must be protected. Kill them all!',0,6,0,0,'hakkar SAY_PROTECT_ALTAR'),
 
 (-1309024,'%s goes into a rage after seeing his raptor fall in battle!',0,2,0,0,'mandokir EMOTE_RAGE');
 
@@ -958,7 +969,16 @@ INSERT INTO script_texts (entry,content_default,sound,type,language,emote,commen
 (-1329004,'An Ash\'ari Crystal has fallen! Stay true to the Lich King, my brethren, and attempt to resummon it.',0,6,0,0,'thuzadin acolyte SAY_ANNOUNCE_ZIGGURAT_1'),
 (-1329005,'One of the Ash\'ari Crystals has been destroyed! Slay the intruders!',0,6,0,0,'thuzadin acolyte SAY_ANNOUNCE_ZIGGURAT_2'),
 (-1329006,'An Ash\'ari Crystal has been toppled! Restore the ziggurat before the Necropolis is vulnerable!',0,6,0,0,'thuzadin acolyte SAY_ANNOUNCE_ZIGGURAT_3'),
-(-1329007,'The Ash\'ari Crystals have been destroyed! The Slaughterhouse is vulnerable!',0,6,0,0,'baron rivendare SAY_ANNOUNCE_RIVENDARE');
+(-1329007,'The Ash\'ari Crystals have been destroyed! The Slaughterhouse is vulnerable!',0,6,0,0,'baron rivendare SAY_ANNOUNCE_RIVENDARE'),
+
+(-1329008,'Intruders at the Service Gate! Lord Rivendare must be warned!',0,6,0,0,'barthilas SAY_WARN_BARON'),
+(-1329009,'Intruders! More pawns of the Argent Dawn, no doubt. I already count one of their number among my prisoners. Withdraw from my domain before she is executed!',0,6,0,0,'baron rivendare SAY_ANNOUNCE_RUN_START'),
+(-1329010,'You\'re still here? Your foolishness is amusing! The Argent Dawn wench needn\'t suffer in vain. Leave at once and she shall be spared!',0,6,0,0,'baron rivendare SAY_ANNOUNCE_RUN_10_MIN'),
+(-1329011,'I shall take great pleasure in taking this poor wretch\'s life! It\'s not too late, she needn\'t suffer in vain. Turn back and her death shall be merciful!',0,6,0,0,'baron rivendare SAY_ANNOUNCE_RUN_5_MIN'),
+(-1329012,'May this prisoner\'s death serve as a warning. None shall defy the Scourge and live!',0,6,0,0,'baron rivendare SAY_ANNOUNCE_RUN_FAIL'),
+(-1329013,'So you see fit to toy with the Lich King\'s creations? Ramstein, be sure to give the intruders a proper greeting.',0,6,0,0,'baron rivendare SAY_ANNOUNCE_RAMSTEIN'),
+(-1329014,'Time to take matters into my own hands. Come. Enter my domain and challenge the might of the Scourge!',0,6,0,0,'baron rivendare SAY_UNDEAD_DEFEAT'),
+(-1329015,'You did it... you\'ve slain Baron Rivendare! The Argent Dawn shall hear of your valiant deeds!',0,0,0,0,'ysida SAY_EPILOGUE');
 
 -- -1 349 000 MARAUDON
 
@@ -995,6 +1015,9 @@ INSERT INTO script_texts (entry,content_default,sound,type,language,emote,commen
 (-1409022,'My flame! Please don\'t take away my flame... ',8042,1,0,0,'ragnaros SAY_ARRIVAL4_MAJ');
 
 -- -1 429 000 DIRE MAUL
+INSERT INTO script_texts (entry,content_default,sound,type,language,emote,comment) VALUES
+(-1429000,'The demon is loose! Quickly we must restrain him!',0,6,0,0,'highborne summoner SAY_FREE_IMMOLTHAR'),
+(-1429001,'Who dares disrupt the sanctity of Eldre\'Thalas? Face me, cowards!',0,6,0,0,'prince tortheldrin SAY_KILL_IMMOLTHAR');
 
 -- -1 469 000 BLACKWING LAIR
 INSERT INTO script_texts (entry,content_default,sound,type,language,emote,comment) VALUES
@@ -2939,7 +2962,26 @@ INSERT INTO script_texts (entry,content_default,sound,type,language,emote,commen
 
 (-1608005,'A Portal Guardian defends the new portal!',0,3,0,0,'EMOTE_GUARDIAN_PORTAL'),
 (-1608006,'An elite Blue Dragonflight squad appears from the portal!',0,3,0,0,'EMOTE_DRAGONFLIGHT_PORTAL'),
-(-1608007,'A Guardian Keeper emerges from the portal!',0,3,0,0,'EMOTE_KEEPER_PORTAL');
+(-1608007,'A Guardian Keeper emerges from the portal!',0,3,0,0,'EMOTE_KEEPER_PORTAL'),
+
+(-1608008,'Free to--mm--fly now. Ra-aak... Not find us--ekh-ekh! Escape!',14218,1,0,0,'erekem SAY_RELEASE_EREKEM'),
+(-1608009,'I... am fury... unrestrained!',14229,1,0,0,'ichoron SAY_RELEASE_ICHORON'),
+(-1608010,'Back in business! Now to execute an exit strategy.',14498,1,0,0,'xevozz SAY_RELEASE_XEVOZZ'),
+(-1608011,'I am... renewed.',13995,1,0,0,'zuramat SAY_RELEASE_ZURAMAT'),
+
+(-1608012,'Not--caww--get in way of--rrak-rrak--flee!',14219,1,0,0,'erekem SAY_AGGRO'),
+(-1608013,'My---raaak--favorite! Awk awk awk! Raa-kaa!',14220,1,0,0,'erekem SAY_ADD_DIE_1'),
+(-1608014,'Nasty little...A-ak,kaw! Kill! Yes,kill you!',14221,1,0,0,'erekem SAY_ADD_DIE_2'),
+(-1608018,'No--kaw,kaw--flee...',14225,1,0,0,'erekem SAY_DEATH'),
+
+(-1608019,'Stand aside, mortals!',14230,1,0,0,'ichoron SAY_AGGRO'),
+(-1608020,'I will not be contained! Ngyah!!',14233,1,0,0,'ichoron SAY_SHATTERING'),
+(-1608021,'Water can hold any form, take any shape... overcome any obstacle.',14232,1,0,0,'ichoron SAY_SHIELD'),
+(-1608022,'I am a force of nature!',14234,1,0,0,'ichoron SAY_SLAY_1'),
+(-1608023,'I shall pass!',14235,1,0,0,'ichoron SAY_SLAY_2'),
+(-1608024,'You can not stop the tide!',14236,1,0,0,'ichoron SAY_SLAY_3'),
+(-1608025,'I shall consume,decimate, devastate,and destroy! Yield now to the wrath of the pounding sea!',14231,1,0,0,'ichoron SAY_ENRAGE'),
+(-1608026,'I... recede.',14237,1,0,0,'ichoron SAY_DEATH');
 
 -- -1 609 000 EBON HOLD (DK START)
 INSERT INTO script_texts (entry,content_default,sound,type,language,emote,comment) VALUES
@@ -3178,7 +3220,7 @@ INSERT INTO script_texts (entry,content_default,sound,type,language,emote,commen
 
 -- -1 649 000 TRIAL OF THE CRUSADER
 INSERT INTO script_texts (entry,content_default,sound,type,language,emote,comment) VALUES
-(-1649000,'Welcome champions, you have heard the call of the argent crusade and you have boldly answered. It is here in the crusaders coliseum that you will face your greatest challenges. Those of you who survive the rigors of the coliseum will join the Argent Crusade on it''s marsh to ice crown citadel.',16036,1,0,0,'tirion SAY_TIRION_RAID_INTRO_LONG'),
+(-1649000,'Welcome champions, you have heard the call of the argent crusade and you have boldly answered. It is here in the crusaders coliseum that you will face your greatest challenges. Those of you who survive the rigors of the coliseum will join the Argent Crusade on it\'s marsh to ice crown citadel.',16036,1,0,0,'tirion SAY_TIRION_RAID_INTRO_LONG'),
 (-1649001,'Welcome to the trials of the crusader. Only the most powerful combatants of azeroth are allowed to undergo these trials. You are among the worthy few.',16053,1,0,0,'tirion SAY_RAID_TRIALS_INTRO'),
 
 (-1649002,'Hailing from the deepest, darkest carverns of the storm peaks, Gormok the Impaler! Battle on, heroes!',16038,1,0,0,'tirion SAY_TIRION_BEAST_1'),
@@ -3194,26 +3236,26 @@ INSERT INTO script_texts (entry,content_default,sound,type,language,emote,commen
 (-1649011,'Prepare for oblivion!',16269,1,0,0,'wilfred SAY_WILFRED_JARAXXUS_INTRO_2'),
 (-1649012,'Ah ha! Behold the absolute power of Wilfred Fizzlebang, master summoner! You are bound to ME, demon!',16270,1,0,0,'wilfred SAY_WILFRED_JARAXXUS_INTRO_3'),
 (-1649013,'Trifling gnome, your arrogance will be your undoing!',16143,1,0,0,'jaraxxus SAY_JARAXXUS_JARAXXAS_INTRO_1'),
-(-1649014,'But I''m in charge her-',16271,1,0,0,'wilfred SAY_WILFRED_DEATH'),
+(-1649014,'But I\'m in charge her-',16271,1,0,0,'wilfred SAY_WILFRED_DEATH'),
 (-1649015,'Quickly, heroes! Destroy the demon lord before it can open a portal to its twisted demonic realm!',16044,1,0,0,'tirion SAY_TIRION_JARAXXUS_INTRO_2'),
 (-1649016,'The loss of Wilfred Fizzlebang, while unfortunate, should be a lesson to those that dare dabble in dark magic. Alas, you are victorious and must now face the next challenge.',16045,1,0,0,'tirion SAY_TIRION_JARAXXUS_EXIT_1'),
 (-1649017,'Treacherous Alliance dogs! You summon a demon lord against warriors of the Horde!? Your deaths will be swift!',16021,1,0,0,'garrosh SAY_GARROSH_JARAXXUS_EXIT_1'),
-(-1649018,'The Alliance doesn''t need the help of a demon lord to deal with Horde filth. Come, pig!',16064,1,0,0,'varian SAY_VARIAN_JARAXXUS_SLAY'),
+(-1649018,'The Alliance doesn\'t need the help of a demon lord to deal with Horde filth. Come, pig!',16064,1,0,0,'varian SAY_VARIAN_JARAXXUS_SLAY'),
 (-1649019,'Everyone, calm down! Compose yourselves! There is no conspiracy at play here. The warlock acted on his own volition - outside of influences from the Alliance. The tournament must go on!',16046,1,0,0,'tirion SAY_TIRION_JARAXXUS_EXIT_2'),
 
-(-1649020,'The next battle will be against the Argent Crusade''s most powerful knights! Only by defeating them will you be deemed worthy...',16047,1,0,0,'tirion SAY_TIRION_PVP_INTRO_1'),
+(-1649020,'The next battle will be against the Argent Crusade\'s most powerful knights! Only by defeating them will you be deemed worthy...',16047,1,0,0,'tirion SAY_TIRION_PVP_INTRO_1'),
 (-1649021,'The Horde demands justice! We challenge the Alliance. Allow us to battle in place of your knights, paladin. We will show these dogs what it means to insult the Horde!',16023,1,0,0,'garrosh SAY_GARROSH_PVP_A_INTRO_1'),
 (-1649022,'Our honor has been besmirched! They make wild claims and false accusations against us. I demand justice! Allow my champions to fight in place of your knights, Tirion. We challenge the Horde!',16066,1,0,0,'varian SAY_VARIAN_PVP_H_INTRO_1'),
 (-1649023,'Very well, I will allow it. Fight with honor!',16048,1,0,0,'tirion SAY_TIRION_PVP_INTRO_2'),
 (-1649024,'Fight for the glory of the Alliance, heroes! Honor your king and your people!',16065,1,0,0,'varian SAY_VARIAN_PVP_A_INTRO_2'),
-(-1649025,'Show them no mercy, Horde champions! LOK''TAR OGAR!',16022,1,0,0,'garrosh SAY_GARROSH_PVP_H_INTRO_2'),
+(-1649025,'Show them no mercy, Horde champions! LOK\'TAR OGAR!',16022,1,0,0,'garrosh SAY_GARROSH_PVP_H_INTRO_2'),
 (-1649026,'Glory to the alliance.',16067,1,0,0,'varian SAY_VARIAN_PVP_A_WIN'),
 (-1649027,'That was just a taste of what the future brings. FOR THE HORDE!',16024,1,0,0,'garrosh SAY_GARROSH_PVP_H_WIN'),
 (-1649028,'A shallow and tragic victory. We are weaker as a whole from the losses suffered today. Who but the Lich King could benefit from such foolishness? Great warriors have lost their lives. And for what? The true threat looms ahead - the Lich King awaits us all in death.',16049,1,0,0,'tirion SAY_TIRION_PVP_WIN'),
 
-(-1649029,'Only by working together will you overcome the final challenge. From the depths of Icecrown come two of the Scourge''s most powerful lieutenants: fearsome val''kyr, winged harbingers of the Lich King!',16050,1,0,0,'tirion SAY_TIRION_TWINS_INTRO'),
+(-1649029,'Only by working together will you overcome the final challenge. From the depths of Icecrown come two of the Scourge\'s most powerful lieutenants: fearsome val\'kyr, winged harbingers of the Lich King!',16050,1,0,0,'tirion SAY_TIRION_TWINS_INTRO'),
 (-1649030,'Let the games begin!',16037,1,0,0,'tirion SAY_RAID_INTRO_SHORT'),
-(-1649031,'Not even the lich king''s most powerful minions could stand against the alliance. All hail our victors.',16068,1,0,0,'varian SAY_VARIAN_TWINS_A_WIN'),
+(-1649031,'Not even the lich king\'s most powerful minions could stand against the alliance. All hail our victors.',16068,1,0,0,'varian SAY_VARIAN_TWINS_A_WIN'),
 (-1649032,'Do you still question the might of the Horde, paladin? We will take on all comers!',16025,1,0,0,'garrosh SAY_GARROSH_TWINS_H_WIN'),
 (-1649033,'A mighty blow has been dealt to the Lich King! You have proven yourselves able bodied champions of the Argent Crusade. Together we will strike at Icecrown Citadel and destroy what remains of the Scourge! There is no challenge that we cannot face united!',16051,1,0,0,'tirion SAY_TIRION_TWINS_WIN'),
 
@@ -3237,7 +3279,7 @@ INSERT INTO script_texts (entry,content_default,sound,type,language,emote,commen
 (-1649048,'Weakling!',16017,1,0,0,'garrosh SAY_GARROSH_PVP_A_SLAY_1'),
 (-1649049,'Pathetic!',16018,1,0,0,'garrosh SAY_GARROSH_PVP_A_SLAY_2'),
 (-1649050,'Overpowered.',16019,1,0,0,'garrosh SAY_GARROSH_PVP_A_SLAY_3'),
-(-1649051,'Lok''tar!',16020,1,0,0,'garrosh SAY_GARROSH_PVP_A_SLAY_4'),
+(-1649051,'Lok\'tar!',16020,1,0,0,'garrosh SAY_GARROSH_PVP_A_SLAY_4'),
 (-1649052,'Hah!',16060,1,0,0,'varian SAY_VARIAN_PVP_H_SLAY_1'),
 (-1649053,'Hardly a challenge!',16061,1,0,0,'varian SAY_VARIAN_PVP_H_SLAY_2'),
 (-1649054,'Worthless scrub.',16062,1,0,0,'varian SAY_VARIAN_PVP_H_SLAY_3'),
@@ -4833,7 +4875,7 @@ INSERT INTO script_waypoint VALUES
 (20129, 25, -8375.42,-4250.41, -205.14,5000, '');
 
 DELETE FROM script_waypoint WHERE entry=20415;
-INSERT INTO script_waypoint VALUES 
+INSERT INTO script_waypoint VALUES
 (20415, 0, 2488.77, 2184.89, 104.64, 0, ""),
 (20415, 1, 2478.72, 2184.77, 98.58, 0, ""),
 (20415, 2, 2473.52, 2184.71, 99.00, 0, ""),
@@ -5372,5 +5414,71 @@ INSERT INTO script_waypoint (entry, pointid, location_x, location_y, location_z,
 (18760, 67, -2341.66, 3435.86, -11.3746, 5000, 'Wave and transform'),
 (18760, 68, -2342.15, 3443.94, -11.2562, 2000, 'final destination');
 
--- EOF
+DELETE FROM script_waypoint WHERE entry=3678;
+INSERT INTO script_waypoint VALUES
+(3678, 0, -134.925, 125.468, -78.16, 0, ''),
+(3678, 1, -125.684, 132.937, -78.42, 0, ''),
+(3678, 2, -113.812, 139.295, -80.98, 0, ''),
+(3678, 3, -109.854, 157.538, -80.20, 0, ''),
+(3678, 4, -108.640, 175.207, -79.74, 0, ''),
+(3678, 5, -108.668, 195.457, -80.64, 0, ''),
+(3678, 6, -111.007, 219.007, -86.58, 0, ''),
+(3678, 7, -102.408, 232.821, -91.52, 0, 'first corner SAY_FIRST_CORNER'),
+(3678, 8, -92.434, 227.742, -90.75, 0, ''),
+(3678, 9, -82.456, 224.853, -93.57, 0, ''),
+(3678, 10, -67.789, 208.073, -93.34, 0, ''),
+(3678, 11, -43.343, 205.295, -96.37, 0, ''),
+(3678, 12, -34.676, 221.394, -95.82, 0, ''),
+(3678, 13, -32.582, 238.573, -93.51, 0, ''),
+(3678, 14, -42.149, 258.672, -92.88, 0, ''),
+(3678, 15, -55.257, 274.696, -92.83, 0, 'circle of flames SAY_CIRCLE_BANISH'),
+(3678, 16, -48.604, 287.584, -92.46, 0, ''),
+(3678, 17, -47.236, 296.093, -90.88, 0, ''),
+(3678, 18, -35.618, 309.067, -89.73, 0, ''),
+(3678, 19, -23.573, 311.376, -88.60, 0, ''),
+(3678, 20, -8.692, 302.389, -87.43, 0, ''),
+(3678, 21, -1.237, 293.268, -85.55, 0, ''),
+(3678, 22, 10.398, 279.294, -85.86, 0, ''),
+(3678, 23, 23.108, 264.693, -86.69, 0, ''),
+(3678, 24, 31.996, 251.436, -87.62, 0, ''),
+(3678, 25, 43.374, 233.073, -87.61, 0, ''),
+(3678, 26, 54.438, 212.048, -89.50, 3000, 'chamber entrance SAY_NARALEX_CHAMBER'),
+(3678, 27, 78.794, 208.895, -92.84, 0, ''),
+(3678, 28, 88.392, 225.231, -94.46, 0, ''),
+(3678, 29, 98.758, 233.938, -95.84, 0, ''),
+(3678, 30, 107.248, 233.054, -95.98, 0, ''),
+(3678, 31, 112.825, 233.907, -96.39, 0, ''),
+(3678, 32, 114.634, 236.969, -96.04, 1000, 'naralex SAY_BEGIN_RITUAL'),
+(3678, 33, 127.385, 252.279, -90.07, 0, ''),
+(3678, 34, 121.595, 264.488, -91.55, 0, ''),
+(3678, 35, 115.472, 264.253, -91.50, 0, ''),
+(3678, 36, 99.988, 252.790, -91.51, 0, ''),
+(3678, 37, 96.347, 245.038, -90.34, 0, ''),
+(3678, 38, 82.201, 216.273, -86.10, 0, ''),
+(3678, 39, 75.112, 206.494, -84.80, 0, ''),
+(3678, 40, 27.174, 201.064, -72.31, 0, ''),
+(3678, 41, -41.114, 204.149, -78.94, 0, '');
 
+DELETE FROM script_waypoint WHERE entry=5644;
+INSERT INTO script_waypoint (entry, pointid, location_x, location_y, location_z, waittime, point_comment) VALUES
+(5644, 1, -339.679, 1752.04, 139.482, 0, ''),
+(5644, 2, -328.957, 1734.95, 139.327, 0, ''),
+(5644, 3, -338.29, 1731.36, 139.327, 0, ''),
+(5644, 4, -350.747, 1731.12, 139.338, 0, ''),
+(5644, 5, -365.064, 1739.04, 139.376, 0, ''),
+(5644, 6, -371.105, 1746.03, 139.374, 0, ''),
+(5644, 7, -383.141, 1738.62, 138.93, 0, ''),
+(5644, 8, -390.445, 1733.98, 136.353, 0, ''),
+(5644, 9, -401.368, 1726.77, 131.071, 0, ''),
+(5644, 10, -416.016, 1721.19, 129.807, 0, ''),
+(5644, 11, -437.139, 1709.82, 126.342, 0, ''),
+(5644, 12, -455.83, 1695.61, 119.305, 0, ''),
+(5644, 13, -459.862, 1687.92, 116.059, 0, ''),
+(5644, 14, -463.565, 1679.1, 111.653, 0, ''),
+(5644, 15, -461.485, 1670.94, 109.033, 0, ''),
+(5644, 16, -471.786, 1647.34, 102.862, 0, ''),
+(5644, 17, -477.146, 1625.69, 98.342, 0, ''),
+(5644, 18, -475.815, 1615.815, 97.07, 0, ''),
+(5644, 19, -474.329, 1590.01, 94.4982, 0, '');
+
+-- EOF

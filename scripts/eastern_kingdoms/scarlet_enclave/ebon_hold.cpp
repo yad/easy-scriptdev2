@@ -1,4 +1,4 @@
-/* Copyright (C) 2006 - 2010 ScriptDev2 <https://scriptdev2.svn.sourceforge.net/>
+/* Copyright (C) 2006 - 2011 ScriptDev2 <http://www.scriptdev2.com/>
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -1150,6 +1150,21 @@ bool GOUse_go_acherus_soul_prison(Player* pPlayer, GameObject* pGo)
 ## npc_eye_of_acherus
 ######*/
 
+enum eEyeOfAcherus
+{
+    DISPLAYID_EYE_HUGE      = 26320,
+    DISPLAYID_EYE_SMALL     = 25499,
+
+    SPELL_EYE_PHASEMASK     = 70889,
+    SPELL_EYE_VISUAL        = 51892,
+    //SPELL_EYE_FL_BOOST_RUN  = 51923,
+    SPELL_EYE_FL_BOOST_FLY  = 51890,
+    SPELL_EYE_CONTROL       = 51852,
+
+    TEXT_EYE_UNDER_CONTROL  = -1666452,
+    TEXT_EYE_LAUNCHED       = -1666451,
+};
+
 struct MANGOS_DLL_DECL npc_eye_of_acherusAI : public ScriptedAI
 {
     npc_eye_of_acherusAI(Creature *pCreature) : ScriptedAI(pCreature)
@@ -1157,22 +1172,17 @@ struct MANGOS_DLL_DECL npc_eye_of_acherusAI : public ScriptedAI
         Reset();
     }
 
-    int32 StartTimer;
-    bool Active;
-    ObjectGuid ownerGuid;
+    bool m_isActive;
 
     void Reset()
     {
-        m_creature->SetDisplayId(26320);
-        StartTimer = 2000;
-        Active = false;
+        m_creature->SetDisplayId(DISPLAYID_EYE_HUGE);
+        m_isActive = false;
     }
 
-    void AttackStart(Unit *) {}
-    void MoveInLineOfSight(Unit*) {}
-
-    void JustDied(Unit* killer)
+    void AttackStart(Unit *)
     {
+<<<<<<< HEAD
         if(!m_creature || m_creature->GetTypeId() != TYPEID_UNIT)
             return;
 
@@ -1184,24 +1194,36 @@ struct MANGOS_DLL_DECL npc_eye_of_acherusAI : public ScriptedAI
  
         owner->RemoveAurasDueToSpell(51923);
         owner->RemoveAurasDueToSpell(51852);
+=======
+    }
+
+    void MoveInLineOfSight(Unit *)
+    {
+    }
+
+    void JustDied(Unit *)
+    {
+        if (Unit* charmer = m_creature->GetCharmer())
+            charmer->RemoveAurasDueToSpell(SPELL_EYE_CONTROL);
+>>>>>>> rsa/master
     }
 
     void MovementInform(uint32 uiType, uint32 uiPointId)
     {
-        if (uiType != POINT_MOTION_TYPE && uiPointId == 0)
+       if (uiType != POINT_MOTION_TYPE || uiPointId != 0)
             return;
 
-            DoScriptText(-1666452, m_creature);
-            m_creature->SetDisplayId(25499);
-//            m_creature->SetDisplayId(26320);
-            m_creature->RemoveAurasDueToSpell(51923);
-            m_creature->CastSpell(m_creature, 51890, true);
+        DoScriptText(TEXT_EYE_UNDER_CONTROL, m_creature);
+        m_creature->SetDisplayId(DISPLAYID_EYE_SMALL);
+        m_creature->CastSpell(m_creature, SPELL_EYE_FL_BOOST_FLY, true);
     }
 
-    void UpdateAI(const uint32 uiDiff)
+    void AttackedBy(Unit * attacker)
     {
-        if(m_creature->isCharmed())
+        // called on remove SPELL_AURA_MOD_POSSESS
+        if (!m_creature->isCharmed() && attacker->GetTypeId() == TYPEID_PLAYER)
         {
+<<<<<<< HEAD
             if (ownerGuid.IsEmpty())
                 ownerGuid = m_creature->GetCharmerOrOwner()->GetObjectGuid();
 
@@ -1217,9 +1239,18 @@ struct MANGOS_DLL_DECL npc_eye_of_acherusAI : public ScriptedAI
             }
             else
                 StartTimer -= uiDiff;
+=======
+            attacker->RemoveAurasDueToSpell(SPELL_EYE_CONTROL);
+//            m_creature->ForcedDespawn();
+>>>>>>> rsa/master
         }
-        else
+    }
+
+    void UpdateAI(const uint32 uiDiff)
+    {
+        if (m_creature->isCharmed())
         {
+<<<<<<< HEAD
             if (StartTimer < (int)uiDiff)
             {
                 m_creature->ForcedDespawn();
@@ -1229,8 +1260,20 @@ struct MANGOS_DLL_DECL npc_eye_of_acherusAI : public ScriptedAI
  
                 owner->RemoveAurasDueToSpell(51852);
                 owner->RemoveAurasDueToSpell(51923);
+=======
+            if (!m_isActive)
+            {
+                m_creature->CastSpell(m_creature, SPELL_EYE_PHASEMASK, true);
+                m_creature->CastSpell(m_creature, SPELL_EYE_VISUAL, true);
+                m_creature->CastSpell(m_creature, SPELL_EYE_FL_BOOST_FLY, true);
+                DoScriptText(TEXT_EYE_LAUNCHED, m_creature);
+                m_creature->GetMotionMaster()->MovePoint(0,1750.8276f, -5873.788f, 147.2266f);
+                m_isActive = true;
+>>>>>>> rsa/master
             }
         }
+        else
+            m_creature->ForcedDespawn();
     }
 };
 
@@ -1324,7 +1367,7 @@ struct MANGOS_DLL_DECL mob_scarlet_ghoulAI : public ScriptedAI
     {
         if (!m_bIsSpawned)
         {
-            DoScriptText(SAY_SCARLET_GHOUL_SPAWN1 + urand(0, 5), m_creature);
+            DoScriptText(SAY_SCARLET_GHOUL_SPAWN1 - urand(0, 5), m_creature);
             m_bIsSpawned = true;
         }
 
@@ -1335,7 +1378,7 @@ struct MANGOS_DLL_DECL mob_scarlet_ghoulAI : public ScriptedAI
                 if (Creature* pGothik = m_creature->GetMap()->GetCreature(m_uiHarvesterGUID) )
                 {
                     if (pGothik->AI()->DoCastSpellIfCan(m_creature, roll_chance_i(50) ? 52519 : 52521) == CAST_OK)
-                        DoScriptText(SAY_SCARLET_GOTHIK1 + urand(0, 4), pGothik);
+                        DoScriptText(SAY_SCARLET_GOTHIK1 - urand(0, 4), pGothik);
 
                     m_uiWaitForThrowTimer = 5000;
                     m_creature->KnockBackFrom(pGothik, 15.0, 5.0);

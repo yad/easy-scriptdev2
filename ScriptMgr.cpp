@@ -1,4 +1,4 @@
-/* Copyright (C) 2006 - 2010 ScriptDev2 <https://scriptdev2.svn.sourceforge.net/>
+/* Copyright (C) 2006 - 2011 ScriptDev2 <http://www.scriptdev2.com/>
  * This program is free software licensed under GPL version 2
  * Please see the included DOCS/LICENSE.TXT for more information */
 
@@ -23,6 +23,8 @@ QueryResult* strSD2Pquery(char* str)
 {
 return SD2Database.Query(str);
 }
+// Not registered scripts storage
+std::map<std::string, Script*> m_scriptStorage;
 
 void FillSpellSummary();
 
@@ -72,6 +74,9 @@ void FreeScriptLibrary()
     for(int i=0; i<MAX_SCRIPTS; ++i)
         delete m_scripts[i];
 
+    for (std::map<std::string, Script*>::iterator itr = m_scriptStorage.begin(); itr != m_scriptStorage.end(); ++itr)
+        delete itr->second;
+
     num_sc_scripts = 0;
     SD2Database.HaltDelayThread();
 }
@@ -112,6 +117,8 @@ void InitScriptLibrary()
 
     for(int i=0; i<MAX_SCRIPTS; ++i)
         m_scripts[i]=NULL;
+
+    m_scriptStorage.clear();
 
     FillSpellSummary();
 
@@ -220,9 +227,9 @@ void Script::RegisterSelf(bool bReportError)
     else
     {
         if (bReportError)
-            error_log("SD2: Script registering but ScriptName %s is not assigned in database. Script will not be used.", (this)->Name.c_str());
+            error_log("SD2: Script registering but ScriptName %s is not assigned in database.", (this)->Name.c_str());
 
-        delete this;
+        m_scriptStorage.insert(std::make_pair(Name.c_str(), this));
     }
 }
 
@@ -523,4 +530,13 @@ InstanceData* CreateInstanceData(Map* pMap)
         return NULL;
 
     return tmpscript->GetInstanceData(pMap);
+}
+
+Script* GetScriptByName(std::string scriptName)
+{
+    std::map<std::string, Script*>::const_iterator itr = m_scriptStorage.find(scriptName);
+    if (itr != m_scriptStorage.end())
+        return itr->second;
+    else
+        return NULL;
 }

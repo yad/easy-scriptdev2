@@ -1,4 +1,4 @@
-/* Copyright (C) 2006 - 2010 ScriptDev2 <https://scriptdev2.svn.sourceforge.net/>
+/* Copyright (C) 2006 - 2011 ScriptDev2 <http://www.scriptdev2.com/>
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -25,7 +25,8 @@ EndScriptData */
 #include "wailing_caverns.h"
 
 instance_wailing_caverns::instance_wailing_caverns(Map* pMap) : ScriptedInstance(pMap),
-    m_uiNaralexGUID(0)
+    m_uiNaralexGUID(0),
+    m_uiDiscipleGUID(0)
 {
     Initialize();
 }
@@ -39,7 +40,8 @@ void instance_wailing_caverns::OnCreatureCreate(Creature* pCreature)
 {
     switch (pCreature->GetEntry())
     {
-        case NPC_NARALEX: m_uiNaralexGUID = pCreature->GetGUID(); break;
+        case NPC_NARALEX:  m_uiNaralexGUID = pCreature->GetGUID();  break;
+        case NPC_DISCIPLE: m_uiDiscipleGUID = pCreature->GetGUID(); break;
     }
 }
 
@@ -68,8 +70,17 @@ void instance_wailing_caverns::SetData(uint32 uiType, uint32 uiData)
     }
 
     // Set to special in order to start the escort event; only if all four bosses are done
-    if (m_auiEncounter[0] == DONE && m_auiEncounter[1] == DONE && m_auiEncounter[2] == DONE && m_auiEncounter[3] == DONE && m_auiEncounter[4] == NOT_STARTED)
+    if (m_auiEncounter[0] == DONE && m_auiEncounter[1] == DONE && m_auiEncounter[2] == DONE && m_auiEncounter[3] == DONE && (m_auiEncounter[4] == NOT_STARTED || m_auiEncounter[4] == FAIL))
+    {
+        // Yell intro text; only the first time
+        if (m_auiEncounter[4] == NOT_STARTED)
+        {
+            if (Creature* pDisciple = instance->GetCreature(m_uiDiscipleGUID))
+                DoScriptText(SAY_INTRO, pDisciple);
+        }
+
         m_auiEncounter[4] = SPECIAL;
+    }
 
     if (uiData == DONE)
     {

@@ -1,4 +1,4 @@
-/* Copyright (C) 2006 - 2010 ScriptDev2 <https://scriptdev2.svn.sourceforge.net/>
+/* Copyright (C) 2006 - 2011 ScriptDev2 <http://www.scriptdev2.com/>
  * This program is free software licensed under GPL version 2
  * Please see the included DOCS/LICENSE.TXT for more information */
 
@@ -17,6 +17,7 @@ enum
     TYPE_MUTANUS    = 5,
 
     NPC_NARALEX     = 3679,
+    NPC_DISCIPLE    = 3678,
     SAY_INTRO       = -1043000,                             // Say when the first 4 encounter are DONE
 };
 
@@ -42,5 +43,6 @@ class MANGOS_DLL_DECL instance_wailing_caverns : public ScriptedInstance
         std::string strInstData;
 
         uint64 m_uiNaralexGUID;
+        uint64 m_uiDiscipleGUID;
 };
 #endif

@@ -1,4 +1,4 @@
-/* Copyright (C) 2006 - 2010 ScriptDev2 <https://scriptdev2.svn.sourceforge.net/>
+/* Copyright (C) 2006 - 2011 ScriptDev2 <http://www.scriptdev2.com/>
 * This program is free software licensed under GPL version 2
 * Please see the included DOCS/LICENSE.TXT for more information */
 
@@ -7,6 +7,23 @@
 //battlegrounds
 extern void AddSC_battleground();
 
+<<<<<<< HEAD
+=======
+//custom
+extern void AddSC_npc_arena_honor();
+extern void AddSC_mob_teleguy();
+
+// OutdoorPvP
+extern void AddSC_outdoor_pvp_eastern_kingdoms();
+extern void AddSC_outdoor_pvp_kalimdor();
+extern void AddSC_outdoor_pvp_northrend();
+extern void AddSC_outdoor_pvp_outland();
+
+// OutdoorPvP zone scripts
+extern void AddSC_outdoor_pvp_eastern_plaguelands();
+extern void AddSC_outdoor_pvp_silithus();
+
+>>>>>>> rsa/master
 //examples
 extern void AddSC_example_creature();
 extern void AddSC_example_escort();
@@ -302,7 +319,8 @@ extern void AddSC_boss_moorabi();
 extern void AddSC_boss_sladran();
 extern void AddSC_instance_gundrak();
 
-extern void AddSC_boss_gafrost();                           // ICC, pit_of_saron
+extern void AddSC_boss_garfrost();                          // ICC, pit_of_saron
+
 extern void AddSC_boss_krick_and_ick();
 extern void AddSC_boss_tyrannus();
 extern void AddSC_instance_pit_of_saron();
@@ -423,7 +441,6 @@ extern void AddSC_boss_lich_king_icc();
 extern void AddSC_instance_forge_of_souls();
 extern void AddSC_boss_devourer_of_souls();
 extern void AddSC_boss_bronjahm();
-extern void AddSC_trash_forge_of_souls();
 extern void AddSC_forge_of_souls();
 
 extern void AddSC_instance_halls_of_reflection();
@@ -523,6 +540,24 @@ void AddScripts()
     //battlegrounds
     AddSC_battleground();
 
+<<<<<<< HEAD
+=======
+    //custom
+    AddSC_npc_arena_honor();
+    AddSC_mob_teleguy();
+
+    // OutdoorPvP zone scripts
+    // Must be _before_ map scripts call!
+    AddSC_outdoor_pvp_eastern_plaguelands();
+    AddSC_outdoor_pvp_silithus();
+
+    // OutdoorPvP
+    AddSC_outdoor_pvp_eastern_kingdoms();
+    AddSC_outdoor_pvp_kalimdor();
+    AddSC_outdoor_pvp_northrend();
+    AddSC_outdoor_pvp_outland();
+
+>>>>>>> rsa/master
     //examples
     AddSC_example_creature();
     AddSC_example_escort();
@@ -806,7 +841,8 @@ void AddScripts()
     AddSC_boss_sladran();
     AddSC_instance_gundrak();
 
-    AddSC_boss_gafrost();                                   // ICC, pit_of_saron
+    AddSC_boss_garfrost();                                  // ICC, FH, pit_of_saron
+
     AddSC_boss_krick_and_ick();
     AddSC_boss_tyrannus();
     AddSC_instance_pit_of_saron();
@@ -927,7 +963,6 @@ void AddScripts()
     AddSC_instance_forge_of_souls();
     AddSC_boss_devourer_of_souls();
     AddSC_boss_bronjahm();
-    AddSC_trash_forge_of_souls();
     AddSC_forge_of_souls();
 
     AddSC_instance_halls_of_reflection();
