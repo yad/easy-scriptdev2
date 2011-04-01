@@ -58,10 +58,10 @@ UPDATE `creature_template` SET `spell6` = 57403, `InhabitType` = 3 WHERE `entry`
 DELETE FROM `gameobject_scripts` WHERE `id` IN 
 (40557,42275);
 INSERT  INTO `gameobject_scripts` 
-(`id`, `delay`, `command`, `datalong`, `datalong2`, `dataint`, `x`, `y`, `z`, `o`) 
+(`id`, `delay`, `command`, `datalong`, `datalong2`, `dataint`, `x`, `y`, `z`, `o`, `comments`)  
 VALUES 
-(42275, 1, 6, 571, 0, '0', 3878.0, 6984.0, 106.0, 0),
-(40557, 1, 6, 578, 0, '0', 1001.61, 1051.13, 359.48, 3.1);
+(42275, 1, 6, 571, 0, '0', 3878.0, 6984.0, 106.0, 0, ''),
+(40557, 1, 6, 578, 0, '0', 1001.61, 1051.13, 359.48, 3.1, '');
 
 -- from lanc
 UPDATE `creature_template` SET

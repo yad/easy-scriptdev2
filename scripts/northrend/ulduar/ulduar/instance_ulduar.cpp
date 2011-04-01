@@ -1085,11 +1085,7 @@ struct MANGOS_DLL_DECL instance_ulduar : public ScriptedInstance
     {
         if (map_id != instance->GetId())
             return false;
-        switch (instance_condition_id)
-        {
-           case TYPE_XT002_HARD:
-               break;
-        }
+        return true;
     }
 
     uint32 GetData(uint32 uiType)
