@@ -1182,19 +1182,6 @@ struct MANGOS_DLL_DECL npc_eye_of_acherusAI : public ScriptedAI
 
     void AttackStart(Unit *)
     {
-<<<<<<< HEAD
-        if(!m_creature || m_creature->GetTypeId() != TYPEID_UNIT)
-            return;
-
-        m_creature->RemoveAurasDueToSpell(530);
-
-        Unit* owner = m_creature->GetCharmerOrOwner();
-        if(!owner || owner->GetTypeId() != TYPEID_PLAYER)
-             return;
- 
-        owner->RemoveAurasDueToSpell(51923);
-        owner->RemoveAurasDueToSpell(51852);
-=======
     }
 
     void MoveInLineOfSight(Unit *)
@@ -1205,7 +1192,6 @@ struct MANGOS_DLL_DECL npc_eye_of_acherusAI : public ScriptedAI
     {
         if (Unit* charmer = m_creature->GetCharmer())
             charmer->RemoveAurasDueToSpell(SPELL_EYE_CONTROL);
->>>>>>> rsa/master
     }
 
     void MovementInform(uint32 uiType, uint32 uiPointId)
@@ -1223,26 +1209,8 @@ struct MANGOS_DLL_DECL npc_eye_of_acherusAI : public ScriptedAI
         // called on remove SPELL_AURA_MOD_POSSESS
         if (!m_creature->isCharmed() && attacker->GetTypeId() == TYPEID_PLAYER)
         {
-<<<<<<< HEAD
-            if (ownerGuid.IsEmpty())
-                ownerGuid = m_creature->GetCharmerOrOwner()->GetObjectGuid();
-
-            if (StartTimer < (int)uiDiff && !Active)
-            {
-                m_creature->CastSpell(m_creature, 70889, true);
-                m_creature->CastSpell(m_creature, 51892, true);
-                m_creature->CastSpell(m_creature, 51923, true);
-                m_creature->SetSpeedRate(MOVE_FLIGHT, 4.0f,true);
-                DoScriptText(-1666451, m_creature);
-                m_creature->GetMotionMaster()->MovePoint(0, 1750.8276f, -5873.788f, 147.2266f);
-                Active = true;
-            }
-            else
-                StartTimer -= uiDiff;
-=======
             attacker->RemoveAurasDueToSpell(SPELL_EYE_CONTROL);
 //            m_creature->ForcedDespawn();
->>>>>>> rsa/master
         }
     }
 
@@ -1250,17 +1218,6 @@ struct MANGOS_DLL_DECL npc_eye_of_acherusAI : public ScriptedAI
     {
         if (m_creature->isCharmed())
         {
-<<<<<<< HEAD
-            if (StartTimer < (int)uiDiff)
-            {
-                m_creature->ForcedDespawn();
-		        Unit* owner = m_creature->GetCharmerOrOwner();
-                if(!owner || owner->GetTypeId() != TYPEID_PLAYER)
-                    return;
- 
-                owner->RemoveAurasDueToSpell(51852);
-                owner->RemoveAurasDueToSpell(51923);
-=======
             if (!m_isActive)
             {
                 m_creature->CastSpell(m_creature, SPELL_EYE_PHASEMASK, true);
@@ -1269,7 +1226,6 @@ struct MANGOS_DLL_DECL npc_eye_of_acherusAI : public ScriptedAI
                 DoScriptText(TEXT_EYE_LAUNCHED, m_creature);
                 m_creature->GetMotionMaster()->MovePoint(0,1750.8276f, -5873.788f, 147.2266f);
                 m_isActive = true;
->>>>>>> rsa/master
             }
         }
         else
