@@ -75,19 +75,6 @@ struct MANGOS_DLL_DECL npc_volcanoAI : public Scripted_NoMovementAI
 {
     npc_volcanoAI(Creature* pCreature) : Scripted_NoMovementAI(pCreature) { Reset(); }
 
-    uint32 CheckTimer;
-    uint64 SupremusGUID;
-    uint32 FireballTimer;
-    uint32 GeyserTimer;
-
-    void Reset()
-    {
-        CheckTimer = 1000;
-        SupremusGUID = 0;
-        FireballTimer = 500;
-        GeyserTimer = 2000;
-    }
-
     void AttackStart(Unit* pWho) {}
     void MoveInLineOfSight(Unit* pWho) {}
     void UpdateAI(const uint32 uiDiff) {}
