@@ -15,6 +15,7 @@ enum
     TYPE_ANUBARAK      = 2,
 
     NPC_KRIKTHIR       = 28684,
+    NPC_HADRONOX       = 28921,
 
     SAY_SEND_GROUP_1   = -1601004,
     SAY_SEND_GROUP_2   = -1601005,
@@ -51,6 +52,7 @@ struct MANGOS_DLL_DECL instance_azjol_nerub : public ScriptedInstance
         void DoSendWatcherOrKrikthir();
 
         uint32 GetData(uint32 uiType);
+        uint64 GetData64(uint32 uiType);
 
     protected:
         uint32 m_auiEncounter[MAX_ENCOUNTER];
@@ -72,6 +74,7 @@ struct MANGOS_DLL_DECL instance_azjol_nerub : public ScriptedInstance
         uint32 m_uiWatcherTimer;
 
         uint64 m_uiCrusherGUID;
-        bool m_bCusherDied;
+        uint64 m_uiHadronoxGUID;
+        bool m_bFirstCrusher;
 };
 #endif

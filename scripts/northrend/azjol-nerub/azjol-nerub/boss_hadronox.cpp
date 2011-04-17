@@ -19,7 +19,8 @@ SDName: Boss_Hadronox
 SD%Complete: 20%
 SDComment:
 SDCategory: Azjol'Nerub
-EndScriptData */
+EndScriptData 
+*/
 
 #include "precompiled.h"
 #include "azjol-nerub.h"
@@ -27,17 +28,30 @@ EndScriptData */
 enum
 {
     POINT_HADRONOX_CHAMBER              = 0,
-    // used in Ph 2
-    SPELL_SUMMON_ANUBAR_CHAMPION        = 53826, // 140
-    SPELL_SUMMON_ANUBAR_NECROMANCER     = 53827, // 140
-    SPELL_SUMMON_ANUBAR_CRYPTFIEND      = 53828, // 140
+
+    SUMMON_ANUBAR_CHAMPION_28924        = 53014, // 18 world trigger spell
+    SUMMON_ANUBAR_NECROMANCER_28925     = 53015, // 18 world trigger spell
+    SUMMON_ANUBAR_CRYPT_FIEND_29051     = 53016, // 18 world trigger spell
+    SUMMON_ANUBAR_CHAMPION_PERIODIC     = 53035, // 1 world trigger spell
+    SUMMON_ANUBAR_NECROMANCER_PERIODIC  = 53036, // 1 world trigger spell
+    SUMMON_ANUBAR_CRYPT_FIEND_PERIODIC  = 53037, // 1 world trigger spell
+    SUMMON_ANUBAR_CHAMPION_29062        = 53064, // 18
+    SUMMON_ANUBAR_CRYPT_FIEND_29063     = 53065, // 18
+    SUMMON_ANUBAR_NECROMANCER_29064     = 53066, // 18
+    SUMMON_ANUBAR_CHAMPION_29096        = 53090, // 18
+    SUMMON_ANUBAR_CRYPT_FIEND_29097     = 53091, // 18
+    SUMMON_ANUBAR_NECROMANCER_29098     = 53092, // 18
+
+    SUMMON_ANUBAR_CHAMPION              = 53826, // 140
+    SUMMON_ANUBAR_NECROMANCER           = 53827, // 140
+    SUMMON_ANUBAR_CRYPT_FIEND           = 53828, // 140
 
     SPELL_ACID_CLOUD                    = 53400, // Victim
     SPELL_LEECH_POISON                  = 53030, // Victim
     SPELL_PIERCE_ARMOR                  = 53418, // Victim
     SPELL_WEB_GRAB                      = 57731, // Victim
     SPELL_WEB_FRONT_DOORS               = 53177, // Self
-    SPELL_WEB_SIDE_DOORS                = 53185, // Self
+    SPELL_WEB_SIDE_DOORS                = 53185  // Self
 };
 
 float fHadronoxLair[3] = {529.691f, 547.126f, 731.916f};
@@ -58,8 +72,19 @@ struct MANGOS_DLL_DECL boss_hadronoxAI : public ScriptedAI
     instance_azjol_nerub* m_pInstance;
     bool m_bIsRegularMode;
 
+    uint32 m_uiAcidTimer;
+    uint32 m_uiLeechTimer;
+    uint32 m_uiPierceTimer;
+    uint32 m_uiGrabTimer;
+    uint32 m_uiDoorsTimer;
+
     void Reset()
     {
+        m_uiAcidTimer = urand(10000, 14000);
+        m_uiLeechTimer = urand(3000, 9000);
+        m_uiPierceTimer = urand(1000, 3000);
+        m_uiGrabTimer = urand(15000, 19000);
+        m_uiDoorsTimer = urand(20000, 30000);
     }
 
     void KilledUnit(Unit* pVictim)
@@ -81,17 +106,11 @@ struct MANGOS_DLL_DECL boss_hadronoxAI : public ScriptedAI
         }
     }
 
-    void DamageTaken(Unit* pDoneBy, uint32 &uiDamage)
-    {
-        if (m_creature->GetHealthPercent() < 50.0f)
-            m_creature->SetHealth(m_creature->GetMaxHealth());
-    }
-
     void JustReachedHome()
     {
         if (m_pInstance)
             m_pInstance->SetData(TYPE_HADRONOX, FAIL);
-    }
+    }      
 
     void UpdateAI(const uint32 uiDiff)
     {
@@ -106,6 +125,50 @@ struct MANGOS_DLL_DECL boss_hadronoxAI : public ScriptedAI
         if (!m_creature->SelectHostileTarget() || !m_creature->getVictim())
             return;
 
+        if (m_uiPierceTimer < uiDiff)
+        {
+            DoCastSpellIfCan(m_creature->getVictim(), SPELL_PIERCE_ARMOR);
+            m_uiPierceTimer = 8000;
+        }
+        else
+            m_uiPierceTimer -= uiDiff;
+
+        if (m_uiAcidTimer < uiDiff)
+        {
+            if (Unit *pTarget = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM, 0))
+                DoCastSpellIfCan(pTarget, SPELL_ACID_CLOUD);
+
+            m_uiAcidTimer = urand(20000, 30000);
+        }
+        else
+            m_uiAcidTimer -= uiDiff;
+
+        if (m_uiLeechTimer < uiDiff)
+        {
+            if (Unit *pTarget = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM, 0))
+                DoCastSpellIfCan(pTarget, SPELL_LEECH_POISON);
+
+            m_uiLeechTimer = urand(11000, 14000);
+        } else m_uiLeechTimer -= uiDiff;
+
+        if (m_uiGrabTimer < uiDiff)
+        {
+            if (Unit *pTarget = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM, 0)) // Draws all players (and attacking Mobs) to itself.
+                DoCastSpellIfCan(pTarget, SPELL_WEB_GRAB);
+
+            m_uiGrabTimer = urand(15000, 30000);
+        }
+        else
+            m_uiGrabTimer -= uiDiff;
+
+        if (m_uiDoorsTimer < uiDiff)
+        {
+            //DoCastSpellIfCan(me, urand(SPELL_WEB_FRONT_DOORS, SPELL_WEB_SIDE_DOORS));
+            m_uiDoorsTimer = urand(30000, 60000);
+        }
+        else
+            m_uiDoorsTimer -= uiDiff;
+
         DoMeleeAttackIfReady();
     }
 };
@@ -115,6 +178,29 @@ CreatureAI* GetAI_boss_hadronox(Creature* pCreature)
     return new boss_hadronoxAI(pCreature);
 }
 
+struct MANGOS_DLL_DECL npc_hadronox_OOC_addAI : public ScriptedAI
+{
+    npc_hadronox_OOC_addAI(Creature* pCreature) : ScriptedAI(pCreature)
+    {
+        m_pInstance = (instance_azjol_nerub*)pCreature->GetInstanceData();
+        Reset();
+    }
+
+    ScriptedInstance* m_pInstance;
+
+    void Reset()
+    {
+        if (m_pInstance && m_pInstance->GetData(TYPE_HADRONOX) != IN_PROGRESS)
+            if (Creature* pHadronox = m_pInstance->instance->GetCreature(m_pInstance->GetData64(NPC_HADRONOX)))
+                m_creature->GetMotionMaster()->MoveFollow(pHadronox, 0, 0);
+    }
+};
+
+CreatureAI* GetAI_npc_hadronox_OOC_add(Creature* pCreature)
+{
+    return new npc_hadronox_OOC_addAI(pCreature);
+}
+
 void AddSC_boss_hadronox()
 {
     Script* pNewScript;
@@ -122,6 +208,11 @@ void AddSC_boss_hadronox()
     pNewScript = new Script;
     pNewScript->Name = "boss_hadronox";
     pNewScript->GetAI = &GetAI_boss_hadronox;
+    pNewScript->RegisterSelf();
+
+    pNewScript = new Script;
+    pNewScript->Name = "npc_hadronox_OOC_add";
+    pNewScript->GetAI = &GetAI_npc_hadronox_OOC_add;
     pNewScript->RegisterSelf();
 }
 
