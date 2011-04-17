@@ -1,3 +1,3 @@
 -- All Along the Watchtowers (5097/5098)
 
-UPDATE creature_template SET ScriptName='npc_andorhal_tower' WHERE entry IN (10902,10903,10904,10905);
+UPDATE gameobject_template SET ScriptName='go_andorhal_tower' WHERE entry IN (176094,176095,176096,176097);

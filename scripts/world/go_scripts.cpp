@@ -666,6 +666,31 @@ bool GOUse_go_warmaul_prison(Player* pPlayer, GameObject* pGo)
     return false;
 };
 
+/*#####
+## go_mammoth_trap
+#####*/
+
+enum
+{
+    QUEST_HELP_THOSE_THAT    =  11876,
+    NPC_TRAPPED_MAMMOTH      =  25850,
+    SPELL_DESPAWN_SELF       =  43014
+};
+
+bool GOUse_go_mammoth_trap(Player* pPlayer, GameObject* pGo)
+{
+    if (pPlayer->GetQuestStatus(QUEST_HELP_THOSE_THAT) == QUEST_STATUS_INCOMPLETE)
+    {
+        Creature *pCreature = GetClosestCreatureWithEntry(pGo, NPC_TRAPPED_MAMMOTH, INTERACTION_DISTANCE);
+        if(pCreature)
+        {
+            pPlayer->KilledMonsterCredit(NPC_TRAPPED_MAMMOTH, pCreature->GetGUID());
+            pCreature->CastSpell(pCreature, SPELL_DESPAWN_SELF, false);
+        }
+    }
+    return false;
+};
+
 void AddSC_go_scripts()
 {
     Script* pNewScript;
@@ -788,5 +813,10 @@ void AddSC_go_scripts()
     pNewScript = new Script;
     pNewScript->Name = "go_warmaul_prison";
     pNewScript->pGOUse = &GOUse_go_warmaul_prison;
+    pNewScript->RegisterSelf();
+
+    pNewScript = new Script;
+    pNewScript->Name = "go_mammoth_trap";
+    pNewScript->pGOUse = &GOUse_go_mammoth_trap;
     pNewScript->RegisterSelf();
 }
