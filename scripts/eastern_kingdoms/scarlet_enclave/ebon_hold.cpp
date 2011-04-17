@@ -3745,16 +3745,6 @@ void AddSC_ebon_hold()
     pNewScript->RegisterSelf();
 
     pNewScript = new Script;
-    pNewScript->Name = "npc_the_lich_king_tirion_dawn";
-    pNewScript->GetAI = &GetAI_npc_the_lich_king_tirion_dawn;
-    pNewScript->RegisterSelf();
-
-    pNewScript = new Script;
-    pNewScript->Name = "npc_minibosses_dawn_of_light";
-    pNewScript->GetAI = &GetAI_npc_minibosses_dawn_of_light;
-    pNewScript->RegisterSelf();
-
-    pNewScript = new Script;
     pNewScript->Name = "mob_acherus_ghoul";
     pNewScript->GetAI = &GetAI_mob_acherus_ghoul;
     pNewScript->RegisterSelf();
