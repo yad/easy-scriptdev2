@@ -27,7 +27,9 @@ enum
     GO_DOOR_KRIKTHIR   = 192395,
     GO_DOOR_ANUBARAK_1 = 192396,
     GO_DOOR_ANUBARAK_2 = 192397,
-    GO_DOOR_ANUBARAK_3 = 192398
+    GO_DOOR_ANUBARAK_3 = 192398,
+
+    NPC_ANUBAR_CUSHER  = 28922
 };
 
 struct MANGOS_DLL_DECL instance_azjol_nerub : public ScriptedInstance
@@ -48,6 +50,8 @@ struct MANGOS_DLL_DECL instance_azjol_nerub : public ScriptedInstance
         void Update(uint32 uiDiff);
         void DoSendWatcherOrKrikthir();
 
+        uint32 GetData(uint32 uiType);
+
     protected:
         uint32 m_auiEncounter[MAX_ENCOUNTER];
         std::string strInstData;
@@ -66,5 +70,8 @@ struct MANGOS_DLL_DECL instance_azjol_nerub : public ScriptedInstance
 
         uint64 m_auiWatcherGUIDS[3];
         uint32 m_uiWatcherTimer;
+
+        uint64 m_uiCrusherGUID;
+        bool m_bCusherDied;
 };
 #endif

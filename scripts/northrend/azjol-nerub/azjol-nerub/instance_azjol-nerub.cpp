@@ -37,7 +37,10 @@ instance_azjol_nerub::instance_azjol_nerub(Map* pMap) : ScriptedInstance(pMap),
 
     m_uiPlayerGUID(0),
 
-    m_uiWatcherTimer(0)
+    m_uiWatcherTimer(0),
+
+    m_uiCrusherGUID(0),
+    m_bCusherDied(false)
 {
     Initialize();
 }
@@ -83,6 +86,9 @@ void instance_azjol_nerub::OnCreatureCreate(Creature* pCreature)
         case NPC_GASHRA:   m_auiWatcherGUIDS[0] = pCreature->GetGUID(); break;
         case NPC_NARJIL:   m_auiWatcherGUIDS[1] = pCreature->GetGUID(); break;
         case NPC_SILTHIK:  m_auiWatcherGUIDS[2] = pCreature->GetGUID(); break;
+        case NPC_ANUBAR_CUSHER:
+            if (!m_bCusherDied)
+                m_uiCrusherGUID = pCreature->GetGUID(); break;
     }
 }
 
@@ -93,6 +99,20 @@ void instance_azjol_nerub::OnCreatureDeath(Creature* pCreature)
     {
         if (m_auiEncounter[0] == NOT_STARTED)
             m_uiWatcherTimer = 5000;
+    }
+
+    if (uiEntry == NPC_ANUBAR_CUSHER)
+    {
+        if (m_bCusherDied)
+            return;
+
+        SetData(TYPE_HADRONOX, SPECIAL);
+        float fPosX, fPosY, fPosZ;
+        pCreature->GetRespawnCoord(fPosX, fPosY, fPosZ);
+        if (Creature* pCrusher = pCreature->SummonCreature(NPC_ANUBAR_CUSHER, 551.81f, 555.10f, 730.00f, 3.60f, TEMPSUMMON_DEAD_DESPAWN, 1))
+            pCrusher->GetMotionMaster()->MovePoint(0, fPosX, fPosY, fPosZ);
+        if (Creature* pCrusher = pCreature->SummonCreature(NPC_ANUBAR_CUSHER, 527.70f, 581.26f, 734.32f, 4.82f, TEMPSUMMON_DEAD_DESPAWN, 1))
+            pCrusher->GetMotionMaster()->MovePoint(0, fPosX, fPosY, fPosZ);
     }
 }
 
@@ -170,6 +190,17 @@ void instance_azjol_nerub::DoSendWatcherOrKrikthir()
     }
 }
 
+uint32 instance_azjol_nerub::GetData(uint32 uiType)
+{
+    switch(uiType)
+    {
+        case TYPE_HADRONOX:
+            return m_auiEncounter[1];
+    }
+    return 0;
+}
+
+
 void instance_azjol_nerub::SetData(uint32 uiType, uint32 uiData)
 {
     switch(uiType)
@@ -180,6 +211,14 @@ void instance_azjol_nerub::SetData(uint32 uiType, uint32 uiData)
                 DoUseDoorOrButton(m_uiDoorKrikthirGUID);
             break;
         case TYPE_HADRONOX:
+            if (uiData == FAIL)
+            {
+                m_bCusherDied = false;
+                if (Creature* pCreature = instance->GetCreature(m_uiCrusherGUID))
+                    pCreature->Respawn();
+            }
+            if (uiData == SPECIAL)
+                m_bCusherDied = true;
             m_auiEncounter[1] = uiData;
             break;
         case TYPE_ANUBARAK:

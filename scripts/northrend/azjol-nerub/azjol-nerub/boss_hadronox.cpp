@@ -14,6 +14,134 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+/* ScriptData
+SDName: Boss_Hadronox
+SD%Complete: 20%
+SDComment:
+SDCategory: Azjol'Nerub
+EndScriptData */
+
+#include "precompiled.h"
+#include "azjol-nerub.h"
+
+enum
+{
+    POINT_HADRONOX_CHAMBER              = 0,
+    // used in Ph 2
+    SPELL_SUMMON_ANUBAR_CHAMPION        = 53826, // 140
+    SPELL_SUMMON_ANUBAR_NECROMANCER     = 53827, // 140
+    SPELL_SUMMON_ANUBAR_CRYPTFIEND      = 53828, // 140
+
+    SPELL_ACID_CLOUD                    = 53400, // Victim
+    SPELL_LEECH_POISON                  = 53030, // Victim
+    SPELL_PIERCE_ARMOR                  = 53418, // Victim
+    SPELL_WEB_GRAB                      = 57731, // Victim
+    SPELL_WEB_FRONT_DOORS               = 53177, // Self
+    SPELL_WEB_SIDE_DOORS                = 53185, // Self
+};
+
+float fHadronoxLair[3] = {529.691f, 547.126f, 731.916f};
+
+/*######
+## boss_hadronox
+######*/
+
+struct MANGOS_DLL_DECL boss_hadronoxAI : public ScriptedAI
+{
+    boss_hadronoxAI(Creature* pCreature) : ScriptedAI(pCreature)
+    {
+        m_pInstance = (instance_azjol_nerub*)pCreature->GetInstanceData();
+        m_bIsRegularMode = pCreature->GetMap()->IsRegularDifficulty();
+        Reset();
+    }
+
+    instance_azjol_nerub* m_pInstance;
+    bool m_bIsRegularMode;
+
+    void Reset()
+    {
+    }
+
+    void KilledUnit(Unit* pVictim)
+    {
+        m_creature->SetHealth(m_creature->GetHealth() + (m_creature->GetMaxHealth() * 0.1));
+    }
+
+
+    void MovementInform(uint32 uiType, uint32 uiPointId)
+    {
+        if (uiType != POINT_MOTION_TYPE)
+            return;
+
+        if (uiPointId == POINT_HADRONOX_CHAMBER)
+        {
+            SetCombatMovement(true);
+            if (m_pInstance)
+                m_pInstance->SetData(TYPE_HADRONOX, IN_PROGRESS);
+        }
+    }
+
+    void DamageTaken(Unit* pDoneBy, uint32 &uiDamage)
+    {
+        if (m_creature->GetHealthPercent() < 50.0f)
+            m_creature->SetHealth(m_creature->GetMaxHealth());
+    }
+
+    void JustReachedHome()
+    {
+        if (m_pInstance)
+            m_pInstance->SetData(TYPE_HADRONOX, FAIL);
+    }
+
+    void UpdateAI(const uint32 uiDiff)
+    {
+        if (m_pInstance)
+            if (m_pInstance->GetData(TYPE_HADRONOX) == SPECIAL && m_creature->GetMotionMaster()->GetCurrentMovementGeneratorType() != POINT_MOTION_TYPE)
+            {
+                m_creature->GetMotionMaster()->MovementExpired();
+                SetCombatMovement(false);
+                m_creature->GetMotionMaster()->MovePoint(POINT_HADRONOX_CHAMBER, fHadronoxLair[0], fHadronoxLair[1], fHadronoxLair[2]);
+            }
+
+        if (!m_creature->SelectHostileTarget() || !m_creature->getVictim())
+            return;
+
+        DoMeleeAttackIfReady();
+    }
+};
+
+CreatureAI* GetAI_boss_hadronox(Creature* pCreature)
+{
+    return new boss_hadronoxAI(pCreature);
+}
+
+void AddSC_boss_hadronox()
+{
+    Script* pNewScript;
+
+    pNewScript = new Script;
+    pNewScript->Name = "boss_hadronox";
+    pNewScript->GetAI = &GetAI_boss_hadronox;
+    pNewScript->RegisterSelf();
+}
+
+
+/* Copyright (C) 2006 - 2011 ScriptDev2 <http://www.scriptdev2.com/>
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
+
 
 /* ScriptData
 SDName: boss_hadronox
@@ -34,7 +162,7 @@ EndScriptData */
 * Hadronox to make his way to you. When Hadronox enters the main room, she will web the doors, and no more non-elites will spawn.
 */
 
-#include "precompiled.h"
+/*#include "precompiled.h"
 #include "azjol-nerub.h"
 
 enum
@@ -209,3 +337,4 @@ void AddSC_boss_hadronox()
     newscript->GetAI = &GetAI_boss_hadronox;
     newscript->RegisterSelf();
 }
+*/
