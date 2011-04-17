@@ -673,8 +673,7 @@ bool GOUse_go_warmaul_prison(Player* pPlayer, GameObject* pGo)
 enum
 {
     QUEST_HELP_THOSE_THAT    =  11876,
-    NPC_TRAPPED_MAMMOTH      =  25850,
-    SPELL_DESPAWN_SELF       =  43014
+    NPC_TRAPPED_MAMMOTH      =  25850
 };
 
 bool GOUse_go_mammoth_trap(Player* pPlayer, GameObject* pGo)

@@ -29,6 +29,7 @@ npc_lady_katrana_prestor
 EndContentData */
 
 #include "precompiled.h"
+#include "escort_ai.h"
 
 /*######
 ## npc_archmage_malin
