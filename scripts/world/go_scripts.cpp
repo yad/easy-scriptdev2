@@ -632,6 +632,40 @@ bool GOUse_go_corkis_prison(Player* pPlayer, GameObject* pGo)
     return false;
 };
 
+/*#####
+## go_warmaul_prison
+#####*/
+
+enum
+{
+    QUEST_FINDING_THE_SURVIVORS        = 9948,
+    NPC_MAGHAR_PRISONER                = 18428,
+    SAY_MAGHAR_THANKS_1                = -1000040,
+    SAY_MAGHAR_THANKS_2                = -1000041,
+    SAY_MAGHAR_THANKS_3                = -1000042,
+};
+
+bool GOUse_go_warmaul_prison(Player* pPlayer, GameObject* pGo) 
+{
+    if (pPlayer->GetQuestStatus(QUEST_FINDING_THE_SURVIVORS) == QUEST_STATUS_INCOMPLETE)
+    {
+     Creature *pCreature = GetClosestCreatureWithEntry(pGo, NPC_MAGHAR_PRISONER, INTERACTION_DISTANCE);
+        if(pCreature)
+        {
+            pPlayer->CastedCreatureOrGO(NPC_MAGHAR_PRISONER, pCreature->GetGUID(), 32347);
+                switch(urand(0,2))
+                {
+                    case 0: DoScriptText(SAY_MAGHAR_THANKS_1, pCreature); break;
+                    case 1: DoScriptText(SAY_MAGHAR_THANKS_2, pCreature); break;
+                    default: DoScriptText(SAY_MAGHAR_THANKS_3, pCreature); break;
+                }
+		
+            pCreature->CastSpell(pCreature, SPELL_DESPAWN_SELF, false);
+        }
+    }
+    return false;
+};
+
 void AddSC_go_scripts()
 {
     Script* pNewScript;
@@ -749,5 +783,10 @@ void AddSC_go_scripts()
     pNewScript = new Script;
     pNewScript->Name = "go_corkis_prison";
     pNewScript->pGOUse = &GOUse_go_corkis_prison;
+    pNewScript->RegisterSelf();
+
+    pNewScript = new Script;
+    pNewScript->Name = "go_warmaul_prison";
+    pNewScript->pGOUse = &GOUse_go_warmaul_prison;
     pNewScript->RegisterSelf();
 }
