@@ -87,7 +87,7 @@ void instance_azjol_nerub::OnCreatureCreate(Creature* pCreature)
         case NPC_GASHRA:   m_auiWatcherGUIDS[0] = pCreature->GetGUID(); break;
         case NPC_NARJIL:   m_auiWatcherGUIDS[1] = pCreature->GetGUID(); break;
         case NPC_SILTHIK:  m_auiWatcherGUIDS[2] = pCreature->GetGUID(); break;
-        case NPC_HADRONOX: m_uiHadronoxGUID = pCreature->GetGUID();     break;
+        case NPC_HADRONOX: m_uiHadronoxGUID     = pCreature->GetGUID(); break;
         case NPC_ANUBAR_CUSHER:
             if (!m_bFirstCrusher)
                 m_uiCrusherGUID = pCreature->GetGUID();
@@ -209,7 +209,6 @@ uint64 instance_azjol_nerub::GetData64(uint32 uiType)
     }
     return 0;
 }
-
 
 void instance_azjol_nerub::SetData(uint32 uiType, uint32 uiData)
 {

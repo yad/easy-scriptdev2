@@ -19,8 +19,7 @@ SDName: Boss_Hadronox
 SD%Complete: 20%
 SDComment:
 SDCategory: Azjol'Nerub
-EndScriptData 
-*/
+EndScriptData */
 
 #include "precompiled.h"
 #include "azjol-nerub.h"
@@ -110,7 +109,7 @@ struct MANGOS_DLL_DECL boss_hadronoxAI : public ScriptedAI
     {
         if (m_pInstance)
             m_pInstance->SetData(TYPE_HADRONOX, FAIL);
-    }      
+    }
 
     void UpdateAI(const uint32 uiDiff)
     {
