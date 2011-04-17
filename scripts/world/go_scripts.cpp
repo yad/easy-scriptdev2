@@ -571,6 +571,67 @@ bool GOUse_go_Ethereal_Teleport_pad(Player* pPlayer, GameObject* pGo)
 
 }
 
+/*#####
+## go_corkis_prison
+#####*/
+
+enum
+{
+    QUEST_HELP                          = 9923,
+    QUEST_CORKIS_GONE                   = 9924,
+    QUEST_CHOWAR                        = 9955,
+    
+    GO_CORKIS_PRISON_1                  = 182349,
+    GO_CORKIS_PRISON_2                  = 182350,
+    GO_CORKIS_PRISON_3                  = 182521,
+    
+    NPC_CORKI                           = 18369,
+    NPC_CORKI_GONE                      = 20812,
+    NPC_CORKI_CHOWAR                    = 18445,
+    NPC_CORKI_EVENT                     = 18444,
+    
+    SPELL_DESPAWN_SELF                  = 43014,
+    
+    SAY_THANKS_1                        = -1999851,
+    SAY_THANKS_2                        = -1999891
+};
+
+bool GOUse_go_corkis_prison(Player* pPlayer, GameObject* pGo)
+{
+    uint64 uiCorkiEntry;
+    if (pPlayer->GetQuestStatus(QUEST_HELP) == QUEST_STATUS_INCOMPLETE || pPlayer->GetQuestStatus(QUEST_CORKIS_GONE) == QUEST_STATUS_INCOMPLETE || pPlayer->GetQuestStatus(QUEST_CHOWAR) == QUEST_STATUS_INCOMPLETE)
+    {
+        switch (pGo->GetEntry())
+        {
+        case GO_CORKIS_PRISON_1: uiCorkiEntry=NPC_CORKI;
+            break;
+        case GO_CORKIS_PRISON_2: uiCorkiEntry=NPC_CORKI_GONE;
+            break;
+        case GO_CORKIS_PRISON_3: uiCorkiEntry=NPC_CORKI_CHOWAR;
+            break;
+        }
+        if(Creature *pCorki = GetClosestCreatureWithEntry(pPlayer, uiCorkiEntry, INTERACTION_DISTANCE))
+        {
+            switch (uiCorkiEntry)
+            {
+            case NPC_CORKI:
+                pPlayer->KilledMonsterCredit(NPC_CORKI, pCorki->GetGUID());
+                DoScriptText(SAY_THANKS_1, pCorki);
+                break;
+            case NPC_CORKI_GONE:
+                pPlayer->KilledMonsterCredit(NPC_CORKI_GONE, pCorki->GetGUID());
+                DoScriptText(SAY_THANKS_2, pCorki);
+                break;
+            case NPC_CORKI_CHOWAR:
+                pPlayer->KilledMonsterCredit(NPC_CORKI_EVENT, pCorki->GetGUID());
+                break;
+            }
+            pCorki->CastSpell(pCorki, SPELL_DESPAWN_SELF, false);
+        }
+    }
+    return false;
+};
+
 void AddSC_go_scripts()
 {
     Script* pNewScript;
@@ -683,5 +744,10 @@ void AddSC_go_scripts()
     pNewScript = new Script;
     pNewScript->Name = "go_Ethereal_Teleport_pad";
     pNewScript->pGOUse = &GOUse_go_Ethereal_Teleport_pad;
+    pNewScript->RegisterSelf();
+
+    pNewScript = new Script;
+    pNewScript->Name = "go_corkis_prison";
+    pNewScript->pGOUse = &GOUse_go_corkis_prison;
     pNewScript->RegisterSelf();
 }
