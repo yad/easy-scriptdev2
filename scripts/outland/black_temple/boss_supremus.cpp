@@ -75,6 +75,7 @@ struct MANGOS_DLL_DECL npc_volcanoAI : public Scripted_NoMovementAI
 {
     npc_volcanoAI(Creature* pCreature) : Scripted_NoMovementAI(pCreature) { Reset(); }
 
+    void Reset() {}
     void AttackStart(Unit* pWho) {}
     void MoveInLineOfSight(Unit* pWho) {}
     void UpdateAI(const uint32 uiDiff) {}
