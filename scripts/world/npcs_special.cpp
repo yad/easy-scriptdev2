@@ -2356,7 +2356,7 @@ struct MANGOS_DLL_DECL mob_risen_ghoulAI : public ScriptedAI
         m_bIsSpawned = false;
         fDist = (m_creature->GetEntry() == ENTRY_AOTD_GHOUL) ? float(urand(1, 5) ) : PET_FOLLOW_DIST;
         fAngle = PET_FOLLOW_ANGLE;
-        m_uiCreatorGUID = m_creature->GetCreatorGUID();
+        m_uiCreatorGUID = m_creature->GetCreatorGuid();
         if (Unit* pOwner = m_creature->GetMap()->GetUnit(m_uiCreatorGUID) )
             fAngle = m_creature->GetAngle(pOwner);
 
@@ -2365,7 +2365,7 @@ struct MANGOS_DLL_DECL mob_risen_ghoulAI : public ScriptedAI
 
     Unit* pTarget;
 
-    uint64 m_uiCreatorGUID;
+    ObjectGuid m_uiCreatorGUID;
     uint64 m_uiTargetGUID;
 
     uint32 m_uiReadyTimer;
