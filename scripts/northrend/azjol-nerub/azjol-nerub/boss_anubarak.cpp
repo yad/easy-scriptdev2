@@ -14,6 +14,188 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+/* ScriptData
+SDName: Boss_Anubarak
+SD%Complete: 20%
+SDComment:
+SDCategory: Azjol'NerubstrInstData
+EndScriptData */
+
+#include "precompiled.h"
+#include "azjol-nerub.h"
+
+enum
+{
+    SAY_INTRO                       = -1601014,
+    SAY_AGGRO                       = -1601015,
+    SAY_KILL_1                      = -1601016,
+    SAY_KILL_2                      = -1601017,
+    SAY_KILL_3                      = -1601018,
+    SAY_SUBMERGE_1                  = -1601019,
+    SAY_SUBMERGE_2                  = -1601020,
+    SAY_LOCUST_1                    = -1601021,
+    SAY_LOCUST_2                    = -1601022,
+    SAY_LOCUST_3                    = -1601023,
+    SAY_DEATH                       = -1601024,
+
+    SPELL_CARRION_BEETLES           = 53520,
+    SPELL_SUBMERGE                  = 53421,
+    SPELL_EMERGE                    = 53500,
+    SPELL_SUMMON_CARRION_BEETLES    = 53521,
+    SPELL_LEECHING_SWARM_N          = 53467,
+    SPELL_LEECHING_SWARM_H          = 59430,
+    SPELL_IMPALE_N                  = 53454,
+    SPELL_IMPALE_H                  = 59446,
+    SPELL_POUND_N                   = 53472,
+    SPELL_POUND_H                   = 59433,
+
+    POINT_ANUBARAK_SPAWN_POS        = 0
+};
+
+/*######
+## boss_anubarak
+######*/
+
+struct MANGOS_DLL_DECL boss_anubarakAI : public ScriptedAI
+{
+    boss_anubarakAI(Creature* pCreature) : ScriptedAI(pCreature)
+    {
+        m_pInstance = (instance_azjol_nerub*)pCreature->GetInstanceData();
+        m_bIsRegularMode = pCreature->GetMap()->IsRegularDifficulty();
+        m_creature->GetRespawnCoord(fPosX, fPosY, fPozZ);
+        Reset();
+    }
+
+    instance_azjol_nerub* m_pInstance;
+    bool m_bIsRegularMode;
+
+    float fHealthPercent;
+    float fPosX, fPosY, fPozZ;
+    uint32 m_uiSubmergePhase_Timer;
+
+    std::list<uint64>lSummons;
+
+    void Reset()
+    {
+        fHealthPercent          = 75.0f;
+        m_uiSubmergePhase_Timer = 45000/3;
+
+        m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+        SetCombatMovement(true);
+    }
+
+    void Aggro(Unit* pWho)
+    {
+        DoScriptText(SAY_AGGRO, m_creature);
+
+        if (m_pInstance)
+            m_pInstance->SetData(TYPE_ANUBARAK, IN_PROGRESS);
+    }
+
+    void KilledUnit(Unit* pVictim)
+    {
+        switch(urand(0, 2))
+        {
+            case 0: DoScriptText(SAY_KILL_1, m_creature); break;
+            case 1: DoScriptText(SAY_KILL_2, m_creature); break;
+            case 2: DoScriptText(SAY_KILL_3, m_creature); break;
+        }
+    }
+
+    void JustDied(Unit* pKiller)
+    {
+        DoScriptText(SAY_DEATH, m_creature);
+
+        if (m_pInstance)
+            m_pInstance->SetData(TYPE_ANUBARAK, DONE);
+    }
+
+    void JustReachedHome()
+    {
+        if (m_pInstance)
+            m_pInstance->SetData(TYPE_ANUBARAK, NOT_STARTED);
+    }
+
+    void JustSummoned(Creature* pSummon)
+    {
+        lSummons.push_back(pSummon->GetGUID());
+    }
+
+    void MovementInform(uint32 uiType, uint32 uiPointId)
+    {
+        if (uiType != POINT_MOTION_TYPE)
+            return;
+
+        DoCastSpellIfCan(m_creature, SPELL_SUBMERGE);
+    }
+
+    void UpdateAI(const uint32 uiDiff)
+    {
+        if (!m_creature->SelectHostileTarget() || !m_creature->getVictim())
+            return;
+
+        if (m_creature->HasAura(SPELL_SUBMERGE))
+        {
+            if (m_uiSubmergePhase_Timer < uiDiff)
+            {
+                m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+                m_creature->RemoveAurasDueToSpell(SPELL_SUBMERGE);
+                DoCastSpellIfCan(m_creature, SPELL_EMERGE);
+                SetCombatMovement(true);
+                m_creature->GetMotionMaster()->MoveChase(m_creature->getVictim());
+                m_uiSubmergePhase_Timer = 45000/3;
+            }
+            else
+                m_uiSubmergePhase_Timer -= uiDiff;
+            
+        }
+        else
+        {
+            if (fHealthPercent)
+                if (m_creature->GetHealthPercent() < fHealthPercent)
+                {
+                    fHealthPercent -= 25;
+                    SetCombatMovement(false);
+                    m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+                    m_creature->GetMotionMaster()->MovePoint(POINT_ANUBARAK_SPAWN_POS, fPosX, fPosY, fPozZ);
+                }
+
+            DoMeleeAttackIfReady();
+        }
+    }
+};
+
+CreatureAI* GetAI_boss_anubarak(Creature* pCreature)
+{
+    return new boss_anubarakAI(pCreature);
+}
+
+void AddSC_boss_anubarak()
+{
+    Script* pNewScript;
+
+    pNewScript = new Script;
+    pNewScript->Name = "boss_anubarak";
+    pNewScript->GetAI = &GetAI_boss_anubarak;
+    pNewScript->RegisterSelf();
+}
+
+/* Copyright (C) 2006 - 2011 ScriptDev2 <http://www.scriptdev2.com/>
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
+
 
 /* ScriptData
 SDName: boss_anubarak
@@ -21,6 +203,7 @@ SD%Complete: ?%
 SDComment: by MaxXx2021
 SDCategory: Azjol-Nerub instance
 EndScriptData */
+/*
 
 #include "precompiled.h"
 #include "azjol-nerub.h"
@@ -348,3 +531,4 @@ void AddSC_boss_anubarak()
     newscript->GetAI = &GetAI_boss_anubarak;
     newscript->RegisterSelf();
 }
+*/
