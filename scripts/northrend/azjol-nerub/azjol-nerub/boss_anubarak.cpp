@@ -42,6 +42,11 @@ enum
     SPELL_SUBMERGE                  = 53421,
     SPELL_EMERGE                    = 53500,
     SPELL_SUMMON_CARRION_BEETLES    = 53521,
+    SPELL_IMPALE_PERIODIC           = 53456,
+    SPELL_SUMMON_ANUBAR_DARTER      = 53599,
+    SPELL_SUMMON_ANUBAR_GUARD_TRIG  = 53613,
+    SPELL_SUMMON_ANUBAR_ASSASSIN    = 53609,
+    SPELL_SUMMON_ANUBAR_VENOMANCER  = 53615,
     SPELL_LEECHING_SWARM_N          = 53467,
     SPELL_LEECHING_SWARM_H          = 59430,
     SPELL_IMPALE_N                  = 53454,
@@ -49,8 +54,12 @@ enum
     SPELL_POUND_N                   = 53472,
     SPELL_POUND_H                   = 59433,
 
-    POINT_ANUBARAK_SPAWN_POS        = 0
+    POINT_ANUBARAK_SPAWN_POS        = 0,
+    NPC_ANUBAR_GUARDIAN             = 29216,
+    NPC_ANUBAR_VENOMANCER           = 29217
 };
+
+float fSummonPosition[3] = {550.0f, 345.0f, 240.0f};
 
 /*######
 ## boss_anubarak
@@ -72,13 +81,29 @@ struct MANGOS_DLL_DECL boss_anubarakAI : public ScriptedAI
     float fHealthPercent;
     float fPosX, fPosY, fPozZ;
     uint32 m_uiSubmergePhase_Timer;
+    uint32 m_uiCarrionBeetles_Timer;
+    uint32 m_uiLeechingSwarm_Timer;
+    uint32 m_uiImpale_Timer;
+    uint32 m_uiPound_Timer;
+    uint32 m_uiSummonEliteAdd_Timer;
+    uint32 m_uiSummonNonEliteAdd_Timer;
+    uint32 m_uiCombatProgress;
+    float fTimerPenalty;
 
     std::list<uint64>lSummons;
 
     void Reset()
     {
-        fHealthPercent          = 75.0f;
-        m_uiSubmergePhase_Timer = 45000/3;
+        m_uiCombatProgress = 25000;
+        fTimerPenalty = 1.0f;
+        fHealthPercent = 75.0f;
+        m_uiSubmergePhase_Timer = 45000;
+        m_uiCarrionBeetles_Timer = 8000;
+        m_uiLeechingSwarm_Timer = 20000;
+        m_uiImpale_Timer = 9000;
+        m_uiPound_Timer = 15000;
+        m_uiSummonEliteAdd_Timer = 10000;
+        m_uiSummonNonEliteAdd_Timer = 5000;
 
         m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
         SetCombatMovement(true);
@@ -116,9 +141,9 @@ struct MANGOS_DLL_DECL boss_anubarakAI : public ScriptedAI
             m_pInstance->SetData(TYPE_ANUBARAK, NOT_STARTED);
     }
 
-    void JustSummoned(Creature* pSummon)
+    void JustSummoned(Creature* pSummoned)
     {
-        lSummons.push_back(pSummon->GetGUID());
+        lSummons.push_back(pSummoned->GetGUID());
     }
 
     void MovementInform(uint32 uiType, uint32 uiPointId)
@@ -126,6 +151,7 @@ struct MANGOS_DLL_DECL boss_anubarakAI : public ScriptedAI
         if (uiType != POINT_MOTION_TYPE)
             return;
 
+        DoCastSpellIfCan(m_creature, SPELL_IMPALE_PERIODIC, CAST_TRIGGERED);
         DoCastSpellIfCan(m_creature, SPELL_SUBMERGE);
     }
 
@@ -134,20 +160,60 @@ struct MANGOS_DLL_DECL boss_anubarakAI : public ScriptedAI
         if (!m_creature->SelectHostileTarget() || !m_creature->getVictim())
             return;
 
+        if (m_uiCombatProgress < uiDiff)
+        {
+            fTimerPenalty = ((fTimerPenalty > 0.4f) ? (fTimerPenalty -= 0.1 * fTimerPenalty) : (fTimerPenalty));
+            m_uiCombatProgress = 25000;
+        }
+        else
+            m_uiCombatProgress -= uiDiff;
+
         if (m_creature->HasAura(SPELL_SUBMERGE))
         {
             if (m_uiSubmergePhase_Timer < uiDiff)
             {
                 m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
                 m_creature->RemoveAurasDueToSpell(SPELL_SUBMERGE);
+                m_creature->RemoveAurasDueToSpell(SPELL_IMPALE_PERIODIC);
                 DoCastSpellIfCan(m_creature, SPELL_EMERGE);
                 SetCombatMovement(true);
                 m_creature->GetMotionMaster()->MoveChase(m_creature->getVictim());
-                m_uiSubmergePhase_Timer = 45000/3;
+                m_uiSubmergePhase_Timer = 45000;
+                return;
             }
             else
                 m_uiSubmergePhase_Timer -= uiDiff;
-            
+
+            if (m_uiSummonEliteAdd_Timer < uiDiff)
+            {
+                Creature* pGuardian = m_creature->SummonCreature(NPC_ANUBAR_GUARDIAN, fSummonPosition[0], fSummonPosition[1], fSummonPosition[2], 0.0f, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 20000);
+                Unit* pTarget = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM, 0);
+                if (pGuardian && pTarget)
+                {
+                    pGuardian->AI()->AttackStart(pTarget);
+                    if (!m_bIsRegularMode)
+                        if (Creature* pVenomancer = m_creature->SummonCreature(NPC_ANUBAR_VENOMANCER, fSummonPosition[0], fSummonPosition[1] + 5, fSummonPosition[2], 0.0f, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 20000))
+                            pVenomancer->AI()->AttackStart(pTarget);
+                }
+                
+                //DoCastSpellIfCan(m_creature, SPELL_SUMMON_ANUBAR_GUARD_TRIG, CAST_TRIGGERED);
+                //DoCastSpellIfCan(m_creature, SPELL_SUMMON_ANUBAR_VENOMANCER, CAST_TRIGGERED);
+                m_uiSummonEliteAdd_Timer = 50000 * fTimerPenalty;
+            }
+            else
+                m_uiSummonEliteAdd_Timer -= uiDiff;
+
+            if (m_uiSummonNonEliteAdd_Timer < uiDiff)
+            {
+                DoCastSpellIfCan(m_creature, SPELL_SUMMON_ANUBAR_ASSASSIN, CAST_TRIGGERED);
+                DoCastSpellIfCan(m_creature, SPELL_SUMMON_ANUBAR_ASSASSIN, CAST_TRIGGERED);
+                if (fTimerPenalty < 0.6f)
+                    DoCastSpellIfCan(m_creature, SPELL_SUMMON_ANUBAR_DARTER, CAST_TRIGGERED);
+
+                m_uiSummonNonEliteAdd_Timer = 15000 * fTimerPenalty;
+            }
+            else
+                m_uiSummonNonEliteAdd_Timer -= uiDiff;
         }
         else
         {
@@ -157,8 +223,34 @@ struct MANGOS_DLL_DECL boss_anubarakAI : public ScriptedAI
                     fHealthPercent -= 25;
                     SetCombatMovement(false);
                     m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+                    m_creature->InterruptNonMeleeSpells(false);
                     m_creature->GetMotionMaster()->MovePoint(POINT_ANUBARAK_SPAWN_POS, fPosX, fPosY, fPozZ);
+                    return;
                 }
+
+            if (m_uiCarrionBeetles_Timer < uiDiff)
+            {
+                DoCastSpellIfCan(m_creature->getVictim(), SPELL_SUMMON_CARRION_BEETLES);
+                m_uiCarrionBeetles_Timer = 8000;
+            }
+            else
+                m_uiCarrionBeetles_Timer -= uiDiff;
+
+            if (m_uiLeechingSwarm_Timer < uiDiff)
+            {
+                DoCastSpellIfCan(m_creature->getVictim(), m_bIsRegularMode ? SPELL_LEECHING_SWARM_N : SPELL_LEECHING_SWARM_H);
+                m_uiLeechingSwarm_Timer = 20000;
+            }
+            else
+                m_uiLeechingSwarm_Timer -= uiDiff;
+
+            if (m_uiPound_Timer < uiDiff)
+            {
+                DoCastSpellIfCan(m_creature->getVictim(), m_bIsRegularMode ? SPELL_POUND_N : SPELL_POUND_H);
+                m_uiPound_Timer = 15000;
+            }
+            else
+                m_uiPound_Timer -= uiDiff; 
 
             DoMeleeAttackIfReady();
         }

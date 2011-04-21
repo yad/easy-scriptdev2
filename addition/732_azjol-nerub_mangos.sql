@@ -1,5 +1,15 @@
 UPDATE creature_template SET ScriptName = '' WHERE entry IN (28729,28730,28731,28732,28733,28734);
 
+DELETE FROM creature_ai_scripts WHERE creature_id = 29184;
+INSERT INTO creature_ai_scripts (`id`, `creature_id`, `event_type`, `event_inverse_phase_mask`, `event_chance`, `event_flags`, `event_param1`, `event_param2`, `event_param3`, `event_param4`, `action1_type`, `action1_param1`, `action1_param2`, `action1_param3`, `action2_type`, `action2_param1`, `action2_param2`, `action2_param3`, `action3_type`, `action3_param1`, `action3_param2`, `action3_param3`, `comment`) VALUES
+('2918401','29184','1','0','100','6','100','100','0','0','11','53455','0','7','41','3800','0','0','0','0','0','0','Anub\'arak Impale Target - Cast Ground Erupt Animation'),
+('2918402','29184','1','0','100','2','3000','3000','0','0','11','53454','0','7','0','0','0','0','28','0','53455','0','Anub\'arak Impale Target (Normal) - Cast Impale'),
+('2918403','29184','1','0','100','4','3000','3000','0','0','11','59446','0','7','0','0','0','0','28','0','53455','0','Anub\'arak Impale Target (Heroic) - Cast Impale');
+
+UPDATE creature SET position_x = '580.074280', position_y = '612.905579', position_z = '771.729858', orientation = '0.692609' WHERE guid = '127378';
+UPDATE creature SET position_x = '481.519714', position_y = '613.969666', position_z = '771.496582', orientation = '2.336147' WHERE guid = '127377';
+UPDATE creature SET position_x = '584.081726', position_y = '605.452393', position_z = '739.293030', orientation = '2.363634' WHERE guid = '127376';
+
 UPDATE creature_template SET faction_a = 1814, faction_h = 1814, ScriptName = 'npc_hadronox_OOC_add' WHERE entry IN (28924,28925);
 
 -- remove trash spiders
