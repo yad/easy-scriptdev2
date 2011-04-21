@@ -27,6 +27,7 @@ npc_alexstrasza_wr_gate
 npc_liquid_fire_of_elune
 npc_tariolstrasz
 npc_torastrasza
+npc_taunkale_refugee
 EndContentData */
 
 #include "precompiled.h"
@@ -189,6 +190,155 @@ bool GossipSelect_npc_torastrasza(Player* pPlayer, Creature* pCreature, uint32 u
     return true;
 }
 
+/*######
+## npc_taunkale_refuge
+######*/
+
+enum
+{
+        QUEST_BLOOD_OATH_OF_THE_HORDE   = 11983,
+        GO_RECOVERED_HORDE_ARMAMENTS    = 188252,   //crate
+        NPC_TAUNKALE_REFUGEE            = 26179,    //creature counted as Q credit, there are 2 types of taunka refugees in DB
+        POINT_NEAR_CRATE                = 1,
+        POINT_REFUGEE_CAMP_EXIT         = 2,
+        SPELL_TAUNKA_TRANSFORM_MALE     = 47022,
+        SPELL_TAUNKA_TRANSFORM_FEMALE   = 47023,
+        SAY_REFUGE                      = -1999926,
+
+        NPC_TEXT_1_1                    = 12611,
+        NPC_TEXT_1_2                    = GOSSIP_SENDER_MAIN, // to fill it up! "we are a people..."
+        NPC_TEXT_1_3                    = GOSSIP_SENDER_MAIN, // may the lich king
+        NPC_TEXT_2                      = 12618,
+        NPC_TEXT_3                      = 12619,
+        NPC_TEXT_4                      = 12620
+};
+
+uint32 NPC_TEXT_1[3] = {NPC_TEXT_1_1, NPC_TEXT_1_2, NPC_TEXT_1_3};
+
+#define GOSSIP_ITEM_TAUNKA_REFUGEE_1    "Worry no more, taunka. The Horde will save and protect you and your people, but first you must swear allegiance to the Warchief by taking the blood oath of the Horde."
+#define GOSSIP_ITEM_TAUNKA_REFUGEE_2    "Yes, taunka. Retribution is a given right of all members of the Horde."
+#define GOSSIP_ITEM_TAUNKA_REFUGEE_3    "Than repeat after me: \"Lok'tar ogar! Victory or death - it is these words that bind me to the Horde. For they are the most sacred and fundamental of truths to warrior of the Horde./n/nI give my flesh and blood freely to the Warchief. I am the instrument of my Warchief\'s desire. I am a weapon of my Warchief\'s command./n/nFrom this moment until the end of days I live and die - For the Horde!\""
+#define GOSSIP_ITEM_TAUNKA_REFUGEE_4    "For the horde!/n/nArm yourself  from the crates that surround us and report to Agmar\'s Hammer, east of here. Your first trial as a member of the Horde is survive the journey./n/nLok\'tar ogar!"
+
+float fWestwindRefugeGatePos[2][3] = 
+{
+    {3698.48f, 2828.36f, 88.08f},
+    {3690.35f, 2881.30f, 92.32f}
+};
+
+bool GossipHello_npc_taunkale_refuge(Player* pPlayer, Creature* pCreature)
+{
+    if (pPlayer->GetQuestStatus(QUEST_BLOOD_OATH_OF_THE_HORDE) == QUEST_STATUS_INCOMPLETE)
+        pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ITEM_TAUNKA_REFUGEE_1, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF);
+
+    pPlayer->SEND_GOSSIP_MENU(NPC_TEXT_1[urand(0,2)], pCreature->GetGUID());
+    return true;
+}
+
+bool GossipSelect_npc_taunkale_refuge(Player* pPlayer, Creature* pCreature, uint32 uiSender, uint32 uiAction)
+{
+    switch(uiAction)
+    {
+        case GOSSIP_ACTION_INFO_DEF:
+            pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ITEM_TAUNKA_REFUGEE_2, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+1);
+            pPlayer->SEND_GOSSIP_MENU(NPC_TEXT_2, pCreature->GetGUID());
+            break;
+        case GOSSIP_ACTION_INFO_DEF+1:
+            pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ITEM_TAUNKA_REFUGEE_3, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+2);
+            pPlayer->SEND_GOSSIP_MENU(NPC_TEXT_3, pCreature->GetGUID());
+            break;
+        case GOSSIP_ACTION_INFO_DEF+2:
+            pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ITEM_TAUNKA_REFUGEE_4, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+3);
+            pPlayer->SEND_GOSSIP_MENU(NPC_TEXT_4, pCreature->GetGUID());
+            break;
+        case GOSSIP_ACTION_INFO_DEF+3:
+            pPlayer->CLOSE_GOSSIP_MENU();
+            pCreature->SetStandState(UNIT_STAND_STATE_STAND);
+            pPlayer->KilledMonsterCredit(NPC_TAUNKALE_REFUGEE, pCreature->GetGUID());
+            if (GameObject* pCrate = GetClosestGameObjectWithEntry(pCreature, GO_RECOVERED_HORDE_ARMAMENTS, DEFAULT_VISIBILITY_DISTANCE))
+            {
+                float fDestX, fDestY, fDestZ;
+                pCrate->GetNearPoint(pCrate, fDestX, fDestY, fDestZ, pCrate->GetObjectBoundingRadius(), 1.0f, 0.0f);
+                pCreature->GetMotionMaster()->Clear();
+                pCreature->SetSpeedRate(MOVE_RUN, 1.0f, true);
+                pCreature->GetMotionMaster()->MovePoint(POINT_NEAR_CRATE, fDestX, fDestY, fDestZ);
+            }
+            // cant talk now
+            pCreature->SetUInt32Value(UNIT_NPC_FLAGS, 0);
+            break;
+    }
+    return true;
+}
+
+struct MANGOS_DLL_DECL npc_taunkale_refugeAI : public ScriptedAI
+{
+    npc_taunkale_refugeAI(Creature* pCreature) : ScriptedAI(pCreature) {Reset();}
+
+    bool m_bArming;
+    uint8 m_uiSubevent;
+    uint32 m_uiArming_Timer;
+
+    void Reset()
+    {
+        m_bArming = false;
+        m_uiArming_Timer = 1000;
+        m_uiSubevent = 0;
+    }
+
+    void MovementInform(uint32 uiType, uint32 uiPointId)
+    {
+        if (uiType != POINT_MOTION_TYPE)
+            return;
+
+        switch (uiPointId)
+        {
+            case 1: m_bArming = true; break;
+            case 2: m_creature->ForcedDespawn(); break;
+            default: break;
+        }
+    }
+
+    void UpdateAI(const uint32 uiDiff)
+    {
+        if (m_bArming)
+        {
+            if (m_uiArming_Timer < uiDiff)
+            {
+                switch (m_uiSubevent)
+                {
+                    case 0:
+                        if (GameObject* pCrate = GetClosestGameObjectWithEntry(m_creature, GO_RECOVERED_HORDE_ARMAMENTS, 40.0f))
+                            m_creature->SetFacingToObject(pCrate);
+                        m_creature->HandleEmote(EMOTE_STATE_USESTANDING);
+                        break;
+                    case 1:
+                        m_creature->HandleEmote(EMOTE_STATE_NONE);
+                        DoCastSpellIfCan(m_creature, m_creature->getGender() == GENDER_MALE ? SPELL_TAUNKA_TRANSFORM_MALE : SPELL_TAUNKA_TRANSFORM_FEMALE);
+                        DoScriptText(SAY_REFUGE, m_creature);
+                        break;
+                    case 2:
+                        m_creature->GetMotionMaster()->Clear();
+                        if (m_creature->GetDistance(fWestwindRefugeGatePos[0][0], fWestwindRefugeGatePos[0][1], fWestwindRefugeGatePos[0][2]) > m_creature->GetDistance(fWestwindRefugeGatePos[1][0], fWestwindRefugeGatePos[1][1], fWestwindRefugeGatePos[1][2]))
+                            m_creature->GetMotionMaster()->MovePoint(POINT_REFUGEE_CAMP_EXIT, fWestwindRefugeGatePos[1][0], fWestwindRefugeGatePos[1][1], fWestwindRefugeGatePos[1][2]);
+                        else
+                            m_creature->GetMotionMaster()->MovePoint(POINT_REFUGEE_CAMP_EXIT, fWestwindRefugeGatePos[0][0], fWestwindRefugeGatePos[0][1], fWestwindRefugeGatePos[0][2]);
+                        m_bArming = false;
+                        return;
+                }
+                ++m_uiSubevent;
+                m_uiArming_Timer = 3000;
+            }
+            else
+                m_uiArming_Timer -= uiDiff;
+        }
+    }
+};
+
+CreatureAI* GetAI_npc_taunkale_refuge(Creature* pCreature)
+{
+    return new npc_taunkale_refugeAI(pCreature);
+}
+
 void AddSC_dragonblight()
 {
     Script *newscript;
@@ -215,5 +365,12 @@ void AddSC_dragonblight()
     newscript->Name = "npc_torastrasza";
     newscript->pGossipHello = &GossipHello_npc_torastrasza;
     newscript->pGossipSelect = &GossipSelect_npc_torastrasza;
+    newscript->RegisterSelf();
+
+    newscript = new Script;
+    newscript->Name = "npc_taunkale_refuge";
+    newscript->GetAI = &GetAI_npc_taunkale_refuge;
+    newscript->pGossipHello = &GossipHello_npc_taunkale_refuge;
+    newscript->pGossipSelect = &GossipSelect_npc_taunkale_refuge;
     newscript->RegisterSelf();
 }
