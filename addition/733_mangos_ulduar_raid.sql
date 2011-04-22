@@ -219,7 +219,8 @@ UPDATE creature_template SET ScriptName = 'mob_flashFreeze' WHERE entry IN (3292
 UPDATE `creature_template` SET `modelid_1` = 15880 WHERE `entry` = 33174;
 UPDATE `creature_template` SET `modelid_2` = 28470, ScriptName = 'mob_icicle' WHERE `entry` = 33169;
 -- flash freeze that will lock the npcs IN iceblock
-UPDATE creature_template SET `modelid_1` = 25865, ScriptName = 'mob_npc_flashFreeze' WHERE entry IN (32938, 33353);
+UPDATE creature_template SET `modelid_1` = 25865 WHERE entry IN (32938, 33353);
+UPDATE creature_template SET `ScriptName` = 'mob_npc_flashFreeze' WHERE entry IN (32938);
 UPDATE creature SET spawnMask = 3 WHERE id IN (32938);
 UPDATE creature SET spawnMask = 2 WHERE id IN (32901, 32900, 32950, 32946,33333, 33330, 33326);
 UPDATE creature_template SET ScriptName = 'npc_hodir_priest' WHERE entry IN (32897, 33326, 32948, 33330);
@@ -380,8 +381,8 @@ REPLACE INTO `spell_script_target` (`entry`, `type`, `targetEntry`) VALUES ('625
 
 -- Vezax
 UPDATE creature_template SET unit_flags = 0, ScriptName = 'boss_vezax' WHERE entry = 33271;
-UPDATE creature_template SET MinHealth = 23009250, MaxHealth = 23009250, ScriptName = 'boss_vezax' WHERE entry = 33449;
-UPDATE `creature_template` SET `mechanic_immune_mask` = 619397115 WHERE `entry` IN (33271, 33449);
+UPDATE creature_template SET MinHealth = 23009250, MaxHealth = 23009250 WHERE entry = 33449;
+UPDATE creature_template SET `mechanic_immune_mask` = 619397115 WHERE `entry` IN (33271, 33449);
 UPDATE creature_template SET ScriptName = 'mob_saronite_animus' WHERE entry = 33524;
 UPDATE creature_template SET ScriptName = 'mob_saronite_vapor', movementType = 1  WHERE entry = 33488;
 
