@@ -92,7 +92,7 @@ struct MANGOS_DLL_DECL boss_ionarAI : public ScriptedAI
         m_uiStaticOverload_Timer = urand(5000, 6000);
         m_uiBallLightning_Timer = urand(10000, 11000);
 
-        m_bHasSplitted = false
+        m_bHasSplitted = false;
 
         if (m_creature->GetVisibility() == VISIBILITY_OFF)
             m_creature->SetVisibility(VISIBILITY_ON);
