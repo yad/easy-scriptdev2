@@ -2514,6 +2514,67 @@ CreatureAI* GetAI_mob_risen_ghoul(Creature* pCreature)
     return new mob_risen_ghoulAI (pCreature);
 };
 
+/*######
+## mob_winter_reveler
+######*/
+
+enum WinterReveler
+{
+    SPELL_HOLLY = 26207,
+    SPELL_MISTLETOE = 26206,
+    SPELL_SNOWFLAKES = 45036,
+    SPELL_MISTLETOE_DEBUFF = 26218
+};
+
+struct MANGOS_DLL_DECL mob_winter_revelerAI : public ScriptedAI
+{
+    mob_winter_revelerAI(Creature* pCreature) : ScriptedAI(pCreature){Reset();}
+
+    uint32 m_uiEmoteTimer;
+
+    void Reset()
+    {
+        m_uiEmoteTimer = 30000;
+    }
+    void ReceiveEmote(Player* pPlayer, uint32 uiEmote)
+    {
+        if (!pPlayer)
+            return;
+
+        if (uiEmote == TEXTEMOTE_KISS)
+        {
+            if (!pPlayer->HasAura(SPELL_MISTLETOE))
+            {
+                m_creature->CastSpell(pPlayer,SPELL_MISTLETOE_DEBUFF,true);
+
+                switch(urand(0,2))
+                {
+                    case 0: m_creature->CastSpell(pPlayer,SPELL_HOLLY,true); break;
+                    case 1: m_creature->CastSpell(pPlayer,SPELL_SNOWFLAKES,true); break;
+                    case 2: m_creature->CastSpell(pPlayer,SPELL_MISTLETOE,true); break;
+                    default: break;
+                }
+            }
+        }
+    }
+
+    void UpdateAI(const uint32 uiDiff)
+    {
+        if (m_uiEmoteTimer <= uiDiff)
+        {
+            m_creature->HandleEmoteCommand(EMOTE_ONESHOT_SHY);
+            m_uiEmoteTimer = 30000+(urand(0,30000));
+        }
+        else m_uiEmoteTimer -= uiDiff;
+    }
+
+};
+
+CreatureAI* GetAI_mob_winter_reveler(Creature* pCreature)
+{
+    return new mob_winter_revelerAI(pCreature);
+}
+
 void AddSC_npcs_special()
 {
     Script* newscript;
@@ -2648,5 +2709,10 @@ void AddSC_npcs_special()
     newscript = new Script;
     newscript->Name = "mob_risen_ghoul";
     newscript->GetAI = &GetAI_mob_risen_ghoul;
+    newscript->RegisterSelf();
+
+    newscript = new Script;
+    newscript->Name = "mob_winter_reveler";
+    newscript->GetAI = &GetAI_mob_winter_reveler;
     newscript->RegisterSelf();
 }
