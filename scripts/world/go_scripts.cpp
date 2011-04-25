@@ -721,8 +721,7 @@ enum
 {
     QUEST_OF_KEY_AND_CAGES_A    = 11231,
     QUEST_OF_KEY_AND_CAGES_H    = 11265,
-    NPC_GJALERBON_PRISONER      = 24035,
-    SPELL_DESPAWN_SELF          = 43014
+    NPC_GJALERBON_PRISONER      = 24035
 };
 
 bool GOUse_go_gjalerbon_cage(Player* pPlayer, GameObject* pGo)
