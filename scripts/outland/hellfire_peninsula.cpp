@@ -743,6 +743,149 @@ bool QuestAccept_npc_wounded_blood_elf(Player* pPlayer, Creature* pCreature, con
     return true;
 }
 
+/*######
+## quest: seer's relic
+######*/
+
+enum
+{
+    SPELL_EXECUTE   = 30462,
+
+    NPC_ESCORT      = 17417,
+    NPC_AMBUSH      = 17418,
+    NPC_KRUN        = 17405,
+
+    //Texts
+    //Sedai
+    TEXT_SEDAI1     = -1174041, //I've failed... peace is impossible.
+    TEXT_SEDAI2     = -1174042, //What in the Light's name...?
+    TEXT_SEDAI3     = -1174043, //Fel orcs!
+    TEXT_SEDAI4     = -1174044, //The cycle of bloodshed is unending. Is there nothing I can do?
+    //Orcs
+    TEXT_ORCS1      = -1174171, //Do not return, draenei scum. Next time we won't spare your life, unarmed or not!
+    //Krun
+    TEXT_KRUN1      = -1174051 //You can die!
+};
+
+struct MANGOS_DLL_DECL npc_Vindicator_SedaiAI : public ScriptedAI
+{
+    npc_Vindicator_SedaiAI(Creature* pCreature) : ScriptedAI(pCreature) {Reset();}
+
+    uint8       Phase;
+    uint32      TextTimer;
+    ObjectGuid  Escort1;
+    ObjectGuid  Escort2;
+
+    void Reset()
+    {
+        if(m_creature->GetAreaId() == 3483)
+        {
+            Phase = 0;
+            TextTimer = 2000;
+            m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PASSIVE);
+
+            if(Creature* pEscort1 = m_creature->SummonCreature(NPC_ESCORT, 226.950f, 4120.283f, 82.68f, m_creature->GetOrientation(), TEMPSUMMON_CORPSE_DESPAWN, 20000))
+                Escort1 = pEscort1->GetGUID();
+            if(Creature* pEscort2 = m_creature->SummonCreature(NPC_ESCORT, 224.703f, 4117.889f, 82.19f, m_creature->GetOrientation(), TEMPSUMMON_CORPSE_DESPAWN, 20000))
+                Escort2 = pEscort2->GetGUID();
+        }
+    }
+    void UpdateAI(const uint32 uiDiff)
+    {
+        if(TextTimer <= uiDiff)
+        {
+            if(m_creature->GetAreaId() == 3483) //Hellfire peninsula - it's useful when someone summon npc in other location ;)
+            {
+                Creature* MagEscort1 = m_creature->GetMap()->GetCreature(Escort1);
+                Creature* MagEscort2 = m_creature->GetMap()->GetCreature(Escort2);
+                Creature* pKrun = GetClosestCreatureWithEntry(m_creature, NPC_KRUN, 200.0f);
+
+            if(MagEscort1 && MagEscort2)
+            {
+                switch(Phase)
+                {
+                    case 0:
+                    {
+                        m_creature->GetMotionMaster()->MovePoint(1, 199.298f, 4141.842f, 75.08f);
+                        MagEscort1->GetMotionMaster()->MovePoint(2, 201.895f, 4140.031f, 75.68f);
+                        MagEscort2->GetMotionMaster()->MovePoint(3, 199.046f, 4137.802f, 75.10f);
+                        TextTimer = 16000;
+                        Phase++;
+                        break;
+                    }
+                    case 1:
+                    {
+                        int i = urand(0,1);
+                        switch(i)
+                        {
+                            case 0: MagEscort1->HandleEmote(EMOTE_ONESHOT_KICK); DoScriptText(TEXT_ORCS1, MagEscort1); break;
+                            case 1: MagEscort2->HandleEmote(EMOTE_ONESHOT_KICK); DoScriptText(TEXT_ORCS1, MagEscort2); break;
+                            default: break;
+                        }
+                        //There need to be other Emote? this don't work ;/
+                        //Workaround
+                        m_creature->CastSpell(m_creature, 39656, true);
+                        //m_creature->HandleEmoteState(EMOTE_STATE_KNEEL);
+                        TextTimer = 3000;
+                        Phase++;
+                        break;
+                    }
+                    case 2:
+                    {
+                        DoScriptText(TEXT_SEDAI1, m_creature);
+                        MagEscort1->GetMotionMaster()->MovePoint(4, 225.0f, 4125.0f, 82.26f);
+                        MagEscort2->GetMotionMaster()->MovePoint(5, 228.0f, 4120.0f, 82.26f);
+                        TextTimer = 3000;
+                        Phase++;
+                        break;
+                    }
+                    case 3: m_creature->SummonCreature(NPC_AMBUSH, 225.5f, 4120.2f, 82.26f, 2.4f, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 25000); TextTimer = 8000; Phase++; break;
+                    case 4:
+                    {
+                        if(Creature* pAmbush = GetClosestCreatureWithEntry(m_creature, NPC_AMBUSH, 150.0f))
+                        {
+                            MagEscort1->AI()->AttackStart(pAmbush);
+                            MagEscort2->AI()->AttackStart(pAmbush);
+                        }
+                        TextTimer = 3000;
+                        Phase++;
+                        break;
+                    }
+                    case 5: DoScriptText(TEXT_SEDAI2, m_creature); TextTimer = 4000; Phase++; break;
+                    case 6: m_creature->RemoveAurasDueToSpell(39656); m_creature->GetMotionMaster()->MovePoint(6, 211.074f, 4131.552f, 78.74f); TextTimer = 8000; Phase++; break;
+                    case 7: DoScriptText(TEXT_SEDAI3, m_creature); TextTimer = 8000; Phase++; break;
+                    case 8:
+                    {
+                        if(Creature* pAmbush = GetClosestCreatureWithEntry(m_creature, NPC_AMBUSH, 100.0f))
+                            pAmbush->GetMotionMaster()->MovePoint(7, 247.64f, 4111.432f, 87.4f);
+
+                        m_creature->GetMotionMaster()->MovePoint(8, 192.873f, 4149.576f, 73.66f);
+                        TextTimer = 11000;
+                        Phase++;
+                        break;
+                    }
+                    case 9: m_creature->SummonCreature(NPC_KRUN, 225.5f, 4120.2f, 82.26f, 2.4f, TEMPSUMMON_TIMED_DESPAWN, 27000); m_creature->CastSpell(m_creature, 39656, true); TextTimer = 2000; Phase++; break;
+                    if(pKrun)
+                    {
+                        case 10: pKrun->GetMotionMaster()->MovePoint(9, 194.150f, 4147.903f, 73.84f); TextTimer = 12000; Phase++; break;
+                        case 11: DoScriptText(TEXT_SEDAI4, m_creature); TextTimer = 8000; Phase++; break;
+                        case 12: m_creature->RemoveAurasDueToSpell(39656); m_creature->HandleEmoteState(EMOTE_STATE_COWER); TextTimer = 750; Phase++; break;
+                        case 13: DoScriptText(TEXT_KRUN1, pKrun); pKrun->CastSpell(m_creature, SPELL_EXECUTE, true); TextTimer = 2000; Phase++; break;
+                        case 14: pKrun->HandleEmoteState(EMOTE_STATE_ROAR); Phase++; break;
+                    }
+                    default: break;
+                }
+            }
+            }
+        } else TextTimer -= uiDiff;
+    }
+};
+
+CreatureAI* GetAI_npc_Vindicator_Sedai(Creature* pCreature)
+{
+    return new npc_Vindicator_SedaiAI(pCreature);
+}
+
 void AddSC_hellfire_peninsula()
 {
     Script *newscript;
@@ -809,5 +952,10 @@ void AddSC_hellfire_peninsula()
     newscript->Name = "npc_wounded_blood_elf";
     newscript->GetAI = &GetAI_npc_wounded_blood_elf;
     newscript->pQuestAcceptNPC = &QuestAccept_npc_wounded_blood_elf;
+    newscript->RegisterSelf();
+
+    newscript = new Script;
+    newscript->Name = "npc_Vindicator_Sedai";
+    newscript->GetAI = &GetAI_npc_Vindicator_Sedai;
     newscript->RegisterSelf();
 }
