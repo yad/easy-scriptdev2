@@ -399,7 +399,7 @@ struct MANGOS_DLL_DECL mob_cannon_chanellerAI : public Scripted_NoMovementAI
     bool Ridge;
     bool Razzan;
     bool Ruuan;
-    ObjectGuid m_uiPLAYERGUID;
+    uint64 m_uiPLAYERGUID;
     uint32 m_uiLaunchTimer;
     uint32 m_uiPhaseTimer;
     uint8 Phase;
@@ -628,7 +628,6 @@ struct MANGOS_DLL_DECL npc_AetherRayAI : public ScriptedAI
     {
         m_bDoEmote = false;
         m_bCanBeWrangled = false;
-        m_playerGuid = 0;
         m_uiWrangleTimer = 5000;
     }
     void UpdateAI(const uint32 uiDiff)
@@ -643,14 +642,16 @@ struct MANGOS_DLL_DECL npc_AetherRayAI : public ScriptedAI
         {
             if(m_uiWrangleTimer < uiDiff)
             {
-                Player* pPlayer = m_creature->GetMap()->GetPlayer(m_playerGuid);
-                pPlayer->KilledMonsterCredit(NPC_AETHERRAYF);
-                m_creature->UpdateEntry(NPC_AETHERRAYF);
-                m_creature->DeleteThreatList();
-                m_creature->CombatStop(true);
-                m_bCanBeWrangled = false;
-                m_creature->ForcedDespawn(140000);
-                m_uiWrangleTimer = 5000;
+                if(Player* pPlayer = m_creature->GetMap()->GetPlayer(m_playerGuid))
+                {
+                    pPlayer->KilledMonsterCredit(NPC_AETHERRAYF);
+                    m_creature->UpdateEntry(NPC_AETHERRAYF);
+                    m_creature->DeleteThreatList();
+                    m_creature->CombatStop(true);
+                    m_bCanBeWrangled = false;
+                    m_creature->ForcedDespawn(140000);
+                    m_uiWrangleTimer = 5000;
+                }
             } else m_uiWrangleTimer -= uiDiff;
         }
 

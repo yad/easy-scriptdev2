@@ -26,6 +26,7 @@ npc_gurgthock
 EndContentData */
 
 #include "precompiled.h"
+#include "follower_ai.h"
 
 /*######
 ## npc_gurgthock

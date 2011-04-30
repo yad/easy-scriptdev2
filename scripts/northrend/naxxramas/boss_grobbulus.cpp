@@ -41,6 +41,7 @@ enum
     SPELL_SLIME_SPRAY               = 28157,
     SPELL_SLIME_SPRAY_H             = 54364,
     SPELL_BERSERK                   = 26662,
+    SPELL_POISONCLOUDAOE            = 59116,
 
     NPC_FALLOUT_SLIME               = 16290
 };
