@@ -261,6 +261,7 @@ bool GossipSelect_npc_taunkale_refuge(Player* pPlayer, Creature* pCreature, uint
                 pCrate->GetNearPoint(pCrate, fDestX, fDestY, fDestZ, pCrate->GetObjectBoundingRadius(), 1.0f, 0.0f);
                 pCreature->GetMotionMaster()->Clear();
                 pCreature->SetSpeedRate(MOVE_RUN, 1.0f, true);
+                pCreature->RemoveSplineFlag(SPLINEFLAG_WALKMODE);
                 pCreature->GetMotionMaster()->MovePoint(POINT_NEAR_CRATE, fDestX, fDestY, fDestZ);
             }
             // cant talk now
@@ -283,6 +284,7 @@ struct MANGOS_DLL_DECL npc_taunkale_refugeAI : public ScriptedAI
         m_bArming = false;
         m_uiArming_Timer = 1000;
         m_uiSubevent = 0;
+        m_creature->AddSplineFlag(SPLINEFLAG_WALKMODE);
     }
 
     void MovementInform(uint32 uiType, uint32 uiPointId)
