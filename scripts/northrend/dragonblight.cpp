@@ -196,29 +196,25 @@ bool GossipSelect_npc_torastrasza(Player* pPlayer, Creature* pCreature, uint32 u
 
 enum
 {
-        QUEST_BLOOD_OATH_OF_THE_HORDE   = 11983,
-        GO_RECOVERED_HORDE_ARMAMENTS    = 188252,   //crate
-        NPC_TAUNKALE_REFUGEE            = 26179,    //creature counted as Q credit, there are 2 types of taunka refugees in DB
-        POINT_NEAR_CRATE                = 1,
-        POINT_REFUGEE_CAMP_EXIT         = 2,
-        SPELL_TAUNKA_TRANSFORM_MALE     = 47022,
-        SPELL_TAUNKA_TRANSFORM_FEMALE   = 47023,
-        SAY_REFUGE                      = -1999926,
+    QUEST_BLOOD_OATH_OF_THE_HORDE   = 11983,
+    GO_RECOVERED_HORDE_ARMAMENTS    = 188252,   //crate
+    NPC_TAUNKALE_REFUGEE            = 26179,    //creature counted as Q credit, there are 2 types of taunka refugees in DB
+    POINT_NEAR_CRATE                = 1,
+    POINT_REFUGEE_CAMP_EXIT         = 2,
+    SPELL_TAUNKA_TRANSFORM_MALE     = 47022,
+    SPELL_TAUNKA_TRANSFORM_FEMALE   = 47023,
+    SAY_REFUGE                      = -1999926,
 
-        NPC_TEXT_1_1                    = 12611,
-        NPC_TEXT_1_2                    = GOSSIP_SENDER_MAIN, // to fill it up! "we are a people..."
-        NPC_TEXT_1_3                    = GOSSIP_SENDER_MAIN, // may the lich king
-        NPC_TEXT_2                      = 12618,
-        NPC_TEXT_3                      = 12619,
-        NPC_TEXT_4                      = 12620
+    NPC_TEXT_1                      = 12611,
+    NPC_TEXT_2                      = 12618,
+    NPC_TEXT_3                      = 12619,
+    NPC_TEXT_4                      = 12620
 };
-
-uint32 NPC_TEXT_1[3] = {NPC_TEXT_1_1, NPC_TEXT_1_2, NPC_TEXT_1_3};
 
 #define GOSSIP_ITEM_TAUNKA_REFUGEE_1    "Worry no more, taunka. The Horde will save and protect you and your people, but first you must swear allegiance to the Warchief by taking the blood oath of the Horde."
 #define GOSSIP_ITEM_TAUNKA_REFUGEE_2    "Yes, taunka. Retribution is a given right of all members of the Horde."
-#define GOSSIP_ITEM_TAUNKA_REFUGEE_3    "Than repeat after me: \"Lok'tar ogar! Victory or death - it is these words that bind me to the Horde. For they are the most sacred and fundamental of truths to warrior of the Horde./n/nI give my flesh and blood freely to the Warchief. I am the instrument of my Warchief\'s desire. I am a weapon of my Warchief\'s command./n/nFrom this moment until the end of days I live and die - For the Horde!\""
-#define GOSSIP_ITEM_TAUNKA_REFUGEE_4    "For the horde!/n/nArm yourself  from the crates that surround us and report to Agmar\'s Hammer, east of here. Your first trial as a member of the Horde is survive the journey./n/nLok\'tar ogar!"
+#define GOSSIP_ITEM_TAUNKA_REFUGEE_3    "Than repeat after me: \"Lok'tar ogar! Victory or death - it is these words that bind me to the Horde. For they are the most sacred and fundamental of truths to warrior of the Horde.\n\nI give my flesh and blood freely to the Warchief. I am the instrument of my Warchief\'s desire. I am a weapon of my Warchief\'s command.\n\nFrom this moment until the end of days I live and die - For the Horde!\""
+#define GOSSIP_ITEM_TAUNKA_REFUGEE_4    "For the horde!\n\nArm yourself  from the crates that surround us and report to Agmar\'s Hammer, east of here. Your first trial as a member of the Horde is survive the journey.\n\nLok\'tar ogar!"
 
 float fWestwindRefugeGatePos[2][3] = 
 {
@@ -231,7 +227,7 @@ bool GossipHello_npc_taunkale_refuge(Player* pPlayer, Creature* pCreature)
     if (pPlayer->GetQuestStatus(QUEST_BLOOD_OATH_OF_THE_HORDE) == QUEST_STATUS_INCOMPLETE)
         pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ITEM_TAUNKA_REFUGEE_1, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF);
 
-    pPlayer->SEND_GOSSIP_MENU(NPC_TEXT_1[urand(0,2)], pCreature->GetGUID());
+    pPlayer->SEND_GOSSIP_MENU(NPC_TEXT_1, pCreature->GetGUID());
     return true;
 }
 
