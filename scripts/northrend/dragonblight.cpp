@@ -198,7 +198,6 @@ enum
 {
     QUEST_BLOOD_OATH_OF_THE_HORDE   = 11983,
     GO_RECOVERED_HORDE_ARMAMENTS    = 188252,   //crate
-    NPC_TAUNKALE_REFUGEE            = 26179,    //creature counted as Q credit, there are 2 types of taunka refugees in DB
     POINT_NEAR_CRATE                = 1,
     POINT_REFUGEE_CAMP_EXIT         = 2,
     SPELL_TAUNKA_TRANSFORM_MALE     = 47022,
@@ -250,11 +249,11 @@ bool GossipSelect_npc_taunkale_refuge(Player* pPlayer, Creature* pCreature, uint
         case GOSSIP_ACTION_INFO_DEF+3:
             pPlayer->CLOSE_GOSSIP_MENU();
             pCreature->SetStandState(UNIT_STAND_STATE_STAND);
-            pPlayer->KilledMonsterCredit(NPC_TAUNKALE_REFUGEE, pCreature->GetGUID());
+            pPlayer->KilledMonster(pCreature->GetCreatureInfo(), pCreature->GetGUID()); // should be done like this instead KilledMonsterCredit()
             if (GameObject* pCrate = GetClosestGameObjectWithEntry(pCreature, GO_RECOVERED_HORDE_ARMAMENTS, DEFAULT_VISIBILITY_DISTANCE))
             {
                 float fDestX, fDestY, fDestZ;
-                pCrate->GetNearPoint(pCrate, fDestX, fDestY, fDestZ, pCrate->GetObjectBoundingRadius(), 1.0f, 0.0f);
+                pCrate->GetNearPoint(pCrate, fDestX, fDestY, fDestZ, pCrate->GetObjectBoundingRadius(), 1.0f, pCrate->GetAngle(pCreature));
                 pCreature->GetMotionMaster()->Clear();
                 pCreature->SetSpeedRate(MOVE_RUN, 1.0f, true);
                 pCreature->RemoveSplineFlag(SPLINEFLAG_WALKMODE);
@@ -305,8 +304,6 @@ struct MANGOS_DLL_DECL npc_taunkale_refugeAI : public ScriptedAI
                 switch (m_uiSubevent)
                 {
                     case 0:
-                        if (GameObject* pCrate = GetClosestGameObjectWithEntry(m_creature, GO_RECOVERED_HORDE_ARMAMENTS, 40.0f))
-                            m_creature->SetFacingToObject(pCrate);
                         m_creature->HandleEmote(EMOTE_STATE_USESTANDING);
                         break;
                     case 1:
