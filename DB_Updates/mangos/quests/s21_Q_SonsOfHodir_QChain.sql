@@ -85,9 +85,6 @@ UPDATE creature_template SET ScriptName = "mob_brunnhildar_prisoner" WHERE entry
 INSERT INTO creature_template_addon VALUES
 (29709, 0, 50331648, 1, 0, 0, 1024, "48602");*/
 
-DELETE FROM spell_script_target WHERE entry = 55046;
-INSERT INTO spell_script_target VALUES (55046, 1, 29639);
-
 DELETE FROM npc_spellclick_spells WHERE npc_entry = 29708;
 INSERT INTO npc_spellclick_spells VALUES (29708, 55028, 12856, 1, 12856, 3);
 

@@ -13,14 +13,11 @@ DELETE from creature where id=28537;
 INSERT into creature VALUES
 (2853701,28537,571,1,1,0,0,5550.404,5768.214,-78.02,1.278,300,0,0,0,0,0,0);
 
-DELETE from spell_script_target WHERE entry in(51932,51931,51933,51934,51935,51936);
+DELETE from spell_script_target WHERE entry in(51932,51931,51933);
 INSERT into spell_script_target VALUES
 (51932,1,28537),
 (51931,1,28537),
-(51933,1,28537),
-(51934,1,28537),
-(51935,1,28537),
-(51936,1,28537);
+(51933,1,28537);
 
 UPDATE creature_template SET
 flags_extra=flags_extra |128

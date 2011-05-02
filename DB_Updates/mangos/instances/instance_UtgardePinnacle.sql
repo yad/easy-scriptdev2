@@ -21,7 +21,6 @@ UPDATE creature_template SET ScriptName='npc_avenging_spirit_summoner' WHERE ent
 REPLACE INTO spell_script_target (entry, type, targetEntry) values
 (48277, 1, 27327),
 (48331, 1, 27327),
-(48642, 1, 26893),
 (51368, 1, 26893),
 (47670, 1, 26687),
 (47670, 1, 26684),
