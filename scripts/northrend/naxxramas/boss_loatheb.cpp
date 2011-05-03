@@ -1,4 +1,4 @@
-/* Copyright (C) 2006 - 2011 ScriptDev2 <http://www.scriptdev2.com/>
+/* Copyright (C) 2006 - 2010 ScriptDev2 <https://scriptdev2.svn.sourceforge.net/>
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -68,6 +68,9 @@ struct MANGOS_DLL_DECL boss_loathebAI : public ScriptedAI
         m_uiSummonTimer = urand(10000, 15000);              // first seen in vid after approx 12s
         m_uiBerserkTimer = MINUTE*12*IN_MILLISECONDS;       // only in heroic, after 12min
         m_uiNecroticAuraCount = 0;
+
+        if (m_pInstance)
+            m_pInstance->SetData(TYPE_ACHI_SPORE_LOSER, DONE);
     }
 
     void Aggro(Unit* pWho)
@@ -85,7 +88,7 @@ struct MANGOS_DLL_DECL boss_loathebAI : public ScriptedAI
     void JustReachedHome()
     {
         if (m_pInstance)
-            m_pInstance->SetData(TYPE_LOATHEB, NOT_STARTED);
+            m_pInstance->SetData(TYPE_LOATHEB, FAIL);
     }
 
     void JustSummoned(Creature* pSummoned)
@@ -97,10 +100,10 @@ struct MANGOS_DLL_DECL boss_loathebAI : public ScriptedAI
             pSummoned->AddThreat(pTarget);
     }
 
-    void SummonedCreatureJustDied(Creature* pSummoned)
+    void SummonedCreatureJustDied(Creature *pCreature)
     {
-        if (pSummoned->GetEntry() == NPC_SPORE && m_pInstance)
-            m_pInstance->SetSpecialAchievementCriteria(TYPE_ACHIEV_SPORE_LOSER, false);
+        if (m_pInstance)
+            m_pInstance->SetData(TYPE_ACHI_SPORE_LOSER, FAIL);
     }
 
     void UpdateAI(const uint32 uiDiff)
@@ -119,7 +122,7 @@ struct MANGOS_DLL_DECL boss_loathebAI : public ScriptedAI
             else
                 m_uiBerserkTimer -= uiDiff;
         }
-
+        
         // Inevitable Doom
         if (m_uiInevitableDoomTimer < uiDiff)
         {
@@ -170,7 +173,7 @@ struct MANGOS_DLL_DECL boss_loathebAI : public ScriptedAI
         }
         else
             m_uiDeathbloomTimer -= uiDiff;
-
+            
         DoMeleeAttackIfReady();
     }
 };
