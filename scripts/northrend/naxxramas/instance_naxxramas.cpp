@@ -326,7 +326,8 @@ void instance_naxxramas::ActivateAreaFissures(ChamberArea AreaNo)
 
         if (pPlayer)
             pPlayer->CastSpell(pPlayer, pFissure->GetGOInfo()->trap.spellId, true, NULL, NULL, pFissure->GetGUID());
-        pFissure->SendGameObjectCustomAnim(pFissure->GetGUID());
+        // Need to test xd
+        pFissure->SendGameObjectCustomAnim(pFissure->GetGUID(), 0);
     }
 }
 

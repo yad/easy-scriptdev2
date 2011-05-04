@@ -210,7 +210,8 @@ struct MANGOS_DLL_DECL boss_sapphironAI : public ScriptedAI
                 for (int32 i = 0; i < MAX_EFFECT_INDEX; ++i)
                 {
                     if (Aura *aur = holder->GetAuraByEffectIndex(SpellEffectIndex(i)))
-                        aur->SetAuraDuration(500);
+                        // need to test xd
+                        aur->SetAuraPeriodicTimer(500);
                 }
                 holder->SendAuraUpdate(false);
             }

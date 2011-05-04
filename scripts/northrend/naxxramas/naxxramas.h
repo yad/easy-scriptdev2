@@ -139,6 +139,8 @@ enum
     GO_CONS_PATH_EXIT_DOOR      = 181123,
     GO_CONS_GLUT_EXIT_DOOR      = 181120,
     GO_CONS_THAD_DOOR           = 181121,                   // Thaddius enc door
+    GO_CONS_NOX_TESLA_FEUGEN    = 181477,
+    GO_CONS_NOX_TESLA_STALAGG   = 181478,
 
     // Frostwyrm Lair
     GO_KELTHUZAD_WATERFALL_DOOR = 181225,                   // exit, open after sapphiron is dead
@@ -225,6 +227,9 @@ class MANGOS_DLL_DECL instance_naxxramas : public ScriptedInstance
         bool IsInRightSideGothArea(Unit* pUnit);
         Unit* SelectRandomTargetOnSide(bool bRight, const WorldObject & object);
 
+        // thaddius
+        void GetThadTeslaCreatures(std::list<uint64> &lList){ lList = m_lThadTeslaCoilList; };
+
         // kel
         void SetChamberCenterCoords(float fX, float fY, float fZ);
         void GetChamberCenterCoords(float &fX, float &fY, float &fZ) { fX = m_fChamberCenterX; fY = m_fChamberCenterY; fZ = m_fChamberCenterZ; }
@@ -268,7 +273,11 @@ class MANGOS_DLL_DECL instance_naxxramas : public ScriptedInstance
 
         uint64 m_uiPathExitDoorGUID;
         uint64 m_uiGlutExitDoorGUID;
+
         uint64 m_uiThadDoorGUID;
+        std::list<uint64> m_lThadTeslaCoilList;
+        uint64 m_uiThadNoxTeslaFeugenGUID;
+        uint64 m_uiThadNoxTeslaStalaggGUID;
 
         uint64 m_uiAnubDoorGUID;
         uint64 m_uiAnubGateGUID;
