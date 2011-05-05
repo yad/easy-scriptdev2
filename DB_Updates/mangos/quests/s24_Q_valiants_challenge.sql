@@ -31,6 +31,6 @@ INSERT INTO creature_template_addon (entry, mount) VALUES
 
 DELETE FROM creature_ai_scripts WHERE creature_id = 33707;
 INSERT INTO creature_ai_scripts VALUES
-(3370701, 33707, 4, 0, 100, 1, 0, 1, 1, 5, 11, 63010, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 'Argent champion - Cast Charge on Aggro'),
+(3370701, 33707, 4, 0, 100, 0, 0, 1, 1, 5, 11, 63010, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 'Argent champion - Cast Charge on Aggro'),
 (3370702, 33707, 6, 0, 100, 0, 0, 0, 0, 0, 33, 33708, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 'Argent champion - Kill credit');
 

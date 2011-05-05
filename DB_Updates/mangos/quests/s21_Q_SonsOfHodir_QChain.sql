@@ -162,7 +162,7 @@ UPDATE creature_template SET minlevel = 80, maxlevel = 80, minhealth = 37800, ma
 
 DELETE FROM creature_ai_scripts WHERE creature_id = 29352;
 INSERT INTO creature_ai_scripts VALUES
-(2935201,  29352, 6, 0, 100, 1, 0, 0, 0, 0, 33, 30221, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, "Kirkraag - Kill Credit upon death");
+(2935201,  29352, 6, 0, 100, 0, 0, 0, 0, 0, 33, 30221, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, "Kirkraag - Kill Credit upon death");
 
 
 
@@ -262,7 +262,7 @@ UPDATE creature_template SET faction_A = 190, faction_H = 190 WHERE entry = 3038
 
 DELETE FROM creature_ai_scripts WHERE id = 3038702;
 INSERT INTO creature_ai_scripts VALUES
-(3038702, 30387, 6, 0, 100, 1, 0, 0, 0, 0, 33, 30125, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, "Seething Revenant - Kill Credit upon death");
+(3038702, 30387, 6, 0, 100, 0, 0, 0, 0, 0, 33, 30125, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, "Seething Revenant - Kill Credit upon death");
 
 -- vehicle info:
 UPDATE creature_template SET faction_A = 1080, faction_H = 1080 WHERE entry = 30124;

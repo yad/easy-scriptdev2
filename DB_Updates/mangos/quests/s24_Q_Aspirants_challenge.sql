@@ -25,4 +25,4 @@ INSERT INTO creature_template_addon (entry, mount) VALUES
 
 DELETE FROM creature_ai_scripts WHERE id = 3344801;
 INSERT INTO creature_ai_scripts VALUES
-(3344801, 33448, 4, 0, 100, 1, 0, 1, 1, 5, 11, 63010, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 'Argent Valiant - Cast Charge on Aggro');
+(3344801, 33448, 4, 0, 100, 0, 0, 1, 1, 5, 11, 63010, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 'Argent Valiant - Cast Charge on Aggro');
