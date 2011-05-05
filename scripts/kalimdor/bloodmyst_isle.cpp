@@ -17,7 +17,7 @@
 /* ScriptData
 SDName: Bloodmyst_Isle
 SD%Complete: 80
-SDComment: Quest support: 9670, 9756(gossip items text needed).
+SDComment: Quest support: 9670, 9756(gossip items text needed), 9740.
 SDCategory: Bloodmyst Isle
 EndScriptData */
 
@@ -25,7 +25,6 @@ EndScriptData */
 mob_webbed_creature
 npc_captured_sunhawk_agent
 go_sunhawk_portal_controller
-npc_sungate_event_manager
 EndContentData */
 
 #include "precompiled.h"
@@ -136,9 +135,6 @@ bool GOUse_go_sunhawk_portal_controller(Player* pPlayer, GameObject* pGo)
 
     std::list<GameObject*>lControllers;
     GetGameObjectListWithEntryInGrid(lControllers, pGo, GO_PORTAL_CONTROLLER, DEFAULT_VISIBILITY_DISTANCE);
-
-    if (lControllers.empty())
-        return false;
 
     for (std::list<GameObject*>::iterator itr = lControllers.begin(); itr != lControllers.end(); ++itr)
     {
