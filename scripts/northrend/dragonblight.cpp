@@ -451,9 +451,9 @@ struct MANGOS_DLL_DECL npc_taunkale_refugeAI : public ScriptedAI
                     case 2:
                         m_creature->GetMotionMaster()->Clear();
                         if (m_creature->GetDistance(fWestwindRefugeGatePos[0][0], fWestwindRefugeGatePos[0][1], fWestwindRefugeGatePos[0][2]) > m_creature->GetDistance(fWestwindRefugeGatePos[1][0], fWestwindRefugeGatePos[1][1], fWestwindRefugeGatePos[1][2]))
-                            m_creature->GetMotionMaster()->MovePoint(POINT_REFUGEE_CAMP_EXIT, fWestwindRefugeGatePos[1][0], fWestwindRefugeGatePos[1][1], fWestwindRefugeGatePos[1][2]);
+                            m_creature->GetMotionMaster()->MovePoint(POINT_REFUGEE_CAMP_EXIT, fWestwindRefugeGatePos[1][0], fWestwindRefugeGatePos[1][1], fWestwindRefugeGatePos[1][2], true);
                         else
-                            m_creature->GetMotionMaster()->MovePoint(POINT_REFUGEE_CAMP_EXIT, fWestwindRefugeGatePos[0][0], fWestwindRefugeGatePos[0][1], fWestwindRefugeGatePos[0][2]);
+                            m_creature->GetMotionMaster()->MovePoint(POINT_REFUGEE_CAMP_EXIT, fWestwindRefugeGatePos[0][0], fWestwindRefugeGatePos[0][1], fWestwindRefugeGatePos[0][2], true);
                         m_bArming = false;
                         return;
                 }
@@ -708,108 +708,181 @@ enum
 
 struct MANGOS_DLL_DECL npc_inquisitor_hallardAI : public ScriptedAI
 {
-    npc_inquisitor_hallardAI(Creature* pCreature) : ScriptedAI(pCreature) { Reset(); }
-    
-    uint64 uiPlayerGUID;
-    uint64 uiEventTimer;
-    bool bEventStarted;
-    uint32 uiPhase;
+    npc_inquisitor_hallardAI(Creature* pCreature) : ScriptedAI(pCreature) 
+    {
+        m_uiMayorGodfreyGUID = 0;
+        Reset();
+    }
 
-     void Reset()
-     {
-         uiPlayerGUID = 0;
-         bEventStarted = false;
-         uiPhase = 0;
-         uiEventTimer = 2000;
-     }
-    
-     void UpdateAI(const uint32 uiDiff)
-     {
-         if(bEventStarted)
-         {
-            if (uiEventTimer <= uiDiff)
+    uint64 m_uiPlayerGUID;
+    uint64 m_uiMayorGodfreyGUID;
+    uint32 m_uiEventTimer;
+    bool m_bEventStarted;
+    uint32 m_uiPhase;
+
+
+    void Reset()
+    {
+        m_uiPlayerGUID = 0;
+        m_bEventStarted = false;
+        m_uiPhase = 0;
+        m_uiEventTimer = 2000;
+    }
+
+    void UpdateAI(const uint32 uiDiff)
+    {
+        if(m_bEventStarted)
+        {
+            if (m_uiEventTimer < uiDiff)
             {
-                switch(uiPhase)
+                Creature* pGodfrey = m_creature->GetMap()->GetCreature(m_uiMayorGodfreyGUID);
+                if (!pGodfrey)
+                    EnterEvadeMode();
+
+                switch(m_uiPhase)
                 {
-                    case 0: if(Player *pPlayer = m_creature->GetMap()->GetPlayer(uiPlayerGUID))
-                                  DoScriptText(HALLARD_SAY_1 ,m_creature, pPlayer);
-                            uiEventTimer = 4000;
-                            break;
-                    case 1: DoScriptText(HALLARD_SAY_2 ,m_creature); uiEventTimer = 2000; break;
-                    case 2: if(Creature *pGodfrey = GetClosestCreatureWithEntry(m_creature, NPC_MAYOR_GODFREY, 15.0f))	
-                                DoScriptText(GODFREY_EMOTE_1, pGodfrey);
-                            uiEventTimer = 2000; break;
-                    case 3: DoScriptText(HALLARD_SAY_3 ,m_creature); uiEventTimer = 4000; break;
-                    case 4: DoScriptText(HALLARD_SAY_4 ,m_creature); uiEventTimer = 2000; break;
-                    case 5: if(Creature *pGodfrey = GetClosestCreatureWithEntry(m_creature, NPC_MAYOR_GODFREY, 15.0f))	
-                                DoScriptText(GODFREY_EMOTE_2, pGodfrey);
-                            uiEventTimer = 3000; break;
-                    case 6: if(Creature *pGodfrey = GetClosestCreatureWithEntry(m_creature, NPC_MAYOR_GODFREY, 15.0f))	
-                                DoScriptText(GODFREY_SAY_1, pGodfrey);
-                            uiEventTimer = 5000; break;
-                    case 7: if(Creature *pGodfrey = GetClosestCreatureWithEntry(m_creature, NPC_MAYOR_GODFREY, 15.0f))	
-                                DoScriptText(GODFREY_SAY_2, pGodfrey);
-                            uiEventTimer = 5000; break;
-                    case 8: if(Creature *pGodfrey = GetClosestCreatureWithEntry(m_creature, NPC_MAYOR_GODFREY, 15.0f))	
-                                DoScriptText(GODFREY_SAY_3, pGodfrey);
-                            uiEventTimer = 5000; break;
-                    case 9:  DoScriptText(HALLARD_SAY_5 ,m_creature); uiEventTimer = 7000; break; 
-                    case 10: DoScriptText(HALLARD_SAY_6 ,m_creature); uiEventTimer = 8000; break;
-                    case 11: DoScriptText(HALLARD_SAY_7 ,m_creature); uiEventTimer = 9000; break;
-                    case 12: DoScriptText(HALLARD_SAY_8 ,m_creature); uiEventTimer = 9000; break;
-                    case 13: if(Creature *pGodfrey = GetClosestCreatureWithEntry(m_creature, NPC_MAYOR_GODFREY, 15.0f))	
-                                 m_creature->CastSpell(pGodfrey, SPELL_INQUISITOR_PENANCE,false);
-                             DoScriptText(HALLARD_SAY_9 ,m_creature); uiEventTimer = 4000; break;
-                    case 14: DoScriptText(HALLARD_SAY_10 ,m_creature); uiEventTimer = 4000; break;
-                    case 15: if(Creature *pGodfrey = GetClosestCreatureWithEntry(m_creature, NPC_MAYOR_GODFREY, 15.0f))	
-                                 m_creature->CastSpell(pGodfrey, SPELL_INQUISITOR_PENANCE,false);
-                             DoScriptText(HALLARD_SAY_9 ,m_creature); uiEventTimer = 4000; break;
-                    case 16: if(Creature *pGodfrey = GetClosestCreatureWithEntry(m_creature, NPC_MAYOR_GODFREY, 15.0f))	
-                                DoScriptText(GODFREY_SAY_4, pGodfrey);
-                            uiEventTimer = 2000; break;
-                    case 17: if(Creature *pGodfrey = GetClosestCreatureWithEntry(m_creature, NPC_MAYOR_GODFREY, 15.0f))	
-                                DoScriptText(GODFREY_SAY_5, pGodfrey);
-                            uiEventTimer = 5000; break;
-                    case 18: if(Creature *pGodfrey = GetClosestCreatureWithEntry(m_creature, NPC_MAYOR_GODFREY, 15.0f))	
-                                 m_creature->CastSpell(pGodfrey, SPELL_INQUISITOR_PENANCE,false);
-                             DoScriptText(HALLARD_SAY_9 ,m_creature); uiEventTimer = 4000; break;
-                    case 19: if(Creature *pGodfrey = GetClosestCreatureWithEntry(m_creature, NPC_MAYOR_GODFREY, 15.0f))	
-                                DoScriptText(GODFREY_SAY_4, pGodfrey);
-                            uiEventTimer = 4000; break;
-                    case 20: DoScriptText(HALLARD_SAY_11 ,m_creature); uiEventTimer = 7000; break;
-                    case 21: if(Creature *pGodfrey = GetClosestCreatureWithEntry(m_creature, NPC_MAYOR_GODFREY, 15.0f))	
-                                DoScriptText(GODFREY_SAY_6, pGodfrey);
-                            uiEventTimer = 7000; break;
-                    case 22: DoScriptText(HALLARD_SAY_12 ,m_creature); uiEventTimer = 10000; break;
-                    case 23: if(Creature *pGodfrey = GetClosestCreatureWithEntry(m_creature, NPC_MAYOR_GODFREY, 15.0f))	
-                                DoScriptText(GODFREY_SAY_7, pGodfrey);
-                            uiEventTimer = 8000; break;
-                    case 24: if(Creature *pGodfrey = GetClosestCreatureWithEntry(m_creature, NPC_MAYOR_GODFREY, 15.0f))	
-                                DoScriptText(GODFREY_SAY_8, pGodfrey);
-                            uiEventTimer = 8000; break;
-                    case 25: DoScriptText(HALLARD_SAY_13 ,m_creature); uiEventTimer = 10000; break;
-                    case 26: if(Creature *pGodfrey = GetClosestCreatureWithEntry(m_creature, NPC_MAYOR_GODFREY, 15.0f))	
-                                DoScriptText(GODFREY_SAY_9, pGodfrey);
-                            uiEventTimer = 7000; break;
-                    case 27: if(Creature *pGodfrey = GetClosestCreatureWithEntry(m_creature, NPC_MAYOR_GODFREY, 15.0f))	
-                                DoScriptText(GODFREY_SAY_10, pGodfrey);
-                            uiEventTimer = 9000; break;
-                    case 28: DoScriptText(HALLARD_SAY_14 ,m_creature); uiEventTimer = 10000; break;
-                    case 29: if(Player *pPlayer = m_creature->GetMap()->GetPlayer(uiPlayerGUID))
-                                DoScriptText(HALLARD_SAY_15 ,m_creature, pPlayer); uiEventTimer = 12000; break;
-                    case 30: DoScriptText(HALLARD_SAY_16 ,m_creature); 
-                             if(Player *pPlayer = m_creature->GetMap()->GetPlayer(uiPlayerGUID))
-                                pPlayer->AreaExploredOrEventHappens(QUEST_RIGHTEOUS_SERMON);
-                             m_creature->ForcedDespawn();
-                             break;
-                    
-
-                } 
-                uiPhase++;
-            } else uiEventTimer -= uiDiff;
-         }
-     }
-
+                    case 0:
+                        m_creature->SetFacingToObject(pGodfrey);
+                        if(Player *pPlayer = m_creature->GetMap()->GetPlayer(m_uiPlayerGUID))
+                            DoScriptText(HALLARD_SAY_1, m_creature, pPlayer);
+                        m_uiEventTimer = 4000;
+                        break;
+                    case 1:
+                        DoScriptText(HALLARD_SAY_2, m_creature);
+                        m_uiEventTimer = 2000;
+                        break;
+                    case 2:
+                        DoScriptText(GODFREY_EMOTE_1, pGodfrey);
+                        m_uiEventTimer = 2000;
+                        break;
+                    case 3:
+                        DoScriptText(HALLARD_SAY_3, m_creature);
+                        m_uiEventTimer = 4000;
+                        break;
+                    case 4:
+                        DoScriptText(HALLARD_SAY_4, m_creature);
+                        m_uiEventTimer = 2000;
+                        break;
+                    case 5:
+                        DoScriptText(GODFREY_EMOTE_2, pGodfrey);
+                        m_uiEventTimer = 3000;
+                        break;
+                    case 6:
+                        DoScriptText(GODFREY_SAY_1, pGodfrey);
+                        m_uiEventTimer = 5000;
+                        break;
+                    case 7:
+                        DoScriptText(GODFREY_SAY_2, pGodfrey);
+                        m_uiEventTimer = 5000;
+                        break;
+                    case 8:
+                        DoScriptText(GODFREY_SAY_3, pGodfrey);
+                        m_uiEventTimer = 5000;
+                        break;
+                    case 9:
+                        DoScriptText(HALLARD_SAY_5, m_creature);
+                        m_uiEventTimer = 7000;
+                        break; 
+                    case 10:
+                        DoScriptText(HALLARD_SAY_6, m_creature);
+                        m_uiEventTimer = 8000;
+                        break;
+                    case 11:
+                        DoScriptText(HALLARD_SAY_7, m_creature);
+                        m_uiEventTimer = 9000;
+                        break;
+                    case 12:
+                        DoScriptText(HALLARD_SAY_8, m_creature);
+                        m_uiEventTimer = 9000;
+                        break;
+                    case 13:
+                        DoCastSpellIfCan(pGodfrey, SPELL_INQUISITOR_PENANCE);
+                        DoScriptText(HALLARD_SAY_9, m_creature);
+                        m_uiEventTimer = 4000;
+                        break;
+                    case 14:
+                        DoScriptText(HALLARD_SAY_10,m_creature);
+                        m_uiEventTimer = 4000;
+                        break;
+                    case 15:
+                        DoCastSpellIfCan(pGodfrey, SPELL_INQUISITOR_PENANCE);
+                        DoScriptText(HALLARD_SAY_9, m_creature);
+                        m_uiEventTimer = 4000;
+                        break;
+                    case 16:
+                        DoScriptText(GODFREY_SAY_4, pGodfrey);
+                        m_uiEventTimer = 2000;
+                        break;
+                    case 17:
+                        DoScriptText(GODFREY_SAY_5, pGodfrey);
+                        m_uiEventTimer = 5000;
+                        break;
+                    case 18:
+                        DoCastSpellIfCan(pGodfrey, SPELL_INQUISITOR_PENANCE);
+                        DoScriptText(HALLARD_SAY_9, m_creature);
+                        m_uiEventTimer = 4000;
+                        break;
+                    case 19:
+                        DoScriptText(GODFREY_SAY_4, pGodfrey);
+                        m_uiEventTimer = 4000;
+                        break;
+                    case 20:
+                        DoScriptText(HALLARD_SAY_11, m_creature);
+                        m_uiEventTimer = 7000;
+                        break;
+                    case 21:
+                        DoScriptText(GODFREY_SAY_6, pGodfrey);
+                        m_uiEventTimer = 7000;
+                        break;
+                    case 22:
+                        DoScriptText(HALLARD_SAY_12, m_creature);
+                        m_uiEventTimer = 10000;
+                        break;
+                    case 23:
+                        DoScriptText(GODFREY_SAY_7, pGodfrey);
+                        m_uiEventTimer = 8000;
+                        break;
+                    case 24:
+                        DoScriptText(GODFREY_SAY_8, pGodfrey);
+                        m_uiEventTimer = 8000;
+                        break;
+                    case 25:
+                        DoScriptText(HALLARD_SAY_13, m_creature);
+                        m_uiEventTimer = 10000;
+                        break;
+                    case 26:
+                        DoScriptText(GODFREY_SAY_9, pGodfrey);
+                        m_uiEventTimer = 7000;
+                        break;
+                    case 27:
+                        DoScriptText(GODFREY_SAY_10, pGodfrey);
+                        m_uiEventTimer = 9000;
+                        break;
+                    case 28:
+                        DoScriptText(HALLARD_SAY_14, m_creature);
+                        m_uiEventTimer = 10000;
+                        break;
+                    case 29:
+                        if(Player *pPlayer = m_creature->GetMap()->GetPlayer(m_uiPlayerGUID))
+                        {
+                            m_creature->SetFacingToObject(pPlayer);
+                            DoScriptText(HALLARD_SAY_15, m_creature, pPlayer);
+                        }
+                        m_uiEventTimer = 12000;
+                        break;
+                    case 30:
+                        DoScriptText(HALLARD_SAY_16, m_creature); 
+                        if(Player *pPlayer = m_creature->GetMap()->GetPlayer(m_uiPlayerGUID))
+                            pPlayer->AreaExploredOrEventHappens(QUEST_RIGHTEOUS_SERMON);
+                        m_creature->ForcedDespawn();
+                        break;
+                }
+                m_uiPhase++;
+            }
+            else
+                m_uiEventTimer -= uiDiff;
+        }
+    }
 };
 
 CreatureAI* GetAI_npc_inquisitor_hallard(Creature* pCreature)
@@ -826,8 +899,10 @@ bool QuestAccept_npc_inquisitor_hallard(Player* pPlayer, Creature* pCreature, co
             if (npc_inquisitor_hallardAI* pHallardAI = dynamic_cast<npc_inquisitor_hallardAI*>(pCreature->AI()))
             {
                 pCreature->GetMotionMaster()->MovePoint(0, 3801.38f , -679.13f , 213.73f );
-                pHallardAI->bEventStarted = true;
-                pHallardAI->uiPlayerGUID = (pPlayer->GetGUID());
+                pHallardAI->m_bEventStarted = true;
+                pHallardAI->m_uiPlayerGUID = (pPlayer->GetGUID());
+                if (Creature *pGodfrey = GetClosestCreatureWithEntry(pCreature, NPC_MAYOR_GODFREY, DEFAULT_VISIBILITY_DISTANCE))
+                    pHallardAI->m_uiMayorGodfreyGUID = pGodfrey->GetGUID();
             }
         }
         break;
