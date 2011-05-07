@@ -144,8 +144,8 @@ UPDATE `creature_template` SET `spell1` = 56911 WHERE `entry` = 30494;
 DELETE FROM `creature_ai_scripts` WHERE `creature_id` IN (30680, 30681, 30682, 30453);
 INSERT INTO `creature_ai_scripts` VALUES
 (3068001, 30680, 0, 0, 100, 7, 5000, 10000, 5000, 10000, 11, 13737, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, "Onyx Brood General - Cast Mortal Strike"),
-(3068002, 30680, 4, 0, 100, 3, 0, 0, 0, 0, 11, 57740, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "Onyx Brood General - Cast Devotion Aura (10man)"),
-(3068003, 30680, 4, 0, 100, 5, 0, 0, 0, 0, 11, 58944, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "Onyx Brood General - Cast Devotion Aura (25man)"),
+(3068002, 30680, 4, 0, 100, 2, 0, 0, 0, 0, 11, 57740, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "Onyx Brood General - Cast Devotion Aura (10man)"),
+(3068003, 30680, 4, 0, 100, 4, 0, 0, 0, 0, 11, 58944, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "Onyx Brood General - Cast Devotion Aura (25man)"),
 (3068004, 30680, 2, 0, 100, 6, 1, 25, 0, 0, 11, 57742, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "Onyx Brood General - Cast Avenging Fury at 25% HP"),
 (3068005, 30680, 0, 0, 100, 3, 5000, 10000, 15000, 20000, 11, 57733, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, "Onyx Brood General - Cast Draconic Rage (10man)"),
 (3068006, 30680, 0, 0, 100, 5, 5000, 10000, 15000, 20000, 11, 58942, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, "Onyx Brood General - Cast Draconic Rage (25man)"),
