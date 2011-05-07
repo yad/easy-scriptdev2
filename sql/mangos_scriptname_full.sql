@@ -497,6 +497,7 @@ UPDATE instance_template SET ScriptName='instance_dire_maul' WHERE map=429;
 /* DRAGONBLIGHT */
 UPDATE creature_template SET ScriptName='npc_afrasastrasz' WHERE entry=27575;
 UPDATE creature_template SET ScriptName='npc_alexstrasza_wr_gate' WHERE entry=31333;
+UPDATE creature_template SET ScriptName='npc_destructive_ward' WHERE entry=27430;
 UPDATE creature_template SET ScriptName='npc_tariolstrasz' WHERE entry=26443;
 UPDATE creature_template SET ScriptName='npc_torastrasza' WHERE entry=26949;
 
@@ -883,6 +884,7 @@ UPDATE creature_template SET ScriptName='npc_henry_stern' WHERE entry=8696;
 
 /* RAZORFEN KRAUL */
 UPDATE instance_template SET ScriptName='instance_razorfen_kraul' WHERE map=47;
+UPDATE creature_template SET ScriptName='npc_willix_the_importer' WHERE entry=4508;
 
 /* REDRIDGE MOUNTAINS */
 UPDATE creature_template SET ScriptName='npc_corporal_keeshan' WHERE entry=349;
@@ -917,6 +919,14 @@ UPDATE creature_template SET ScriptName='boss_vectus' WHERE entry=10432;
 UPDATE creature_template SET ScriptName='boss_jandice_barov' WHERE entry=10503;
 UPDATE creature_template SET ScriptName='boss_kormok' WHERE entry=16118;
 UPDATE creature_template SET ScriptName='mob_illusionofjandicebarov' WHERE entry=11439;
+DELETE FROM scripted_event_id WHERE id IN (5618, 5619, 5620, 5621, 5622, 5623);
+INSERT INTO scripted_event_id VALUES
+(5618,'event_spell_gandling_shadow_portal'),
+(5619,'event_spell_gandling_shadow_portal'),
+(5620,'event_spell_gandling_shadow_portal'),
+(5621,'event_spell_gandling_shadow_portal'),
+(5622,'event_spell_gandling_shadow_portal'),
+(5623,'event_spell_gandling_shadow_portal');
 
 /* SEARING GORGE */
 UPDATE creature_template SET ScriptName='npc_kalaran_windblade' WHERE entry=8479;
@@ -1026,6 +1036,14 @@ UPDATE instance_template SET ScriptName='instance_sunken_temple' WHERE map=109;
 DELETE FROM scripted_areatrigger WHERE entry=4016;
 INSERT INTO scripted_areatrigger VALUES (4016,'at_shade_of_eranikus');
 UPDATE creature_template SET ScriptName='npc_malfurion_stormrage' WHERE entry=15362;
+DELETE FROM scripted_event_id WHERE id IN (3094,3095,3097,3098,3099,3100);
+INSERT INTO scripted_event_id VALUES
+(3094,'event_antalarion_statue_activation'),
+(3095,'event_antalarion_statue_activation'),
+(3097,'event_antalarion_statue_activation'),
+(3098,'event_antalarion_statue_activation'),
+(3099,'event_antalarion_statue_activation'),
+(3100,'event_antalarion_statue_activation');
 
 /* SUNWELL PLATEAU */
 UPDATE instance_template SET ScriptName='instance_sunwell_plateau' WHERE map=580;
