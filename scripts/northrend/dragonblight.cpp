@@ -953,6 +953,86 @@ CreatureAI* GetAI_npc_wintergarde_bomb(Creature* pCreature)
     return new npc_wintergarde_bombAI(pCreature);
 }
 
+enum
+{
+    SPELL_SUMMON_ANUBAR_INVADER     = 47303,
+    QUEST_THE_MIGHT_OF_THE_HORDE    = 12053,
+    SAY_PLAYER_PLANTED_STANDARD     = -1999888,
+    SAY_EMOTE_STANDARD_DESTROYED    = -1999889,
+    SAY_INVIDER_DESTROYED_STANDARD  = -1999890
+};
+
+struct MANGOS_DLL_DECL npc_warsong_battle_standartAI : public Scripted_NoMovementAI
+{
+    npc_warsong_battle_standartAI(Creature* pCreature) : Scripted_NoMovementAI(pCreature)
+    {
+        m_uiCycle = 0;
+        Reset();
+    }
+
+    uint8 m_uiCycle;
+    uint32 m_uiSummonTimer;
+    void Reset() 
+    {
+        m_uiSummonTimer = 5000;
+    }
+
+    void JustSummoned(Creature* pSummoned)
+    {
+        if (pSummoned->IsHostileTo(m_creature))
+            pSummoned->AI()->AttackStart(m_creature);
+    }
+
+    void JustDied(Unit* pKiller)
+    {
+        DoScriptText(SAY_INVIDER_DESTROYED_STANDARD, pKiller);
+        DoScriptText(SAY_EMOTE_STANDARD_DESTROYED, m_creature);
+    }
+
+    void UpdateAI(const uint32 uiDiff)
+    {
+        if (m_uiSummonTimer < uiDiff)
+        {
+            switch (m_uiCycle)
+            {
+                case 0:
+                    if (Player* pPlayer = m_creature->GetMap()->GetPlayer(m_creature->GetCreatorGuid()))
+                        DoScriptText(SAY_PLAYER_PLANTED_STANDARD, pPlayer);
+                    break;
+                case 1:
+                    DoCastSpellIfCan(m_creature, SPELL_SUMMON_ANUBAR_INVADER, CAST_TRIGGERED);
+                    break;
+                case 2:
+                    DoCastSpellIfCan(m_creature, SPELL_SUMMON_ANUBAR_INVADER, CAST_TRIGGERED);
+                    DoCastSpellIfCan(m_creature, SPELL_SUMMON_ANUBAR_INVADER, CAST_TRIGGERED);
+                    break;
+                case 3:
+                    DoCastSpellIfCan(m_creature, SPELL_SUMMON_ANUBAR_INVADER, CAST_TRIGGERED);
+                    break;
+                case 4:
+                    DoCastSpellIfCan(m_creature, SPELL_SUMMON_ANUBAR_INVADER, CAST_TRIGGERED);
+                    DoCastSpellIfCan(m_creature, SPELL_SUMMON_ANUBAR_INVADER, CAST_TRIGGERED);
+                    DoCastSpellIfCan(m_creature, SPELL_SUMMON_ANUBAR_INVADER, CAST_TRIGGERED);
+                    break;
+                case 5:
+                    if (Player* pPlayer = m_creature->GetMap()->GetPlayer(m_creature->GetCreatorGuid()))
+                        pPlayer->GroupEventHappens(QUEST_THE_MIGHT_OF_THE_HORDE, m_creature);
+                    m_creature->ForcedDespawn(5000);
+                return;
+            }
+            ++m_uiCycle;
+            m_uiSummonTimer = 10000;
+        }
+        else
+            m_uiSummonTimer -= uiDiff;
+    }    
+};
+
+CreatureAI* GetAI_npc_warsong_battle_standart(Creature* pCreature)
+{
+    return new npc_warsong_battle_standartAI(pCreature);
+}
+
 void AddSC_dragonblight()
 {
     Script* pNewScript;
@@ -1022,5 +1102,10 @@ void AddSC_dragonblight()
     pNewScript = new Script;
     pNewScript->Name = "npc_wintergarde_bomb";
     pNewScript->GetAI = &GetAI_npc_wintergarde_bomb;
+    pNewScript->RegisterSelf();
+
+    pNewScript = new Script;
+    pNewScript->Name = "npc_warsong_battle_standart";
+    pNewScript->GetAI = &GetAI_npc_warsong_battle_standart;
     pNewScript->RegisterSelf();
 }
