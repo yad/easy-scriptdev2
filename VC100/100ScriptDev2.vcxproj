@@ -719,6 +719,10 @@
     <ClCompile Include="..\scripts\world\npc_professions.cpp" />
     <ClCompile Include="..\scripts\world\npcs_special.cpp" />
     <ClCompile Include="..\scripts\world\spell_scripts.cpp" />
+    <ClCompile Include="..\scripts\world\worldmap_eastern_kingdoms.cpp" />
+    <ClCompile Include="..\scripts\world\worldmap_kalimdor.cpp" />
+    <ClCompile Include="..\scripts\world\worldmap_northrend.cpp" />
+    <ClCompile Include="..\scripts\world\worldmap_outland.cpp" />
     <ClCompile Include="..\include\precompiled.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
@@ -810,6 +814,10 @@
     <ClInclude Include="..\scripts\outland\tempest_keep\arcatraz\arcatraz.h" />
     <ClInclude Include="..\scripts\outland\tempest_keep\the_eye\the_eye.h" />
     <ClInclude Include="..\scripts\outland\tempest_keep\the_mechanar\mechanar.h" />
+    <ClInclude Include="..\scripts\world\worldmap_eastern_kingdoms.h" />
+    <ClInclude Include="..\scripts\world\worldmap_kalimdor.h" />
+    <ClInclude Include="..\scripts\world\worldmap_northrend.h" />
+    <ClInclude Include="..\scripts\world\worldmap_outland.h" />
     <ClInclude Include="..\include\precompiled.h" />
     <ClInclude Include="..\include\sc_creature.h" />
     <ClInclude Include="..\include\sc_gossip.h" />

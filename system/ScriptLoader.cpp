@@ -39,6 +39,9 @@ extern void AddSC_item_scripts();
 extern void AddSC_npc_professions();
 extern void AddSC_npcs_special();
 extern void AddSC_spell_scripts();
+extern void AddSC_worldmap_eastern_kingdoms();
+extern void AddSC_worldmap_kalimdor();
+extern void AddSC_worldmap_outland();
 
 //eastern kingdoms
 extern void AddSC_blackrock_depths();                       //blackrock_depths
@@ -570,6 +573,9 @@ void AddScripts()
     AddSC_npc_professions();
     AddSC_npcs_special();
     AddSC_spell_scripts();
+    AddSC_worldmap_eastern_kingdoms();
+    AddSC_worldmap_kalimdor();
+    AddSC_worldmap_outland();
 
     //eastern kingdoms
     AddSC_blackrock_depths();                               //blackrock_depths

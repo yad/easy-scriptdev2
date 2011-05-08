@@ -1302,6 +1302,18 @@
     <ClCompile Include="..\scripts\world\spell_scripts.cpp">
       <Filter>scripts\world</Filter>
     </ClCompile>
+    <ClCompile Include="..\scripts\world\worldmap_eastern_kingdoms.cpp">
+      <Filter>scripts\world</Filter>
+    </ClCompile>
+    <ClCompile Include="..\scripts\world\worldmap_kalimdor.cpp">
+      <Filter>scripts\world</Filter>
+    </ClCompile>
+    <ClCompile Include="..\scripts\world\worldmap_northrend.cpp">
+      <Filter>scripts\world</Filter>
+    </ClCompile>
+    <ClCompile Include="..\scripts\world\worldmap_outland.cpp">
+      <Filter>scripts\world</Filter>
+    </ClCompile>
     <ClCompile Include="..\include\precompiled.cpp">
       <Filter>include</Filter>
     </ClCompile>
@@ -2234,6 +2246,18 @@
     </ClInclude>
     <ClInclude Include="..\scripts\outland\tempest_keep\the_mechanar\mechanar.h">
       <Filter>scripts\outland\tempest_keep\the_mechanar</Filter>
+    </ClInclude>
+    <ClInclude Include="..\scripts\world\worldmap_eastern_kingdoms.h">
+      <Filter>scripts\world</Filter>
+    </ClInclude>
+    <ClInclude Include="..\scripts\world\worldmap_kalimdor.h">
+      <Filter>scripts\world</Filter>
+    </ClInclude>
+    <ClInclude Include="..\scripts\world\worldmap_northrend.h">
+      <Filter>scripts\world</Filter>
+    </ClInclude>
+    <ClInclude Include="..\scripts\world\worldmap_outland.h">
+      <Filter>scripts\world</Filter>
     </ClInclude>
     <ClInclude Include="..\include\precompiled.h">
       <Filter>include</Filter>
