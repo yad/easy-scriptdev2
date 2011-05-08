@@ -329,62 +329,56 @@ CreatureAI* GetAI_mob_crusader_trigger(Creature* pCreature)
 ######*/
 enum 
 {
-    NPC_DECAYING_GHOUL              = 28565,
-    NPC_GHOUL_FEEDING_KC            = 28591,
-    QUEST_FEEDIN_DA_GOOLZ           = 12652
- 
+    SPELL_ATTRACT_GHOUL     = 52037,
+    POINT_NEAR_BOWL         = 0,
+    SPELL_KILL_KREDIT       = 52030,
+    SPELL_KC_SCRIPT_EFFECT  = 52038, // not used
+    SPELL_KC                = 52039  // not used
 };
 
-struct MANGOS_DLL_DECL npc_ghoul_feeding_bunnyAI : public ScriptedAI
+struct MANGOS_DLL_DECL npc_deacying_ghoulAI : public ScriptedAI
 {
-    npc_ghoul_feeding_bunnyAI(Creature* pCreature) : ScriptedAI(pCreature) { Reset(); }
+    npc_deacying_ghoulAI(Creature* pCreature) : ScriptedAI(pCreature) {Reset();}
 
-    uint32 uiKaboomTimer;
-    uint32 uiCheckTimer;
+    uint64 m_uiPlayerGUID;
 
-    void Reset() 
+    void Reset()
     {
-        uiCheckTimer  = 1000;
-        uiKaboomTimer = 11000;
+        m_uiPlayerGUID = 0;
     }
 
-    void UpdateAI(const uint32 uiDiff)
-     {
-            if (uiCheckTimer <= uiDiff)
-            {
-                if(Creature *pGhoul = GetClosestCreatureWithEntry(m_creature, NPC_DECAYING_GHOUL, 20.0f))
-                    {
-                        if(pGhoul->isAlive())
-                        {
-                            pGhoul->GetMotionMaster()->MovePoint(0, m_creature->GetPositionX(), m_creature->GetPositionY(), m_creature->GetPositionZ());
-                            
+    void SpellHit(Unit* pCaster, const SpellEntry* pSpell)
+    {
+        if (pSpell->Id == SPELL_ATTRACT_GHOUL && pCaster->GetTypeId() == TYPEID_UNIT)
+        {
+            if (Player* pPlayer = m_creature->GetMap()->GetPlayer(((Creature*)pCaster)->GetCreatorGuid()))
+                m_uiPlayerGUID = pPlayer->GetGUID();
+            SetCombatMovement(false);
+            float fDestX, fDestY, fDestZ;
+            pCaster->GetNearPoint(pCaster, fDestX, fDestY, fDestZ, pCaster->GetObjectBoundingRadius(), 4.0f, pCaster->GetAngle(m_creature));
+            m_creature->GetMotionMaster()->Clear();
+            m_creature->RemoveSplineFlag(SPLINEFLAG_WALKMODE);
+            m_creature->GetMotionMaster()->MovePoint(POINT_NEAR_BOWL, fDestX, fDestY, fDestZ);
+        }
+    }
 
-                        }    
-                    }
+    void MovementInform(uint32 uiType, uint32 uiPointId)
+    {
+        if (uiType != POINT_MOTION_TYPE)
+            return;
 
-            } else uiCheckTimer -= uiDiff;
-
-            if( uiKaboomTimer <= uiDiff)
-            {
-                if(Player *pPlayer = m_creature->GetMap()->GetPlayer(m_creature->GetCreatorGuid()))
-                {
-                    if(pPlayer->GetQuestStatus(QUEST_FEEDIN_DA_GOOLZ) == QUEST_STATUS_INCOMPLETE)
-                    {                        
-                         pPlayer->KilledMonsterCredit(NPC_GHOUL_FEEDING_KC);
-                    }
-                }
-                m_creature->ForcedDespawn();
-                if(Creature *pGhoul = GetClosestCreatureWithEntry(m_creature, NPC_DECAYING_GHOUL, 10.0f))
-                {
-                    pGhoul->ForcedDespawn();
-                }
-            }
-            else uiKaboomTimer -= uiDiff;
-     }    
+        if (uiPointId == POINT_NEAR_BOWL)
+        {
+            m_creature->HandleEmote(EMOTE_ONESHOT_EAT);
+            m_creature->ForcedDespawn(3000);
+            if (Player* pPlayer = m_creature->GetMap()->GetPlayer(m_uiPlayerGUID))
+                DoCastSpellIfCan(pPlayer, SPELL_KILL_KREDIT);
+        }
+    }
 };
-CreatureAI* GetAI_npc_ghoul_feeding_bunny(Creature* pCreature)
+CreatureAI* GetAI_npc_deacying_ghoul(Creature* pCreature)
 {
-    return new npc_ghoul_feeding_bunnyAI(pCreature);
+    return new npc_deacying_ghoulAI(pCreature);
 }
 
 void AddSC_zuldrak()
@@ -408,7 +402,7 @@ void AddSC_zuldrak()
     pNewScript->RegisterSelf();
 
     pNewScript = new Script;
-    pNewScript->Name = "npc_ghoul_feeding_bunny";
-    pNewScript->GetAI = &GetAI_npc_ghoul_feeding_bunny;
+    pNewScript->Name = "npc_deacying_ghoul";
+    pNewScript->GetAI = &GetAI_npc_deacying_ghoul;
     pNewScript->RegisterSelf();
 }
