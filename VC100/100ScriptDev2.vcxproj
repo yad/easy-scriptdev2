@@ -408,6 +408,7 @@
     <ClCompile Include="..\scripts\kalimdor\moonglade.cpp" />
     <ClCompile Include="..\scripts\kalimdor\mulgore.cpp" />
     <ClCompile Include="..\scripts\kalimdor\orgrimmar.cpp" />
+    <ClCompile Include="..\scripts\kalimdor\razorfen_kraul\razorfen_kraul.cpp" />
     <ClCompile Include="..\scripts\kalimdor\silithus.cpp" />
     <ClCompile Include="..\scripts\kalimdor\stonetalon_mountains.cpp" />
     <ClCompile Include="..\scripts\kalimdor\tanaris.cpp" />
