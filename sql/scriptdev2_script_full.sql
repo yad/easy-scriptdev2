@@ -3,7 +3,7 @@
 --
 
 DELETE FROM sd2_db_version;
-INSERT INTO sd2_db_version (version) VALUES ('ScriptDev2 (for MaNGOS 11316+) ');
+INSERT INTO sd2_db_version (version) VALUES ('ScriptDev2 (for MaNGOS 11432+) ');
 
 --
 -- Below contains data for table `script_texts` mainly used in C++ parts.
@@ -703,7 +703,18 @@ INSERT INTO script_texts (entry,content_default,sound,type,language,emote,commen
 (-1000653,'Hey... me not feel so good.',0,0,0,0,'dragonmaw peon SAY_PEON_2'),
 (-1000654,'You is bad orc... baaad... or... argh!',0,0,0,0,'dragonmaw peon SAY_PEON_3'),
 (-1000655,'Time for eating!?',0,0,0,71,'dragonmaw peon SAY_PEON_4'),
-(-1000656,'It put the mutton in the stomach!',0,0,0,71,'dragonmaw peon SAY_PEON_5');
+(-1000656,'It put the mutton in the stomach!',0,0,0,71,'dragonmaw peon SAY_PEON_5'),
+
+(-1000657,'Let\'s get the hell out of here.',0,0,0,5,'helice SAY_HELICE_ACCEPT'),
+(-1000658,'Listen up, Venture Company goons! Rule #1: Never keep the prisoner near the explosives.',0,0,0,25,'helice SAY_HELICE_EXPLOSIVES_1'),
+(-1000659,'Or THIS is what you get.',0,0,0,0,'helice SAY_HELICE_EXPLODE_1'),
+(-1000660,'It\'s getting a little hot over here. Shall we move on?',0,0,0,11,'helice SAY_HELICE_MOVE_ON'),
+(-1000661,'Oh, look, it\'s another cartload of explosives! Let\'s help them dispose of it.',0,0,0,25,'helice SAY_HELICE_EXPLOSIVES_2'),
+(-1000662,'You really shouldn\'t play with this stuff. Someone could get hurt.',0,0,0,5,'helice SAY_HELICE_EXPLODE_2'),
+(-1000663,'We made it! Thank you for getting me out of that hell hole. Tell Hemet to expect me!',0,0,0,4,'helice SAY_HELICE_COMPLETE'),
+
+(-1000664,'The Destructive Ward gains in power.',0,5,0,0,'destructive ward SAY_WARD_POWERUP'),
+(-1000665,'The Destructive Ward is fully charged!',0,5,0,0,'destructive ward SAY_WARD_CHARGED');
 
 -- -1 033 000 SHADOWFANG KEEP
 INSERT INTO script_texts (entry,content_default,sound,type,language,emote,comment) VALUES
@@ -765,6 +776,20 @@ INSERT INTO script_texts (entry,content_default,sound,type,language,emote,commen
 (-1043019,'Deal with this $N! I need to prepare to awake Naralex!',0,0,0,0,'Disciple of Naralex - SAY_AGGRO_3');
 
 -- -1 047 000 RAZORFEN KRAUL
+INSERT INTO script_texts (entry,content_default,sound,type,LANGUAGE,emote,comment) VALUES
+(-1047000,'Woo hoo! Finally getting out of here. It\'s going to be rough though. Keep your eyes peeled for trouble.',0,0,0,0,'willix SAY_READY'),
+(-1047001,'Up there is where Charlga Razorflank resides. Blasted old crone.',0,0,0,25,'willix SAY_1'),
+(-1047002,'There\'s blueleaf tuber in this trench! It\'s like gold waiting to be mined I tell you!',0,0,0,0,'willix SAY_2'),
+(-1047003,'There could be danger around every corner here.',0,0,0,0,'willix SAY_3'),
+(-1047004,'I don\'t see how these foul animals live in this place... sheesh it smells!',0,0,0,0,'willix SAY_4'),
+(-1047005,'I think I see a way for us to get out of this big twisted mess of a bramble.',0,0,0,0,'willix SAY_5'),
+(-1047006,'Glad to be out of that wretched trench. Not much nicer up here though!',0,0,0,0,'willix SAY_6'),
+(-1047007,'Finally! I\'ll be glad to get out of this place.',0,0,0,0,'willix SAY_7'),
+(-1047008,'I think I\'ll rest a moment and catch my breath before heading back to Ratchet. Thanks for all the help!',0,0,0,0,'willix SAY_END'),
+(-1047009,'$N heading this way fast! To arms!',0,0,0,0,'willix SAY_AGGRO_1'),
+(-1047010,'Eek! $N coming right at us!',0,0,0,0,'willix SAY_AGGRO_2'),
+(-1047011,'Egads! $N on me!',0,0,0,0,'willix SAY_AGGRO_3'),
+(-1047012,'Help! Get this $N off of me!',0,0,0,0,'willix SAY_AGGRO_4');
 
 -- -1 048 000 BLACKFATHOM DEEPS
 
@@ -817,7 +842,9 @@ INSERT INTO script_texts (entry,content_default,sound,type,language,emote,commen
 (-1109001,'Be steadfast, champion. I know why it is that you are here and I know what it is that you seek. Eranikus will not give up the shard freely. He has been twisted... twisted by the same force that you seek to destroy.',0,0,0,0,'malfurion stormrge SAY_MALFURION1'),
 (-1109002,'Are you really surprised? Is it hard to believe that the power of an Old God could reach even inside the Dream? It is true - Eranikus, Tyrant of the Dream, wages a battle against us all. The Nightmare follows in his wake of destruction.',0,0,0,0,'malfurion stormrge SAY_MALFURION2'),
 (-1109003,'Understand this, Eranikus wants nothing more than to be brought to Azeroth from the Dream. Once he is out, he will stop at nothing to destroy my physical manifestation. This, however, is the only way in which you could recover the scepter shard.',0,0,0,0,'malfurion stormrge SAY_MAFLURION3'),
-(-1109004,'You will bring him back into this world, champion.',0,0,0,0,'malfurion Stormrge SAY_MALFURION4');
+(-1109004,'You will bring him back into this world, champion.',0,0,0,0,'malfurion Stormrge SAY_MALFURION4'),
+
+(-1109005,'The shield be down! Rise up Atal\'ai! Rise up!',5861,6,0,0,'jammalan SAY_JAMMALAN_INTRO');
 
 -- -1 129 000 RAZORFEN DOWNS
 INSERT INTO script_texts (entry,content_default,sound,type,language,emote,comment) VALUES
@@ -995,7 +1022,11 @@ INSERT INTO script_texts (entry,content_default,sound,type,language,emote,commen
 (-1329012,'May this prisoner\'s death serve as a warning. None shall defy the Scourge and live!',0,6,0,0,'baron rivendare SAY_ANNOUNCE_RUN_FAIL'),
 (-1329013,'So you see fit to toy with the Lich King\'s creations? Ramstein, be sure to give the intruders a proper greeting.',0,6,0,0,'baron rivendare SAY_ANNOUNCE_RAMSTEIN'),
 (-1329014,'Time to take matters into my own hands. Come. Enter my domain and challenge the might of the Scourge!',0,6,0,0,'baron rivendare SAY_UNDEAD_DEFEAT'),
-(-1329015,'You did it... you\'ve slain Baron Rivendare! The Argent Dawn shall hear of your valiant deeds!',0,0,0,0,'ysida SAY_EPILOGUE');
+(-1329015,'You did it... you\'ve slain Baron Rivendare! The Argent Dawn shall hear of your valiant deeds!',0,0,0,0,'ysida SAY_EPILOGUE'),
+
+(-1329016,'Today you have unmade what took me years to create! For this you shall all die by my hand!',0,1,0,0,'dathrohan SAY_AGGRO'),
+(-1329017,'You fools think you can defeat me so easily? Face the true might of the Nathrezim!',0,1,0,0,'dathrohan SAY_TRANSFORM'),
+(-1329018,'Damn you mortals! All my plans of revenge, all my hate... all burned to ash...',0,0,0,0,'dathrohan SAY_DEATH');
 
 -- -1 349 000 MARAUDON
 
@@ -1036,7 +1067,9 @@ INSERT INTO script_texts (entry,content_default,sound,type,language,emote,commen
 -- -1 429 000 DIRE MAUL
 INSERT INTO script_texts (entry,content_default,sound,type,language,emote,comment) VALUES
 (-1429000,'The demon is loose! Quickly we must restrain him!',0,6,0,0,'highborne summoner SAY_FREE_IMMOLTHAR'),
-(-1429001,'Who dares disrupt the sanctity of Eldre\'Thalas? Face me, cowards!',0,6,0,0,'prince tortheldrin SAY_KILL_IMMOLTHAR');
+(-1429001,'Who dares disrupt the sanctity of Eldre\'Thalas? Face me, cowards!',0,6,0,0,'prince tortheldrin SAY_KILL_IMMOLTHAR'),
+
+(-1429002,'At last... Freed from his cursed grasp!',0,6,0,0,'old ironbark SAY_IRONBARK_REDEEM');
 
 -- -1 469 000 BLACKWING LAIR
 INSERT INTO script_texts (entry,content_default,sound,type,language,emote,comment) VALUES
@@ -1108,7 +1141,7 @@ INSERT INTO script_texts (entry,content_default,sound,type,language,emote,commen
 (-1509019,'My powers are renewed!',8595,1,0,0,'ossirian SAY_SURPREME2'),
 (-1509020,'My powers return!',8596,1,0,0,'ossirian SAY_SURPREME3'),
 (-1509021,'Protect the city at all costs!',8597,1,0,0,'ossirian SAY_RAND_INTRO1'),
-(-1509022,'The walls have been breached!',8599,1,0,0,'ossirian SAY_RAND_INTRO2'),
+(-1509022,'The walls have been breached!',8599,6,0,0,'ossirian SAY_RAND_INTRO2'),
 (-1509023,'To your posts. Defend the city.',8600,1,0,0,'ossirian SAY_RAND_INTRO3'),
 (-1509024,'Tresspassers will be terminated.',8601,1,0,0,'ossirian SAY_RAND_INTRO4'),
 (-1509025,'Sands of the desert rise and block out the sun!',8598,1,0,0,'ossirian SAY_AGGRO'),
@@ -3462,13 +3495,13 @@ INSERT INTO gossip_texts (entry,content_default,comment) VALUES
 (-3000107,'[PH] Get Presicion Bombs','greer orehammer GOSSIP_ITEM_GET_BOMBS'),
 (-3000108,'[PH] Start bombing mission','greer orehammer GOSSIP_ITEM_FLIGHT');
 
--- -3 090 000 GNOMEREGAN
-INSERT INTO gossip_texts (entry,content_default,comment) VALUES
-(-3090000,'I am ready to begin.','emi shortfuse GOSSIP_ITEM_START');
-
 -- -3 043 000 WAILING CAVERNS
 INSERT INTO gossip_texts (entry,content_default,comment) VALUES
 (-3043000,'Let the event begin!','Disciple of Naralex - GOSSIP_ITEM_BEGIN');
+
+-- -3 090 000 GNOMEREGAN
+INSERT INTO gossip_texts (entry,content_default,comment) VALUES
+(-3090000,'I am ready to begin.','emi shortfuse GOSSIP_ITEM_START');
 
 -- -3 409 000 MOLTEN CORE
 INSERT INTO gossip_texts (entry,content_default,comment) VALUES
@@ -5217,6 +5250,31 @@ INSERT INTO script_waypoint VALUES
 (28217,23, 5638.541504, 4594.924805, -137.495117, 0, 'summon'),
 (28217,24, 5638.061523, 4579.945801, -138.029465, 0, '');
 
+DELETE FROM script_waypoint WHERE entry=28787;
+INSERT INTO script_waypoint (entry, pointid, location_x, location_y, location_z, waittime, point_comment) VALUES
+(28787, 1, 5913.516113, 5379.034668, -98.896118, 0, ''),
+(28787, 2, 5917.750977, 5374.519043, -98.869781, 0, 'SAY_HELICE_EXPLOSIVES_1'),
+(28787, 3, 5926.428711, 5372.145020, -98.884453, 0, ''),
+(28787, 4, 5929.214844, 5377.803223, -99.020065, 0, ''),
+(28787, 5, 5927.621582, 5378.564941, -99.047890, 0, ''),
+(28787, 6, 5917.622070, 5383.494629, -106.310204, 0, ''),
+(28787, 7, 5908.991211, 5387.655762, -106.310204, 0, ''),
+(28787, 8, 5906.287109, 5390.496582, -106.041801, 0, ''),
+(28787, 9, 5902.415039, 5399.741211, -99.306595, 0, ''),
+(28787, 10, 5901.444336, 5404.593262, -96.759636, 0, ''),
+(28787, 11, 5897.860352, 5406.656250, -96.029709, 0, ''),
+(28787, 12, 5892.254395, 5401.291504, -95.848808, 0, ''),
+(28787, 13, 5887.421875, 5386.701172, -95.400146, 0, 'SAY_HELICE_EXPLOSIVES_2'),
+(28787, 14, 5883.308105, 5385.057617, -94.423698, 0, ''),
+(28787, 15, 5879.180664, 5375.897461, -95.088066, 0, ''),
+(28787, 16, 5872.613281, 5363.473633, -97.703575, 0, ''),
+(28787, 17, 5857.971191, 5354.929688, -98.586090, 0, ''),
+(28787, 18, 5848.729004, 5345.326660, -99.428978, 0, ''),
+(28787, 19, 5842.330566, 5335.018555, -100.421455, 0, ''),
+(28787, 20, 5832.164551, 5323.145020, -98.703285, 0, ''),
+(28787, 21, 5824.738770, 5315.712891, -97.758018, 0, ''),
+(28787, 22, 5819.650879, 5305.409668, -97.481796, 10000, 'SAY_HELICE_COMPLETE');
+
 DELETE FROM script_waypoint WHERE entry=28912;
 INSERT INTO script_waypoint VALUES
 (28912, 0, 1653.518, -6038.374, 127.585, 0, 'Jump off'),
@@ -5511,5 +5569,55 @@ INSERT INTO script_waypoint (entry, pointid, location_x, location_y, location_z,
 (5644, 17, -477.146, 1625.69, 98.342, 0, ''),
 (5644, 18, -475.815, 1615.815, 97.07, 0, ''),
 (5644, 19, -474.329, 1590.01, 94.4982, 0, '');
+
+DELETE FROM script_waypoint WHERE entry=4508;
+INSERT INTO script_waypoint VALUES
+(4508, 0, 2194.38, 1791.65, 65.48, 5000, ''),
+(4508, 1, 2188.56, 1805.87, 64.45, 0, ''),
+(4508, 2, 2186.2, 1836.278, 59.859, 5000, 'SAY_WILLIX_1'),
+(4508, 3, 2163.27, 1851.67, 56.73, 0, ''),
+(4508, 4, 2140.22, 1845.02, 48.32, 0, ''),
+(4508, 5, 2131.5, 1804.29, 46.85, 0, ''),
+(4508, 6, 2096.18, 1789.03, 51.13, 3000, 'SAY_WILLIX_2'),
+(4508, 7, 2074.46, 1780.09, 55.64, 0, ''),
+(4508, 8, 2055.12, 1768.67, 58.46, 0, ''),
+(4508, 9, 2037.83, 1748.62, 60.27, 5000, 'SAY_WILLIX_3'),
+(4508, 10, 2037.51, 1728.94, 60.85, 0, ''),
+(4508, 11, 2044.7, 1711.71, 59.71, 0, ''),
+(4508, 12, 2067.66, 1701.84, 57.77, 0, ''),
+(4508, 13, 2078.91, 1704.54, 56.77, 0, ''),
+(4508, 14, 2097.65, 1715.24, 54.74, 3000, 'SAY_WILLIX_4'),
+(4508, 15, 2106.44, 1720.98, 54.41, 0, ''),
+(4508, 16, 2123.96, 1732.56, 52.27, 0, ''),
+(4508, 17, 2153.82, 1728.73, 51.92, 0, ''),
+(4508, 18, 2163.49, 1706.33, 54.42, 0, ''),
+(4508, 19, 2158.75, 1695.98, 55.70, 0, ''),
+(4508, 20, 2142.6, 1680.72, 58.24, 0, ''),
+(4508, 21, 2118.31, 1671.54, 59.21, 0, ''),
+(4508, 22, 2086.02, 1672.04, 61.24, 0, ''),
+(4508, 23, 2068.81, 1658.93, 61.24, 0, ''),
+(4508, 24, 2062.82, 1633.31, 64.35, 0, ''),
+(4508, 25, 2060.92, 1600.11, 62.41, 3000, 'SAY_WILLIX_5'),
+(4508, 26, 2063.05, 1589.16, 63.26, 0, ''),
+(4508, 27, 2063.67, 1577.22, 65.89, 0, ''),
+(4508, 28, 2057.94, 1560.68, 68.40, 0, ''),
+(4508, 29, 2052.56, 1548.05, 73.35, 0, ''),
+(4508, 30, 2045.22, 1543.4, 76.65, 0, ''),
+(4508, 31, 2034.35, 1543.01, 79.70, 0, ''),
+(4508, 32, 2029.95, 1542.94, 80.79, 0, ''),
+(4508, 33, 2021.34, 1538.67, 80.8, 0, 'SAY_WILLIX_6'),
+(4508, 34, 2012.45, 1549.48, 79.93, 0, ''),
+(4508, 35, 2008.05, 1554.92, 80.44, 0, ''),
+(4508, 36, 2006.54, 1562.72, 81.11, 0, ''),
+(4508, 37, 2003.8, 1576.43, 81.57, 0, ''),
+(4508, 38, 2000.57, 1590.06, 80.62, 0, ''),
+(4508, 39, 1998.96, 1596.87, 80.22, 0, ''),
+(4508, 40, 1991.19, 1600.82, 79.39, 0, ''),
+(4508, 41, 1980.71, 1601.44, 79.77, 0, ''),
+(4508, 42, 1967.22, 1600.18, 80.62, 0, ''),
+(4508, 43, 1956.43, 1596.97, 81.75, 0, ''),
+(4508, 44, 1954.87, 1592.02, 82.18, 3000, 'SAY_WILLIX_7'),
+(4508, 45, 1948.35, 1571.35, 80.96, 30000, 'SAY_WILLIX_END'),
+(4508, 46, 1947.02, 1566.42, 81.80, 30000, '');
 
 -- EOF

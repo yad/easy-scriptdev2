@@ -42,8 +42,6 @@ instance_stratholme::instance_stratholme(Map* pMap) : ScriptedInstance(pMap),
     m_auiRivendareDoorGUID(0),
     m_uiYsidaCageGUID(0),
 
-    m_bIsSlaughterhouseGateOpened(false),
-
     m_uiBaronGUID(0),
     m_uiYsidaTriggerGUID(0),
 
@@ -72,7 +70,6 @@ bool instance_stratholme::StartSlaugtherSquare()
             DoScriptText(SAY_ANNOUNCE_RIVENDARE, pBaron);
 
         DoUseDoorOrButton(m_uiPortGauntletGUID);
-        m_bIsSlaughterhouseGateOpened = true;
         DoUseDoorOrButton(m_uiPortSlaugtherGUID);
 
         debug_log("SD2: Instance Stratholme: Open slaugther square.");
@@ -138,10 +135,7 @@ void instance_stratholme::OnObjectCreate(GameObject* pGo)
         case GO_PORT_GAUNTLET:
             m_uiPortGauntletGUID = pGo->GetGUID();
             if (m_auiEncounter[TYPE_BARONESS] == SPECIAL && m_auiEncounter[TYPE_NERUB] == SPECIAL && m_auiEncounter[TYPE_PALLID] == SPECIAL)
-            {
-                m_bIsSlaughterhouseGateOpened = true;
                 pGo->SetGoState(GO_STATE_ACTIVE);
-            }
             break;
         case GO_PORT_SLAUGTHER:
             m_uiPortSlaugtherGUID = pGo->GetGUID();
@@ -208,7 +202,6 @@ void instance_stratholme::SetData(uint32 uiType, uint32 uiData)
                 {
                     m_uiSlaugtherSquareTimer = 20000;       // TODO - unknown, also possible that this is not the very correct place..
                     DoUseDoorOrButton(m_uiPortGauntletGUID);
-                    m_bIsSlaughterhouseGateOpened = false;
                 }
 
                 uint32 uiCount = m_sAbomnationGUID.size();
@@ -251,10 +244,7 @@ void instance_stratholme::SetData(uint32 uiType, uint32 uiData)
             }
             // After fail aggroing Ramstein means wipe on Ramstein, so close door again
             if (uiData == IN_PROGRESS && m_auiEncounter[uiType] == FAIL)
-            {
                 DoUseDoorOrButton(m_uiPortGauntletGUID);
-                m_bIsSlaughterhouseGateOpened = false;
-            }
             if (uiData == DONE)
             {
                 // Open side gate and start summoning skeletons
@@ -282,7 +272,6 @@ void instance_stratholme::SetData(uint32 uiType, uint32 uiData)
             if (uiData == FAIL && m_auiEncounter[uiType] != FAIL)
             {
                 DoUseDoorOrButton(m_uiPortGauntletGUID);
-                m_bIsSlaughterhouseGateOpened = true;
                 m_uiSlaugtherSquareTimer = 0;
 
                 // Let already moving Abomnations stop
@@ -304,11 +293,8 @@ void instance_stratholme::SetData(uint32 uiType, uint32 uiData)
                     SetData(TYPE_BARON_RUN, DONE);
 
                 // Close Slaughterhouse door if needed
-                if (m_bIsSlaughterhouseGateOpened)
-                {
+                if (m_auiEncounter[5] == FAIL)              // TODO
                     DoUseDoorOrButton(m_uiPortGauntletGUID);
-                    m_bIsSlaughterhouseGateOpened = false;
-                }
             }
             if (uiData == DONE)
             {
@@ -342,13 +328,9 @@ void instance_stratholme::SetData(uint32 uiType, uint32 uiData)
 
                 // Open Slaughterhouse door again
                 DoUseDoorOrButton(m_uiPortGauntletGUID);
-                m_bIsSlaughterhouseGateOpened = true;
             }
             if (uiData == FAIL)
-            {
                 DoUseDoorOrButton(m_uiPortGauntletGUID);
-                m_bIsSlaughterhouseGateOpened = true;
-            }
 
             // combat door
             DoUseDoorOrButton(m_auiRivendareDoorGUID);
@@ -369,6 +351,27 @@ void instance_stratholme::SetData(uint32 uiType, uint32 uiData)
             }
             m_auiEncounter[6] = uiData;                     // TODO
             break;
+        case TYPE_BLACK_GUARDS:
+            // Prevent double action
+            if (m_auiEncounter[7] == uiData)                // TODO
+                return;
+
+            // Restart after failure, close Gauntlet
+            if (uiData == IN_PROGRESS && m_auiEncounter[7] == FAIL)
+                DoUseDoorOrButton(m_uiPortGauntletGUID);
+            // Wipe case - open gauntlet
+            if (uiData == FAIL)
+                DoUseDoorOrButton(m_uiPortGauntletGUID);
+            if (uiData == DONE)
+            {
+                if (Creature* pBaron = instance->GetCreature(m_uiBaronGUID))
+                    DoScriptText(SAY_UNDEAD_DEFEAT, pBaron);
+                DoUseDoorOrButton(m_auiRivendareDoorGUID);
+            }
+            m_auiEncounter[7] = uiData;                     // TODO
+
+            // No need to save anything here, so return
+            return;
 
         case TYPE_SH_AELMAR:
             m_bIsSilverHandDead[0] = (uiData) ? true : false;
@@ -484,7 +487,7 @@ void instance_stratholme::DoSortZiggurats()
         return;
 
     std::list<Creature*> lAcolytes;                         // Valid pointers, only used locally
-    for (std::list<uint64>::const_iterator itr = m_luiAcolyteGUIDs.begin(); itr != m_luiAcolyteGUIDs.end(); itr++)
+    for (std::list<uint64>::const_iterator itr = m_luiAcolyteGUIDs.begin(); itr != m_luiAcolyteGUIDs.end(); ++itr)
     {
         if (Creature* pAcolyte = instance->GetCreature(*itr))
             lAcolytes.push_back(pAcolyte);
@@ -525,7 +528,7 @@ void instance_stratholme::DoSortZiggurats()
     }
 
     // In case some mobs have not been able to be sorted, store their GUIDs again
-    for (std::list<Creature*>::const_iterator itr = lAcolytes.begin(); itr != lAcolytes.end(); itr++)
+    for (std::list<Creature*>::const_iterator itr = lAcolytes.begin(); itr != lAcolytes.end(); ++itr)
         m_luiAcolyteGUIDs.push_back((*itr)->GetGUID());
 
     // Sort Crystal
@@ -576,12 +579,8 @@ void instance_stratholme::OnCreatureEnterCombat(Creature* pCreature)
 
         case NPC_MINDLESS_UNDEAD:
         case NPC_BLACK_GUARD:
-            // Aggro in Slaughterhouse after Ramstein -- Need to close Slaughterhouse Door if not closed (wipe case)
-            if (m_bIsSlaughterhouseGateOpened)
-            {
-                DoUseDoorOrButton(m_uiPortGauntletGUID);
-                m_bIsSlaughterhouseGateOpened = false;
-            }
+            // Aggro in Slaughterhouse after Ramstein
+            SetData(TYPE_BLACK_GUARDS, IN_PROGRESS);
             break;
     }
 }
@@ -603,12 +602,8 @@ void instance_stratholme::OnCreatureEvade(Creature* pCreature)
             break;
         case NPC_MINDLESS_UNDEAD:
         case NPC_BLACK_GUARD:
-            // Fail in Slaughterhouse after Ramstein -- Need to open Slaughterhouse Door
-            if (!m_bIsSlaughterhouseGateOpened)
-            {
-                DoUseDoorOrButton(m_uiPortGauntletGUID);
-                m_bIsSlaughterhouseGateOpened = true;
-            }
+            // Fail in Slaughterhouse after Ramstein
+            SetData(TYPE_BLACK_GUARDS, FAIL);
             break;
     }
 }
@@ -677,11 +672,8 @@ void instance_stratholme::OnCreatureDeath(Creature* pCreature)
         case NPC_BLACK_GUARD:
             m_luiGuardGUIDs.remove(pCreature->GetGUID());
             if (m_luiGuardGUIDs.empty())
-            {
-                if (Creature* pBaron = instance->GetCreature(m_uiBaronGUID))
-                    DoScriptText(SAY_UNDEAD_DEFEAT, pBaron);
-                DoUseDoorOrButton(m_auiRivendareDoorGUID);
-            }
+                SetData(TYPE_BLACK_GUARDS, DONE);
+
             break;
     }
 }
