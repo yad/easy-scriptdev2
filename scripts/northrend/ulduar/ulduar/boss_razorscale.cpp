@@ -523,7 +523,7 @@ struct MANGOS_DLL_DECL boss_razorscaleAI : public ScriptedAI
 
     std::list<GameObject*> lHarpoons;
     std::list<Creature*> m_lHarpoonDummies;
-    std::list<uint64> m_lEngineersGUID;
+    GUIDList m_lEngineersGUID;
     std::list<Creature*> m_lEngineersList;
 
     void Reset()
@@ -669,7 +669,7 @@ struct MANGOS_DLL_DECL boss_razorscaleAI : public ScriptedAI
 
         if (!m_lEngineersGUID.empty())
         {
-            for(std::list<uint64>::iterator itr = m_lEngineersGUID.begin(); itr != m_lEngineersGUID.end(); ++itr)
+            for(GUIDList::iterator itr = m_lEngineersGUID.begin(); itr != m_lEngineersGUID.end(); ++itr)
             {
                 if (Creature *pEng = m_pInstance->instance->GetCreature(*itr))
                 {

@@ -67,7 +67,7 @@ struct MANGOS_DLL_DECL boss_anubrekhanAI : public ScriptedAI
 
     instance_naxxramas* m_pInstance;
 
-    std::list<uint64> m_lCryptGuardList;
+    GUIDList m_lCryptGuardList;
     bool m_bIsRegularMode;
     bool m_bHasTaunted;
     bool m_bBerserking;
@@ -124,7 +124,7 @@ struct MANGOS_DLL_DECL boss_anubrekhanAI : public ScriptedAI
         if(m_lCryptGuardList.empty())
             return;
 
-        for(std::list<uint64>::iterator itr = m_lCryptGuardList.begin(); itr != m_lCryptGuardList.end(); ++itr)
+        for(GUIDList::iterator itr = m_lCryptGuardList.begin(); itr != m_lCryptGuardList.end(); ++itr)
         {
             Creature* pCryptGuard = m_creature->GetMap()->GetCreature(*itr);
             if (pCryptGuard && pCryptGuard->isAlive() && pWho->isInAccessablePlaceFor(pCryptGuard) && pCryptGuard->IsHostileTo(pWho) && pCryptGuard->AI())
@@ -175,7 +175,7 @@ struct MANGOS_DLL_DECL boss_anubrekhanAI : public ScriptedAI
         if (m_lCryptGuardList.empty())
             return;
 
-        for(std::list<uint64>::iterator itr = m_lCryptGuardList.begin(); itr != m_lCryptGuardList.end(); ++itr)
+        for(GUIDList::iterator itr = m_lCryptGuardList.begin(); itr != m_lCryptGuardList.end(); ++itr)
         {
             Creature* pTemp = m_creature->GetMap()->GetCreature(*itr);
             if (pTemp && pTemp->isAlive())

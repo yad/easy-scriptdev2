@@ -90,7 +90,7 @@ struct MANGOS_DLL_DECL boss_anubarakAI : public ScriptedAI
     uint32 m_uiCombatProgress;
     float fTimerPenalty;
 
-    std::list<uint64>lSummons;
+    GUIDList lSummons;
 
     void Reset()
     {

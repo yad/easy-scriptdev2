@@ -415,11 +415,11 @@ struct MANGOS_DLL_DECL boss_xt002AI : public ScriptedAI
     instance_ulduar* m_pInstance;
     bool m_bIsRegularMode;
 
-    std::list<uint64> m_lScrapbotsGUIDList;
-    std::list<uint64> m_lBoombotsGUIDList;
-    std::list<uint64> m_lPummelerGUIDList;
-    std::list<uint64> m_lLifeSparkGUIDList;
-    std::list<uint64> m_lVoidZoneGUIDList;
+    GUIDList m_lScrapbotsGUIDList;
+    GUIDList m_lBoombotsGUIDList;
+    GUIDList m_lPummelerGUIDList;
+    GUIDList m_lLifeSparkGUIDList;
+    GUIDList m_lVoidZoneGUIDList;
 
     // spell timers
     uint32 m_uiHeart_Timer;
@@ -580,14 +580,14 @@ struct MANGOS_DLL_DECL boss_xt002AI : public ScriptedAI
         DespawnUnitsFromList(m_lVoidZoneGUIDList);
     }
 
-    void DespawnUnitsFromList(std::list<uint64> list)
+    void DespawnUnitsFromList(GUIDList list)
     {
         if (!m_pInstance)
             return;
 
         if (!list.empty())
         {
-            for (std::list<uint64>::iterator i = list.begin(); i != list.end(); i++)
+            for (GUIDList::iterator i = list.begin(); i != list.end(); i++)
             {
                 Creature *pTmp = m_pInstance->instance->GetCreature(*i);
                 if (pTmp && pTmp->isAlive())

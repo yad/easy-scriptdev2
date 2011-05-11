@@ -105,7 +105,7 @@ struct MANGOS_DLL_DECL boss_faerlinaAI : public ScriptedAI
         {
             m_pInstance->SetData(TYPE_FAERLINA, IN_PROGRESS);
 
-            for (std::list<uint64>::iterator itr = m_pInstance->lFaelinasAdds.begin(); itr != m_pInstance->lFaelinasAdds.end(); ++itr)
+            for (GUIDList::iterator itr = m_pInstance->lFaelinasAdds.begin(); itr != m_pInstance->lFaelinasAdds.end(); ++itr)
             {
                 Creature* pAdd = m_creature->GetMap()->GetCreature(*itr);
                 if (pAdd && !pAdd->isInCombat() && pAdd->AI())
@@ -143,7 +143,7 @@ struct MANGOS_DLL_DECL boss_faerlinaAI : public ScriptedAI
         if (m_pInstance)
         {
             m_pInstance->SetData(TYPE_FAERLINA, FAIL);
-            for (std::list<uint64>::iterator itr = m_pInstance->lFaelinasAdds.begin(); itr != m_pInstance->lFaelinasAdds.end(); ++itr)
+            for (GUIDList::iterator itr = m_pInstance->lFaelinasAdds.begin(); itr != m_pInstance->lFaelinasAdds.end(); ++itr)
             {
                 Creature* pAdd = m_creature->GetMap()->GetCreature(*itr);
                 if (pAdd && !pAdd->isAlive())

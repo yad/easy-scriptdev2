@@ -133,7 +133,7 @@ struct MANGOS_DLL_DECL boss_the_lich_king_iccAI : public BSWScriptedAI
     bool finalphase;
     Creature* pTirion;
     Creature* pFrostmourne;
-    std::list<uint64> mobsGUIDList;
+    GUIDList mobsGUIDList;
 
     void Reset()
     {
@@ -246,7 +246,7 @@ struct MANGOS_DLL_DECL boss_the_lich_king_iccAI : public BSWScriptedAI
         if (mobsGUIDList.empty())
             return;
 
-        for(std::list<uint64>::iterator itr = mobsGUIDList.begin(); itr != mobsGUIDList.end(); ++itr)
+        for(GUIDList::iterator itr = mobsGUIDList.begin(); itr != mobsGUIDList.end(); ++itr)
         {
             if (Creature* pTemp = m_creature->GetMap()->GetCreature(*itr))
                 if (pTemp->isAlive()) 

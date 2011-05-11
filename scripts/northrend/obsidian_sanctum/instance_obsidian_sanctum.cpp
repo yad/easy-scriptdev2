@@ -159,7 +159,7 @@ bool instance_obsidian_sanctum::CheckAchievementCriteriaMeet(uint32 uiCriteriaId
         case ACHIEV_CRIT_VOLCANO_10:
             if (instance->IsRegularDifficulty())
             {
-                for (std::list<uint64>::iterator i = m_lHitByVolcanoGUIDList.begin(); i != m_lHitByVolcanoGUIDList.end(); i++)
+                for (GUIDList::iterator i = m_lHitByVolcanoGUIDList.begin(); i != m_lHitByVolcanoGUIDList.end(); i++)
                     if (pSource->GetGUID() == *i)
                         return false;
 
@@ -169,7 +169,7 @@ bool instance_obsidian_sanctum::CheckAchievementCriteriaMeet(uint32 uiCriteriaId
         case ACHIEV_CRIT_VOLCANO_25:
             if (!instance->IsRegularDifficulty())
             {
-                for (std::list<uint64>::iterator i = m_lHitByVolcanoGUIDList.begin(); i != m_lHitByVolcanoGUIDList.end(); i++)
+                for (GUIDList::iterator i = m_lHitByVolcanoGUIDList.begin(); i != m_lHitByVolcanoGUIDList.end(); i++)
                     if (pSource->GetGUID() == *i)
                         return false;
 

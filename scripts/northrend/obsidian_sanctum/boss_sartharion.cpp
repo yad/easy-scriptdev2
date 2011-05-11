@@ -311,7 +311,7 @@ struct MANGOS_DLL_DECL boss_sartharionAI : public ScriptedAI
         if (m_pInstance->m_lBlazesGUIDList.empty() )
             return;
 
-        for (std::list<uint64>::iterator i = m_pInstance->m_lBlazesGUIDList.begin(); i != m_pInstance->m_lBlazesGUIDList.end(); i++)
+        for (GUIDList::iterator i = m_pInstance->m_lBlazesGUIDList.begin(); i != m_pInstance->m_lBlazesGUIDList.end(); i++)
             if (Creature *pBlaze = m_pInstance->instance->GetCreature(*i))
                 if (pBlaze->isAlive())
                     pBlaze->ForcedDespawn();
@@ -330,7 +330,7 @@ struct MANGOS_DLL_DECL boss_sartharionAI : public ScriptedAI
             // trash mobs in the area should help Sartharion in the fight
             if (!m_pInstance->m_lTrashMobsGUIDlist.empty())
             {
-                for (std::list<uint64>::iterator itr = m_pInstance->m_lTrashMobsGUIDlist.begin(); itr != m_pInstance->m_lTrashMobsGUIDlist.end(); itr++)
+                for (GUIDList::iterator itr = m_pInstance->m_lTrashMobsGUIDlist.begin(); itr != m_pInstance->m_lTrashMobsGUIDlist.end(); itr++)
                 {
                     if (Creature *pCreature = m_pInstance->instance->GetCreature(*itr) )
                         pCreature->AI()->AttackStart(pWho);
@@ -654,7 +654,7 @@ struct MANGOS_DLL_DECL boss_sartharionAI : public ScriptedAI
                     }
                 }
                 if (!m_pInstance->m_lEggsGUIDList.empty())
-                    for (std::list<uint64>::iterator itr = m_pInstance->m_lEggsGUIDList.begin(); itr != m_pInstance->m_lEggsGUIDList.end(); ++itr)
+                    for (GUIDList::iterator itr = m_pInstance->m_lEggsGUIDList.begin(); itr != m_pInstance->m_lEggsGUIDList.end(); ++itr)
                         if (Creature* pTemp = m_pInstance->instance->GetCreature(*itr))
                             if (pTemp->isAlive())
                                 bNoAliveTwilightRealm = false;
@@ -992,7 +992,7 @@ struct MANGOS_DLL_DECL dummy_dragonAI : public ScriptedAI
                 }
 
             if (!m_pInstance->m_lEggsGUIDList.empty())
-                for (std::list<uint64>::iterator itr = m_pInstance->m_lEggsGUIDList.begin(); itr != m_pInstance->m_lEggsGUIDList.end(); ++itr)
+                for (GUIDList::iterator itr = m_pInstance->m_lEggsGUIDList.begin(); itr != m_pInstance->m_lEggsGUIDList.end(); ++itr)
                     if (Creature* pTemp = m_pInstance->instance->GetCreature(*itr))
                         if (pTemp->isAlive())
                         {
@@ -1020,7 +1020,7 @@ struct MANGOS_DLL_DECL dummy_dragonAI : public ScriptedAI
                 iTextId = SAY_TENEBRON_DEATH;
                 
                 if (!m_pInstance->m_lEggsGUIDList.empty())
-                    for (std::list<uint64>::iterator itr = m_pInstance->m_lEggsGUIDList.begin(); itr != m_pInstance->m_lEggsGUIDList.end(); ++itr)
+                    for (GUIDList::iterator itr = m_pInstance->m_lEggsGUIDList.begin(); itr != m_pInstance->m_lEggsGUIDList.end(); ++itr)
                         if (Creature* pEgg = m_pInstance->instance->GetCreature(*itr))
                             pEgg->ForcedDespawn();
                 break;
@@ -1124,14 +1124,14 @@ struct MANGOS_DLL_DECL mob_tenebronAI : public dummy_dragonAI
         m_pInstance->SetData(TYPE_TENEBRON, NOT_STARTED);
 
         if (!m_pInstance->m_lEggsGUIDList.empty())
-            for (std::list<uint64>::iterator i = m_pInstance->m_lEggsGUIDList.begin(); i != m_pInstance->m_lEggsGUIDList.end(); i++)
+            for (GUIDList::iterator i = m_pInstance->m_lEggsGUIDList.begin(); i != m_pInstance->m_lEggsGUIDList.end(); i++)
                 if (Creature *pEgg = m_pInstance->instance->GetCreature(*i))
                     if (pEgg->isAlive())
                         pEgg->ForcedDespawn();
         m_pInstance->m_lEggsGUIDList.clear();
 
         if (!m_pInstance->m_lWhelpsGUIDList.empty())
-            for (std::list<uint64>::iterator i = m_pInstance->m_lWhelpsGUIDList.begin(); i != m_pInstance->m_lWhelpsGUIDList.end(); i++)
+            for (GUIDList::iterator i = m_pInstance->m_lWhelpsGUIDList.begin(); i != m_pInstance->m_lWhelpsGUIDList.end(); i++)
                 if (Creature *pWhelp = m_pInstance->instance->GetCreature(*i))
                     if (pWhelp->isAlive())
                         pWhelp->ForcedDespawn();
@@ -1641,7 +1641,7 @@ struct MANGOS_DLL_DECL mob_twilight_egg_controllerAI : public ScriptedAI
         if (m_pInstance->m_lEggsGUIDList.empty())
             return;
 
-        for (std::list<uint64>::iterator i = m_pInstance->m_lEggsGUIDList.begin(); i != m_pInstance->m_lEggsGUIDList.end(); i++)
+        for (GUIDList::iterator i = m_pInstance->m_lEggsGUIDList.begin(); i != m_pInstance->m_lEggsGUIDList.end(); i++)
             if (Creature *pEgg = m_pInstance->instance->GetCreature(*i))
                 if (pEgg->isAlive())
                     pEgg->CastSpell(pEgg, spell, true);

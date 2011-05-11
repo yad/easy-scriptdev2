@@ -1611,11 +1611,11 @@ struct MANGOS_DLL_DECL npc_highlord_darion_mograineAI : public npc_escortAI
 
     Map *m_pMap;
 
-    std::list<uint64> lTargetsList;
+    GUIDList lTargetsList;
     std::list<GameObject*> lLightningsHList;
-    std::list<uint64> lLightningsHGUIDsList;
+    GUIDList lLightningsHGUIDsList;
     std::list<GameObject*> lLightningsVList;
-    std::list<uint64> lLightningsVGUIDsList;
+    GUIDList lLightningsVGUIDsList;
 
     float x, y, z, o;
 
@@ -2009,10 +2009,10 @@ struct MANGOS_DLL_DECL npc_highlord_darion_mograineAI : public npc_escortAI
                     if (pTemp->isAlive() )
                         pTemp->ForcedDespawn(60000);
                 // show lightnings again
-                for (std::list<uint64>::const_iterator i = lLightningsHGUIDsList.begin(); i != lLightningsHGUIDsList.end(); i++)
+                for (GUIDList::const_iterator i = lLightningsHGUIDsList.begin(); i != lLightningsHGUIDsList.end(); i++)
                     if (GameObject *pGO = m_pMap->GetGameObject(*i) )
                         pGO->SetPhaseMask(128, true);
-                for (std::list<uint64>::const_iterator i = lLightningsVGUIDsList.begin(); i != lLightningsVGUIDsList.end(); i++)
+                for (GUIDList::const_iterator i = lLightningsVGUIDsList.begin(); i != lLightningsVGUIDsList.end(); i++)
                     if (GameObject *pGO = m_pMap->GetGameObject(*i) )
                         pGO->SetPhaseMask(128, true);
                 break;
@@ -2928,10 +2928,10 @@ struct MANGOS_DLL_DECL npc_highlord_darion_mograineAI : public npc_escortAI
                         }
                     }
                     // lightnings appear
-                    for (std::list<uint64>::const_iterator i = lLightningsHGUIDsList.begin(); i != lLightningsHGUIDsList.end(); i++)
+                    for (GUIDList::const_iterator i = lLightningsHGUIDsList.begin(); i != lLightningsHGUIDsList.end(); i++)
                         if (GameObject *pGO = m_pMap->GetGameObject(*i) )
                             pGO->SetPhaseMask(128, true);
-                    for (std::list<uint64>::const_iterator i = lLightningsVGUIDsList.begin(); i != lLightningsVGUIDsList.end(); i++)
+                    for (GUIDList::const_iterator i = lLightningsVGUIDsList.begin(); i != lLightningsVGUIDsList.end(); i++)
                         if (GameObject *pGO = m_pMap->GetGameObject(*i) )
                             pGO->SetPhaseMask(128, true);
                 }
@@ -2949,10 +2949,10 @@ struct MANGOS_DLL_DECL npc_highlord_darion_mograineAI : public npc_escortAI
                     uiTirionAppearsTimer = 300000;
 
                     // lightnings disappear
-                    for (std::list<uint64>::const_iterator i = lLightningsHGUIDsList.begin(); i != lLightningsHGUIDsList.end(); i++)
+                    for (GUIDList::const_iterator i = lLightningsHGUIDsList.begin(); i != lLightningsHGUIDsList.end(); i++)
                         if (GameObject *pGO = m_pMap->GetGameObject(*i) )
                             pGO->SetPhaseMask(0, true);
-                    for (std::list<uint64>::const_iterator i = lLightningsVGUIDsList.begin(); i != lLightningsVGUIDsList.end(); i++)
+                    for (GUIDList::const_iterator i = lLightningsVGUIDsList.begin(); i != lLightningsVGUIDsList.end(); i++)
                         if (GameObject *pGO = m_pMap->GetGameObject(*i) )
                             pGO->SetPhaseMask(0, true);
 
@@ -3112,7 +3112,7 @@ struct MANGOS_DLL_DECL npc_highlord_darion_mograineAI : public npc_escortAI
 
         Creature *pTemp;
         ShuffleTargetsList();
-        std::list<uint64>::const_iterator target = lTargetsList.begin();
+        GUIDList::const_iterator target = lTargetsList.begin();
 
         for (uint8 i = 0; i < 3; i++)
         {
@@ -3184,7 +3184,7 @@ struct MANGOS_DLL_DECL npc_highlord_darion_mograineAI : public npc_escortAI
         // swapping aggro so the battle would look more dynamic
         Creature *pTemp;
         ShuffleTargetsList();
-        std::list<uint64>::const_iterator target = lTargetsList.begin();
+        GUIDList::const_iterator target = lTargetsList.begin();
 
         DoResetThreat();
         if (Unit *pVictim = m_pMap->GetCreature(*target++) )

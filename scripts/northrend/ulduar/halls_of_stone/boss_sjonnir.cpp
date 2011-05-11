@@ -80,7 +80,7 @@ struct MANGOS_DLL_DECL boss_sjonnirAI : public ScriptedAI
     bool m_bIsRegularMode;
     bool m_bIsFrenzy;
 
-    std::list<uint64> m_lDwarfGUIDList;
+    GUIDList m_lDwarfGUIDList;
     uint32 m_uiChainLightning_Timer;
     uint32 m_uiLightningShield_Timer;
     uint32 m_uiStaticCharge_Timer;
@@ -138,7 +138,7 @@ struct MANGOS_DLL_DECL boss_sjonnirAI : public ScriptedAI
         if (m_lDwarfGUIDList.empty())
             return;
 
-        for(std::list<uint64>::iterator itr = m_lDwarfGUIDList.begin(); itr != m_lDwarfGUIDList.end(); ++itr)
+        for(GUIDList::iterator itr = m_lDwarfGUIDList.begin(); itr != m_lDwarfGUIDList.end(); ++itr)
         {
             if (Creature* pTemp = m_creature->GetMap()->GetCreature(*itr))
             {

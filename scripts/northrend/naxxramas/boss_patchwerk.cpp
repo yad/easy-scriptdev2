@@ -95,7 +95,7 @@ struct MANGOS_DLL_DECL boss_patchwerkAI : public ScriptedAI
 
         // call all creatures in area
         if (!m_pInstance->lPatchwerkAreaMobs.empty())
-            for (std::list<uint64>::iterator itr = m_pInstance->lPatchwerkAreaMobs.begin(); itr != m_pInstance->lPatchwerkAreaMobs.end(); ++itr)
+            for (GUIDList::iterator itr = m_pInstance->lPatchwerkAreaMobs.begin(); itr != m_pInstance->lPatchwerkAreaMobs.end(); ++itr)
             {
                 Creature* pCreature = m_creature->GetMap()->GetCreature(*itr);
                 if (pCreature && pCreature->isAlive() && !pCreature->isInCombat() && pCreature->AI())

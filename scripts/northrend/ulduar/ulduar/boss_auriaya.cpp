@@ -242,7 +242,7 @@ struct MANGOS_DLL_DECL mob_feral_defenderAI : public ScriptedAI
     bool m_bIsDead;
     bool m_bHasAura;
 
-    std::list<uint64> m_lVoidZones;
+    GUIDList m_lVoidZones;
 
     void Reset()
     {
@@ -257,7 +257,7 @@ struct MANGOS_DLL_DECL mob_feral_defenderAI : public ScriptedAI
         {
             if (m_pInstance)
             {
-                for(std::list<uint64>::iterator itr = m_lVoidZones.begin(); itr != m_lVoidZones.end(); itr++)
+                for(GUIDList::iterator itr = m_lVoidZones.begin(); itr != m_lVoidZones.end(); itr++)
                 {
                     if (Creature *pTmp = m_pInstance->instance->GetCreature(*itr))
                         pTmp->ForcedDespawn();

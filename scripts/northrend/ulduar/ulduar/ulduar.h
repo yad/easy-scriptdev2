@@ -306,7 +306,7 @@ class MANGOS_DLL_DECL instance_ulduar : public ScriptedInstance
         Player* GetPlayerInMap();
         void SpawnFriendlyKeeper(uint32 uiWho);
 
-        std::list<uint64> m_lIronConstructsGUIDs;
+        GUIDList m_lIronConstructsGUIDs;
 
         // achievements
         void IronDwarfPushBack(uint64 uiGuid);
@@ -433,7 +433,7 @@ class MANGOS_DLL_DECL instance_ulduar : public ScriptedInstance
     bool m_bRubbleRoll;
     bool m_bCatLady;
     bool m_bNineLives;
-    std::list<uint64> m_lIronDwarvesAchievList;
+    GUIDList m_lIronDwarvesAchievList;
 };
 
 #endif

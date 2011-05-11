@@ -70,7 +70,7 @@ struct MANGOS_DLL_DECL boss_gluthAI : public ScriptedAI
     instance_naxxramas* m_pInstance;
     bool m_bIsRegularMode;
 
-    std::list<uint64> lZombies;
+    GUIDList lZombies;
     uint32 m_uiSearchZombieTimer;
     uint32 m_uiMortalWoundTimer;
     uint32 m_uiDecimateTimer;
@@ -96,7 +96,7 @@ struct MANGOS_DLL_DECL boss_gluthAI : public ScriptedAI
         if (lZombies.empty())
             return;
 
-        for (std::list<uint64>::iterator itr = lZombies.begin(); itr != lZombies.end(); ++itr)
+        for (GUIDList::iterator itr = lZombies.begin(); itr != lZombies.end(); ++itr)
         {
             Creature* pZombie = m_creature->GetMap()->GetCreature(*itr);
             if (pZombie && pZombie->isAlive())
@@ -195,7 +195,7 @@ struct MANGOS_DLL_DECL boss_gluthAI : public ScriptedAI
         {
             DoCastSpellIfCan(m_creature, SPELL_DECIMATE);
             DoScriptText(EMOTE_DECIMATE, m_creature);
-            for (std::list<uint64>::iterator itr = lZombies.begin(); itr != lZombies.end(); ++itr)
+            for (GUIDList::iterator itr = lZombies.begin(); itr != lZombies.end(); ++itr)
             {
                 Creature* pZombie = m_creature->GetMap()->GetCreature(*itr);
                 if (pZombie && pZombie->isAlive())

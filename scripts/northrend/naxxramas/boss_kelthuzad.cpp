@@ -374,7 +374,7 @@ struct MANGOS_DLL_DECL boss_kelthuzadAI : public ScriptedAI
         if (m_threatlist.empty())
             return NULL;
 
-        std::list<uint64> manaPositive;
+        GUIDList manaPositive;
         for (ThreatList::const_iterator itr = m_threatlist.begin(); itr!= m_threatlist.end(); ++itr)
         {
             if (Unit* pTemp = m_creature->GetMap()->GetUnit((*itr)->getUnitGuid()))
@@ -387,7 +387,7 @@ struct MANGOS_DLL_DECL boss_kelthuzadAI : public ScriptedAI
 
         if (!manaPositive.empty())
         {
-            std::list<uint64>::iterator m_uiPlayerGUID = manaPositive.begin();
+            GUIDList::iterator m_uiPlayerGUID = manaPositive.begin();
             advance(m_uiPlayerGUID, (rand()%manaPositive.size()));
 
             if (Player* pTemp = m_creature->GetMap()->GetPlayer(*m_uiPlayerGUID))

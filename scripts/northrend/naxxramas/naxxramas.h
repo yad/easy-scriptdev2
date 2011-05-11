@@ -210,17 +210,17 @@ class MANGOS_DLL_DECL instance_naxxramas : public ScriptedInstance
         void ActivateAreaFissures(ChamberArea AreaNo);
 
         // faerlina
-        std::list<uint64> lFaelinasAdds;
+        GUIDList lFaelinasAdds;
 
         // ravozious
-        std::list<uint64> lUnderstudyGUID;
+        GUIDList lUnderstudyGUID;
 
         // patchwerk
-        std::list<uint64> lPatchwerkAreaMobs;
+        GUIDList lPatchwerkAreaMobs;
 
         // gothik
-        std::list<uint64> lGothikDeathAdds;
-        std::list<uint64> lGothikLiveAdds;
+        GUIDList lGothikDeathAdds;
+        GUIDList lGothikLiveAdds;
         void SetGothTriggers();
         Creature* GetClosestAnchorForGoth(Creature* pSource, bool bRightSide);
         void GetGothSummonPointCreatures(std::list<Creature*> &lList, bool bRightSide);
@@ -255,7 +255,7 @@ class MANGOS_DLL_DECL instance_naxxramas : public ScriptedInstance
         uint64 m_uiHeiganGUID;
         // table contains 4 lists of fissures related to Heigan encounter.
         // each list groups fissures from different area of his chamber
-        std::list<uint64> lFissuresGUIDs[4];
+        GUIDList lFissuresGUIDs[4];
 
         uint64 m_uiZeliekGUID;
         uint64 m_uiThaneGUID;

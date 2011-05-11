@@ -241,7 +241,7 @@ struct MANGOS_DLL_DECL boss_malygosAI : public ScriptedAI
     uint32 m_uiSpeechTimer;
     uint32 m_uiPortalNeedResTimer;
     uint8 m_uiVortexPhase;
-    std::list<uint64> m_lSparkPortalGUIDList;
+    GUIDList m_lSparkPortalGUIDList;
 
     uint32 m_uiTimer;
     uint32 m_uiEnrageTimer;
@@ -308,7 +308,7 @@ struct MANGOS_DLL_DECL boss_malygosAI : public ScriptedAI
         DespawnCreatures(NPC_STATIC_FIELD);
 
         if (!m_lSparkPortalGUIDList.empty())
-            for (std::list<uint64>::iterator itr = m_lSparkPortalGUIDList.begin(); itr != m_lSparkPortalGUIDList.end(); ++itr)
+            for (GUIDList::iterator itr = m_lSparkPortalGUIDList.begin(); itr != m_lSparkPortalGUIDList.end(); ++itr)
                 if (Creature* pSparkPortal = m_creature->GetMap()->GetCreature(*itr))
                     pSparkPortal->Respawn();
 
@@ -735,7 +735,7 @@ struct MANGOS_DLL_DECL boss_malygosAI : public ScriptedAI
             if (m_uiPowerSparkTimer <= uiDiff)
             {
                 DoScriptText(SAY_POWER_SPARK, m_creature);
-                std::list<uint64>::iterator pTargetSparkPortalGUID = m_lSparkPortalGUIDList.begin();
+                GUIDList::iterator pTargetSparkPortalGUID = m_lSparkPortalGUIDList.begin();
                 advance(pTargetSparkPortalGUID, urand(0, m_lSparkPortalGUIDList.size()-1));
                 if (Creature* pTargetSparkPortal = m_creature->GetMap()->GetCreature(*pTargetSparkPortalGUID))
                     if (Creature *pSpark = pTargetSparkPortal->SummonCreature(NPC_POWER_SPARK, pTargetSparkPortal->GetPositionX(), pTargetSparkPortal->GetPositionY(), pTargetSparkPortal->GetPositionZ(), 0, TEMPSUMMON_TIMED_OR_DEAD_DESPAWN, 120000))

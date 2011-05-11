@@ -208,7 +208,7 @@ struct MANGOS_DLL_DECL boss_gothikAI : public ScriptedAI
         if (m_pInstance->lGothikDeathAdds.empty())
             return;
 
-        for(std::list<uint64>::iterator itr = m_pInstance->lGothikDeathAdds.begin(); itr != m_pInstance->lGothikDeathAdds.end(); ++itr) 
+        for(GUIDList::iterator itr = m_pInstance->lGothikDeathAdds.begin(); itr != m_pInstance->lGothikDeathAdds.end(); ++itr) 
         {
             Creature* pDeathAdds = m_pInstance->instance->GetCreature((*itr));
             if (pDeathAdds && pDeathAdds->isAlive())
@@ -216,7 +216,7 @@ struct MANGOS_DLL_DECL boss_gothikAI : public ScriptedAI
         }
         m_pInstance->lGothikDeathAdds.clear();
         
-        for(std::list<uint64>::iterator itr = m_pInstance->lGothikLiveAdds.begin(); itr != m_pInstance->lGothikLiveAdds.end(); ++itr) 
+        for(GUIDList::iterator itr = m_pInstance->lGothikLiveAdds.begin(); itr != m_pInstance->lGothikLiveAdds.end(); ++itr) 
         {
             Creature* pLiveAdds = m_pInstance->instance->GetCreature((*itr));
             if (pLiveAdds && pLiveAdds->isAlive())
@@ -338,12 +338,12 @@ struct MANGOS_DLL_DECL boss_gothikAI : public ScriptedAI
                         m_uiPhase = PHASE_END;
                         m_uiShadowboltTimer = 2000;
                         // all out of combat summons from Death Side storm the raid at once
-                        for (std::list<uint64>::iterator itr = m_pInstance->lGothikDeathAdds.begin(); itr != m_pInstance->lGothikDeathAdds.end(); itr++)
+                        for (GUIDList::iterator itr = m_pInstance->lGothikDeathAdds.begin(); itr != m_pInstance->lGothikDeathAdds.end(); itr++)
                             if (Creature* pCreature = m_pInstance->instance->GetCreature(*itr) )
                                 if (pCreature->isAlive() && !pCreature->getVictim() )
                                     pCreature->AI()->AttackStart(m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM, 0) );
                         // all out of combat summons from Live Side storm the raid at once
-                        for (std::list<uint64>::iterator itr = m_pInstance->lGothikLiveAdds.begin(); itr != m_pInstance->lGothikLiveAdds.end(); itr++)
+                        for (GUIDList::iterator itr = m_pInstance->lGothikLiveAdds.begin(); itr != m_pInstance->lGothikLiveAdds.end(); itr++)
                             if (Creature* pCreature = m_pInstance->instance->GetCreature(*itr) )
                                 if (pCreature->isAlive() && !pCreature->getVictim() )
                                     pCreature->AI()->AttackStart(m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM, 0) );

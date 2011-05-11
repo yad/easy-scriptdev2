@@ -110,7 +110,7 @@ struct MANGOS_DLL_DECL boss_novosAI : public ScriptedAI
     uint32 m_uiSummonTrollCorpse_Timer;
     uint64 m_uiSummonTargetGUID[SUMMON_TARGETS_NO];
 
-    std::list<uint64>lSummonGUIDs;
+    GUIDList lSummonGUIDs;
 
     void Reset()
     {
@@ -132,7 +132,7 @@ struct MANGOS_DLL_DECL boss_novosAI : public ScriptedAI
     {
         if (!lSummonGUIDs.empty())
         {
-            for (std::list<uint64>::iterator itr = lSummonGUIDs.begin(); itr != lSummonGUIDs.end(); ++itr)
+            for (GUIDList::iterator itr = lSummonGUIDs.begin(); itr != lSummonGUIDs.end(); ++itr)
                 if (Creature* pSummon = m_creature->GetMap()->GetCreature(*itr))
                     pSummon->ForcedDespawn();
 
@@ -220,7 +220,7 @@ struct MANGOS_DLL_DECL boss_novosAI : public ScriptedAI
         {
             if (m_uiCheckoutAdds_Timer < uiDiff)
             {
-                for (std::list<uint64>::iterator itr = lSummonGUIDs.begin(); itr != lSummonGUIDs.end(); ++itr)
+                for (GUIDList::iterator itr = lSummonGUIDs.begin(); itr != lSummonGUIDs.end(); ++itr)
                     if (Creature* pCreature = m_pInstance->instance->GetCreature(*itr))
                         if (pCreature->GetCreatureInfo()->type ==  CREATURE_TYPE_UNDEAD && pCreature->GetPositionY() > -770.0f)
                         {

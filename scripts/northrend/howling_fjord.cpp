@@ -423,7 +423,7 @@ struct MANGOS_DLL_DECL npc_silvermoon_harryAI : public ScriptedAI
 
     uint32 m_uiEventTimer;
     uint64 PlayerGUID;
-    std::list<uint64> lPlayersEventDone;
+    GUIDList lPlayersEventDone;
 
     void Reset() 
     {
@@ -450,7 +450,7 @@ struct MANGOS_DLL_DECL npc_silvermoon_harryAI : public ScriptedAI
         // or are not at quest, so in that case lets switch this part off
         if (bTriggeredByEvent)
         {
-            if (m_creature->GetHealth() * 100 / m_creature->GetMaxHealth() <= 33)
+            if (m_creature->GetHealthPercent() < 33.0f)
             {
                 ThreatList const& tList = m_creature->getThreatManager().getThreatList();
                 for (ThreatList::const_iterator itr = tList.begin();itr != tList.end(); ++itr)
@@ -503,7 +503,7 @@ struct MANGOS_DLL_DECL npc_silvermoon_harryAI : public ScriptedAI
         if (lPlayersEventDone.empty())
             return false;
 
-        for(std::list<uint64>::iterator itr = lPlayersEventDone.begin(); itr != lPlayersEventDone.end(); ++itr)
+        for(GUIDList::iterator itr = lPlayersEventDone.begin(); itr != lPlayersEventDone.end(); ++itr)
         {
             if ((*itr) && (*itr) == PlayerGUID)
                 return true;

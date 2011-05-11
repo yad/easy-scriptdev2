@@ -489,7 +489,7 @@ struct MANGOS_DLL_DECL npc_hodir_druidAI : public ScriptedAI
     ScriptedInstance *pInstance;
 
     uint32 spellTimer;
-    std::list<uint64> FriendlyList;
+    GUIDList FriendlyList;
 
     void Reset()
     {
@@ -526,18 +526,18 @@ struct MANGOS_DLL_DECL npc_hodir_druidAI : public ScriptedAI
             return m_creature->GetGUID();
         }
 
-        std::list<uint64>::iterator iter = FriendlyList.begin();
+        GUIDList::iterator iter = FriendlyList.begin();
         advance(iter, urand(0, FriendlyList.size()-1));
 
         return *iter;
     }
 
-    bool ListContains(std::list<uint64> &plist, uint64 element)
+    bool ListContains(GUIDList &plist, uint64 element)
     {
         if (plist.empty())
             return false;
 
-        std::list<uint64>::iterator i;
+        GUIDList::iterator i;
         for (i = plist.begin(); i!=plist.end(); ++i)
         {
             if ((*i) == element)
@@ -588,7 +588,7 @@ struct MANGOS_DLL_DECL npc_hodir_shamanAI : public ScriptedAI
     ScriptedInstance *pInstance;
 
     uint32 spellTimer;
-    std::list<uint64> FriendlyList;
+    GUIDList FriendlyList;
 
     void Reset()
     {
@@ -625,18 +625,18 @@ struct MANGOS_DLL_DECL npc_hodir_shamanAI : public ScriptedAI
             return m_creature->GetGUID();
         }
 
-        std::list<uint64>::iterator iter = FriendlyList.begin();
+        GUIDList::iterator iter = FriendlyList.begin();
         advance(iter, urand(0, FriendlyList.size()-1));
 
         return *iter;
     }
 
-    bool ListContains(std::list<uint64> &plist, uint64 element)
+    bool ListContains(GUIDList &plist, uint64 element)
     {
         if (plist.empty())
             return false;
 
-        std::list<uint64>::iterator i;
+        GUIDList::iterator i;
         for (i = plist.begin(); i!=plist.end(); ++i)
         {
             if ((*i) == element)
@@ -685,7 +685,7 @@ struct MANGOS_DLL_DECL npc_hodir_mageAI : public ScriptedAI
     ScriptedInstance *pInstance;
 
     uint32 spellTimer;
-    std::list<uint64> FriendlyList;
+    GUIDList FriendlyList;
 
     void Reset()
     {
@@ -722,18 +722,18 @@ struct MANGOS_DLL_DECL npc_hodir_mageAI : public ScriptedAI
             return m_creature->GetGUID();
         }
 
-        std::list<uint64>::iterator iter = FriendlyList.begin();
+        GUIDList::iterator iter = FriendlyList.begin();
         advance(iter, urand(0, FriendlyList.size()-1));
 
         return *iter;
     }
 
-    bool ListContains(std::list<uint64> &plist, uint64 element)
+    bool ListContains(GUIDList &plist, uint64 element)
     {
         if (plist.empty())
             return false;
 
-        std::list<uint64>::iterator i;
+        GUIDList::iterator i;
         for (i = plist.begin(); i!=plist.end(); ++i)
         {
             if ((*i) == element)
@@ -791,7 +791,7 @@ struct MANGOS_DLL_DECL npc_hodir_priestAI : public ScriptedAI
     ScriptedInstance *pInstance;
 
     uint32 spellTimer;
-    std::list<uint64> FriendlyList;
+    GUIDList FriendlyList;
 
     void Reset()
     {
@@ -828,18 +828,18 @@ struct MANGOS_DLL_DECL npc_hodir_priestAI : public ScriptedAI
             return m_creature->GetGUID();
         }
 
-        std::list<uint64>::iterator iter = FriendlyList.begin();
+        GUIDList::iterator iter = FriendlyList.begin();
         advance(iter, urand(0, FriendlyList.size()-1));
 
         return *iter;
     }
 
-    bool ListContains(std::list<uint64> &plist, uint64 element)
+    bool ListContains(GUIDList &plist, uint64 element)
     {
         if (plist.empty())
             return false;
 
-        std::list<uint64>::iterator i;
+        GUIDList::iterator i;
         for (i = plist.begin(); i!=plist.end(); ++i)
         {
             if ((*i) == element)

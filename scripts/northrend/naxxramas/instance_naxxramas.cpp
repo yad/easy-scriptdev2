@@ -312,7 +312,7 @@ void instance_naxxramas::OnObjectCreate(GameObject* pGo)
 
 void instance_naxxramas::ActivateAreaFissures(ChamberArea AreaNo)
 {
-    for (std::list<uint64>::iterator itr = lFissuresGUIDs[AreaNo].begin(); itr != lFissuresGUIDs[AreaNo].end(); ++itr)
+    for (GUIDList::iterator itr = lFissuresGUIDs[AreaNo].begin(); itr != lFissuresGUIDs[AreaNo].end(); ++itr)
     {
         GameObject* pFissure = instance->GetGameObject(*itr);
         if (!pFissure)
@@ -671,7 +671,7 @@ void instance_naxxramas::SetGothTriggers()
     if (!pGoth)
         return;
 
-    for(std::list<uint64>::iterator itr = m_lGothTriggerList.begin(); itr != m_lGothTriggerList.end(); ++itr)
+    for(GUIDList::iterator itr = m_lGothTriggerList.begin(); itr != m_lGothTriggerList.end(); ++itr)
     {
         if (Creature* pTrigger = instance->GetCreature(*itr))
         {
@@ -736,7 +736,7 @@ bool instance_naxxramas::IsInRightSideGothArea(Unit* pUnit)
 Unit* instance_naxxramas::SelectRandomTargetOnSide(bool bRight, const WorldObject & object)
 {
     Map::PlayerList const& lPlayers = instance->GetPlayers();
-    std::list<uint64> lTargets;
+    GUIDList lTargets;
 
     if (lPlayers.isEmpty() )
         return NULL;
@@ -750,7 +750,7 @@ Unit* instance_naxxramas::SelectRandomTargetOnSide(bool bRight, const WorldObjec
     if (lTargets.empty() )
         return NULL;
 
-    std::list<uint64>::iterator itrGUID = lTargets.begin();
+    GUIDList::iterator itrGUID = lTargets.begin();
     advance(itrGUID, (rand()%lTargets.size()) );
     if (Unit* pTarget = instance->GetUnit(*itrGUID))
         return pTarget;

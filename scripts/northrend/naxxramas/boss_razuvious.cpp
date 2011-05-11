@@ -111,7 +111,7 @@ struct MANGOS_DLL_DECL boss_razuviousAI : public ScriptedAI
 
         if (m_pInstance)
         {
-            for (std::list<uint64>::iterator itr = m_pInstance->lUnderstudyGUID.begin(); itr != m_pInstance->lUnderstudyGUID.end(); ++itr)
+            for (GUIDList::iterator itr = m_pInstance->lUnderstudyGUID.begin(); itr != m_pInstance->lUnderstudyGUID.end(); ++itr)
             {
                 if (Creature* pUnderstudy = m_pInstance->instance->GetCreature(*itr))
                     pUnderstudy->AI()->AttackStart(pWho);
@@ -127,7 +127,7 @@ struct MANGOS_DLL_DECL boss_razuviousAI : public ScriptedAI
         {
             if (m_pInstance)
             {
-                for (std::list<uint64>::iterator itr = m_pInstance->lUnderstudyGUID.begin(); itr != m_pInstance->lUnderstudyGUID.end(); ++itr)
+                for (GUIDList::iterator itr = m_pInstance->lUnderstudyGUID.begin(); itr != m_pInstance->lUnderstudyGUID.end(); ++itr)
                 {
                     Creature* pUnderstudy = m_pInstance->instance->GetCreature(*itr);
                     if (pUnderstudy && !pUnderstudy->isAlive())
@@ -148,7 +148,7 @@ struct MANGOS_DLL_DECL boss_razuviousAI : public ScriptedAI
         if (m_pInstance && !m_pInstance->lUnderstudyGUID.empty() && m_uiCurrentNode+1 != uiPointId)
         {
             pUnderstudy = NULL;
-            for (std::list<uint64>::iterator itr = m_pInstance->lUnderstudyGUID.begin(); itr != m_pInstance->lUnderstudyGUID.end(); ++itr)
+            for (GUIDList::iterator itr = m_pInstance->lUnderstudyGUID.begin(); itr != m_pInstance->lUnderstudyGUID.end(); ++itr)
             {
                 Creature* pTemp = m_pInstance->instance->GetCreature(*itr);
                 if (pTemp && pTemp->isAlive() && pTemp->GetDistance(m_creature) < 4.0f)

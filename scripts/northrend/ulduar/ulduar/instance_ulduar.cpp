@@ -988,7 +988,7 @@ bool instance_ulduar::CheckAchievementCriteriaMeet(uint32 uiCriteriaId, Player c
             if (!instance->IsRegularDifficulty())
                 return false;
 
-            for (std::list<uint64>::const_iterator itr = m_lIronDwarvesAchievList.begin(); itr != m_lIronDwarvesAchievList.end(); ++itr)
+            for (GUIDList::const_iterator itr = m_lIronDwarvesAchievList.begin(); itr != m_lIronDwarvesAchievList.end(); ++itr)
             {
                 if (pTarget && (*itr) == pTarget->GetGUID())
                     return true;
@@ -998,7 +998,7 @@ bool instance_ulduar::CheckAchievementCriteriaMeet(uint32 uiCriteriaId, Player c
             if (instance->IsRegularDifficulty())
                 return false;
 
-            for (std::list<uint64>::const_iterator itr = m_lIronDwarvesAchievList.begin(); itr != m_lIronDwarvesAchievList.end(); ++itr)
+            for (GUIDList::const_iterator itr = m_lIronDwarvesAchievList.begin(); itr != m_lIronDwarvesAchievList.end(); ++itr)
             {
                 if (pTarget && (*itr) == pTarget->GetGUID())
                     return true;
