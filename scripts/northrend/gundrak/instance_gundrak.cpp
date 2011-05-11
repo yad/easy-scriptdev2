@@ -326,7 +326,7 @@ void instance_gundrak::DoAltarVisualEffect(uint8 uiType)
             fHeight += pCollusAltar->GetPositionZ();
 
         std::list<Creature*> lStalkerTargets, lStalkerCasters;
-        for (std::list<uint64>::const_iterator itr = m_luiStalkerGUIDs.begin(); itr != m_luiStalkerGUIDs.end(); itr++)
+        for (GUIDList::const_iterator itr = m_luiStalkerGUIDs.begin(); itr != m_luiStalkerGUIDs.end(); ++itr)
         {
             if (Creature* pStalker = instance->GetCreature(*itr))
             {
@@ -361,8 +361,8 @@ void instance_gundrak::DoAltarVisualEffect(uint8 uiType)
         default: return;
     }
 
-    std::list<uint64>::iterator targetItr = m_luiStalkerTargetGUIDs.begin();
-    std::list<uint64>::iterator casterItr = m_luiStalkerCasterGUIDs.begin();
+    GUIDList::iterator targetItr = m_luiStalkerTargetGUIDs.begin();
+    GUIDList::iterator casterItr = m_luiStalkerCasterGUIDs.begin();
 
     advance(targetItr, uiIndex);
     advance(casterItr, uiIndex);
