@@ -1,18 +1,17 @@
 -- Instance Eye of Eternity
--- Instance last changes: a658
+-- Instance last changes: a39
 
 -- Set instance script
 UPDATE instance_template SET ScriptName = 'instance_eye_of_eternity' WHERE map = 616;
 
 -- Update flags for NPCs/Vehicles
-UPDATE creature_template SET InhabitType = 4, flags_extra = flags_extra | 2 WHERE entry = 30090; -- Vortex;
+UPDATE creature_template SET faction_A = 35, faction_H = 35, InhabitType = 4, flags_extra = flags_extra | 2 WHERE entry = 30090; -- Vortex;
 UPDATE creature_template SET flags_extra = flags_extra | 2, faction_A = 35, faction_H = 35, unit_flags = 0 WHERE entry IN (30234, 30248); -- Hover Disk
 UPDATE creature_template SET flags_extra = flags_extra | 2, faction_A = 35, faction_H = 35, InhabitType = 4 WHERE entry = 30118; -- Portal (Malygos)
 UPDATE creature_template SET flags_extra = flags_extra | 2 WHERE entry = 30282; -- Arcane Overload
 UPDATE creature_template SET mindmg = 1, maxdmg = 1, dmg_multiplier = 1, InhabitType = 4 WHERE entry = 30592; -- Static Field
 
 -- Set scriptnames and some misc data to bosses and GOs
-UPDATE gameobject_template SET flags = 4, data0 = 43 WHERE gameobject_template.entry in (193967, 193905);
 UPDATE `gameobject_template` SET ScriptName = "go_focusing_iris" WHERE `entry` IN (193958, 193960);
 UPDATE creature_template SET ScriptName = 'boss_malygos', unit_flags = unit_flags & ~256 WHERE entry = 28859;
 UPDATE creature_template SET InhabitType = 3 WHERE entry IN (28859, 31734);
@@ -25,7 +24,9 @@ UPDATE creature_template SET faction_A = 14, faction_H = 14, ScriptName = 'npc_p
 UPDATE creature_template SET faction_A = 14, faction_H = 14 WHERE entry = 32187; -- Power Spark (1)
 UPDATE creature_template SET ScriptName = "npc_arcane_overload" WHERE entry = 30282; -- Arcane Overload
 UPDATE creature_template SET ScriptName = 'npc_alexstrasza' WHERE entry = 32295;
-UPDATE `creature_template` SET speed_walk = 1 WHERE entry IN (30084, 32187); -- speed of power sparks
+UPDATE `creature_template` SET `PowerType` = 3, `InhabitType` = 3 WHERE entry=30161;
+UPDATE `creature_template` SET `PowerType` = 3, `InhabitType` = 3 WHERE entry=31752; -- wyrmrest skytalon (1)
+UPDATE `creature_template` SET speed_walk = 2 WHERE entry IN (30084, 32187); -- speed of power sparks
 UPDATE `creature_template` SET InhabitType = 4 WHERE entry IN (32448, 32295); -- Alexstrasza and gift bunny npc fly
 
 DELETE FROM `spell_script_target` WHERE `entry` IN (56505, 61028);
@@ -37,21 +38,9 @@ INSERT INTO `spell_script_target` VALUES
 UPDATE creature_template SET PowerType = 3, minhealth = 100000, maxhealth = 100000, Spell1 = 56091, Spell2 = 56092, Spell3 = 57090, Spell4 = 57143, Spell5 = 57108, Spell6 = 57092 WHERE entry = 32535;
 
 -- hover disk
-DELETE FROM npc_spellclick_spells WHERE npc_entry = 30248;
-INSERT INTO npc_spellclick_spells VALUES
-(30248, 75648, 0, 0, 0, 1);
-
--- old veh patch
--- allow drakes to be healed and use proper spell2 entry
--- UPDATE vehicle_data SET flags = flags|0x0010, Spell2 = 56092 WHERE entry = 165;
-
--- Hover Disk
--- unused until casting from vehicles get implemented
--- DELETE FROM vehicle_seat_data WHERE seat = 2223;
--- INSERT INTO vehicle_seat_data (seat, flags) VALUES
--- (2223, 5);
--- make disk unattackable
--- UPDATE vehicle_data SET flags = flags|0x0080|0x0004|0x0008 WHERE entry = 223;
+DELETE FROM `npc_spellclick_spells` WHERE npc_entry=30248;
+INSERT INTO `npc_spellclick_spells` (npc_entry, spell_id, quest_start, quest_start_active, quest_end, cast_flags) VALUES
+(30248, 48754, 0, 0, 0, 1);
 
 -- Fix Loot caches being not selectable
 UPDATE gameobject_template SET faction = 35, flags = 0 WHERE entry IN (193967, 193905);

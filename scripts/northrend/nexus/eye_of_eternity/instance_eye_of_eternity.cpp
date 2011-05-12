@@ -1,4 +1,4 @@
-/* Copyright (C) 2006 - 2011 ScriptDev2 <https://scriptdev2.svn.sourceforge.net/>
+/* Copyright (C) 2006 - 2009 ScriptDev2 <https://scriptdev2.svn.sourceforge.net/>
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -25,176 +25,192 @@ EndScriptData */
 #include "precompiled.h"
 #include "eye_of_eternity.h"
 
-struct MANGOS_DLL_DECL instance_eye_of_eternity : public ScriptedInstance
+
+Instance_eye_of_eternity::Instance_eye_of_eternity(Map* pMap) : ScriptedInstance(pMap)
 {
-    instance_eye_of_eternity(Map* pMap) : ScriptedInstance(pMap) {Initialize();}
+    Initialize();
+}
 
-    std::string strInstData;
-    uint32 m_auiEncounter[MAX_ENCOUNTER];
+void Instance_eye_of_eternity::Initialize()
+{
+    memset(&m_auiEncounter, 0, sizeof(m_auiEncounter));
 
-    uint64 m_uiMalygosGUID;
-    uint64 m_uiPlatformGUID;
-    uint64 m_uiExitPortalGUID;
-    uint64 m_uiFocusingIrisGUID;
-    uint64 m_uiGiftGUID;
-    uint64 m_uiHeartGUID;
+    m_uiMalygosGUID = 0;
+    m_uiPlatformGUID = 0;
+    m_uiExitPortalGUID = 0;
+    m_uiFocusingIrisGUID = 0;
+    m_uiGiftGUID = 0;
+    m_uiHeartGUID = 0;
+}
 
-    void Initialize()
+void Instance_eye_of_eternity::OnCreatureCreate(Creature* pCreature)
+{
+    switch(pCreature->GetEntry())
     {
-        memset(&m_auiEncounter, 0, sizeof(m_auiEncounter));
-
-        m_uiMalygosGUID = 0;
-        m_uiPlatformGUID = 0;
-        m_uiExitPortalGUID = 0;
-        m_uiFocusingIrisGUID = 0;
-        m_uiGiftGUID = 0;
-        m_uiHeartGUID = 0;
+        case NPC_MALYGOS:
+            m_uiMalygosGUID = pCreature->GetGUID();
+            pCreature->SetActiveObjectState(true);
+            break;
     }
+}
 
-    void OnCreatureCreate(Creature* pCreature)
+void Instance_eye_of_eternity::OnObjectCreate(GameObject* pGo)
+{
+    switch(pGo->GetEntry())
     {
-        switch(pCreature->GetEntry())
+        case GO_PLATFORM:
+            m_uiPlatformGUID = pGo->GetGUID();
+            break;
+        case GO_EXIT_PORTAL:
+            m_uiExitPortalGUID = pGo->GetGUID();
+            break;
+        case GO_FOCUSING_IRIS:
+        case GO_FOCUSING_IRIS_H:
+            m_uiFocusingIrisGUID = pGo->GetGUID();
+            break;
+        case GO_ALEXSTRASZAS_GIFT:
+        case GO_ALEXSTRASZAS_GIFT_H:
+            m_uiGiftGUID = pGo->GetGUID();
+            break;
+        case GO_HEART_OF_MAGIC:
+        case GO_HEART_OF_MAGIC_H:
+            m_uiHeartGUID = pGo->GetGUID();
+            break;
+    }
+}
+
+bool Instance_eye_of_eternity::IsEncounterInProgress() const
+{
+    for (uint8 i = 0; i < MAX_ENCOUNTER; ++i)
+        if (m_auiEncounter[i] == IN_PROGRESS)
+            return true;
+
+    return false;
+}
+
+void Instance_eye_of_eternity::SetData(uint32 uiType, uint32 uiData)
+{
+    switch(uiType)
+    {
+        case TYPE_MALYGOS:
         {
-            case NPC_MALYGOS:
-                m_uiMalygosGUID = pCreature->GetGUID();
-                pCreature->SetActiveObjectState(true);
-                break;
-        }
-    }
-    
-    void OnObjectCreate(GameObject* pGo)
-    {
-        switch(pGo->GetEntry())
-        {
-            case GO_PLATFORM:
-                m_uiPlatformGUID = pGo->GetGUID();
-                break;
-            case GO_EXIT_PORTAL:
-                m_uiExitPortalGUID = pGo->GetGUID();
-                break;
-            case GO_FOCUSING_IRIS:
-            case GO_FOCUSING_IRIS_H:
-                m_uiFocusingIrisGUID = pGo->GetGUID();
-                break;
-            case GO_ALEXSTRASZAS_GIFT:
-            case GO_ALEXSTRASZAS_GIFT_H:
-                m_uiGiftGUID = pGo->GetGUID();
-                break;
-            case GO_HEART_OF_MAGIC:
-            case GO_HEART_OF_MAGIC_H:
-                m_uiHeartGUID = pGo->GetGUID();
-                break;
-        }
-    }
-
-    bool IsEncounterInProgress() const
-    {
-        for (uint8 i = 0; i < MAX_ENCOUNTER; ++i)
-            if (m_auiEncounter[i] == IN_PROGRESS)
-                return true;
-
-        return false;
-    }
-
-    void SetData(uint32 uiType, uint32 uiData)
-    {
-        switch(uiType)
-        {
-            case TYPE_MALYGOS:
+            if (uiData == NOT_STARTED)
             {
-                if (uiData == NOT_STARTED)
+                if (GameObject* pFocusingIris = instance->GetGameObject(m_uiFocusingIrisGUID))
                 {
-                    if (GameObject* pFocusingIris = instance->GetGameObject(m_uiFocusingIrisGUID))
-                    {
-                        pFocusingIris->SetGoState(GO_STATE_READY);
-                        pFocusingIris->SetPhaseMask(1, true);
-                    }
-                    if (GameObject* pExitPortal = instance->GetGameObject(m_uiExitPortalGUID))
-                        pExitPortal->SetPhaseMask(1, true);
-                    if (GameObject* pPlatform = instance->GetGameObject(m_uiPlatformGUID))
-                        pPlatform->RemoveFlag(GAMEOBJECT_FLAGS, GO_FLAG_DESTROYED);
+                    pFocusingIris->SetGoState(GO_STATE_READY);
+                    pFocusingIris->SetPhaseMask(1, true);
                 }
-                if (uiData == IN_PROGRESS)
-                {
-                    if (GameObject* pFocusingIris = instance->GetGameObject(m_uiFocusingIrisGUID))
-                        pFocusingIris->SetPhaseMask(2, true);
-                    if (GameObject* pExitPortal = instance->GetGameObject(m_uiExitPortalGUID))
-                        pExitPortal->SetPhaseMask(2, true);
-                }
-                if (uiData == DONE)
-                {
-                    if (GameObject* pExitPortal = instance->GetGameObject(m_uiExitPortalGUID))
-                        pExitPortal->SetPhaseMask(1, true);
-                    DoRespawnGameObject(m_uiGiftGUID, HOUR*IN_MILLISECONDS);
-                    DoRespawnGameObject(m_uiHeartGUID, HOUR*IN_MILLISECONDS);
-                }
-                m_auiEncounter[0] = uiData;
-                break;
+                if (GameObject* pExitPortal = instance->GetGameObject(m_uiExitPortalGUID))
+                    pExitPortal->SetPhaseMask(1, true);
+                if (GameObject* pPlatform = instance->GetGameObject(m_uiPlatformGUID))
+                    pPlatform->RemoveFlag(GAMEOBJECT_FLAGS, GO_FLAG_DESTROYED);
             }
+            if (uiData == IN_PROGRESS)
+            {
+                if (GameObject* pFocusingIris = instance->GetGameObject(m_uiFocusingIrisGUID))
+                    pFocusingIris->SetPhaseMask(2, true);
+                if (GameObject* pExitPortal = instance->GetGameObject(m_uiExitPortalGUID))
+                    pExitPortal->SetPhaseMask(2, true);
+            }
+            if (uiData == DONE)
+            {
+                if (GameObject* pExitPortal = instance->GetGameObject(m_uiExitPortalGUID))
+                    pExitPortal->SetPhaseMask(1, true);
+                DoRespawnGameObject(m_uiGiftGUID, HOUR*IN_MILLISECONDS);
+                DoRespawnGameObject(m_uiHeartGUID, HOUR*IN_MILLISECONDS);
+            }
+            m_auiEncounter[0] = uiData;
+            break;
         }
-        OUT_SAVE_INST_DATA;
-        std::ostringstream saveStream;
-        saveStream << m_auiEncounter[0];
-
-        strInstData = saveStream.str();
-        SaveToDB();
-        OUT_SAVE_INST_DATA_COMPLETE;
-
     }
+    OUT_SAVE_INST_DATA;
+    std::ostringstream saveStream;
+    saveStream << m_auiEncounter[0];
 
-    const char* Save()
-    {
-        return strInstData.c_str();
-    }
+    strInstData = saveStream.str();
+    SaveToDB();
+    OUT_SAVE_INST_DATA_COMPLETE;
 
-    void Load(const char* chrIn)
-    {
-        if (!chrIn)
-        {
-            OUT_LOAD_INST_DATA_FAIL;
-            return;
-        }
+}
 
-        OUT_LOAD_INST_DATA(chrIn);
-
-        std::istringstream loadStream(chrIn);
-        loadStream >> m_auiEncounter[0];
-
-        for(uint8 i = 0; i < MAX_ENCOUNTER; ++i)
-        {
-            if (m_auiEncounter[i] == IN_PROGRESS)
-                m_auiEncounter[i] = NOT_STARTED;
-        }
-
-        OUT_LOAD_INST_DATA_COMPLETE;
-    }
-
-    uint32 GetData(uint32 uiType)
-    {
-        switch(uiType)
-        {
-            case TYPE_MALYGOS:
-                return m_auiEncounter[0];
-        }
-        return 0;
-    }
-
-    uint64 GetData64(uint32 uiData)
-    {
-        switch(uiData)
-        {
-            case NPC_MALYGOS:
-                return m_uiMalygosGUID;
-            case GO_PLATFORM:
-                return m_uiPlatformGUID;
-        }
-        return 0;
-    }
-};
-
-InstanceData* GetInstanceData_instance_eye_of_eternity(Map* pMap)
+const char* Instance_eye_of_eternity::Save()
 {
-    return new instance_eye_of_eternity(pMap);
+    return strInstData.c_str();
+}
+
+void Instance_eye_of_eternity::Load(const char* chrIn)
+{
+    if (!chrIn)
+    {
+        OUT_LOAD_INST_DATA_FAIL;
+        return;
+    }
+
+    OUT_LOAD_INST_DATA(chrIn);
+
+    std::istringstream loadStream(chrIn);
+    loadStream >> m_auiEncounter[0];
+
+    for(uint8 i = 0; i < MAX_ENCOUNTER; ++i)
+    {
+        if (m_auiEncounter[i] == IN_PROGRESS)
+            m_auiEncounter[i] = NOT_STARTED;
+    }
+
+    OUT_LOAD_INST_DATA_COMPLETE;
+}
+
+uint32 Instance_eye_of_eternity::GetData(uint32 uiType)
+{
+    switch(uiType)
+    {
+        case TYPE_MALYGOS:
+            return m_auiEncounter[0];
+    }
+    return 0;
+}
+
+uint64 Instance_eye_of_eternity::GetData64(uint32 uiData)
+{
+    switch(uiData)
+    {
+        case NPC_MALYGOS:
+            return m_uiMalygosGUID;
+        case GO_PLATFORM:
+            return m_uiPlatformGUID;
+    }
+    return 0;
+}
+
+bool Instance_eye_of_eternity::CheckAchievementCriteriaMeet(uint32 uiCriteriaId, Player const* pSource, Unit const* pTarget, uint32 uiMiscValue1 /* = 0*/)
+{
+    switch (uiCriteriaId)
+    {
+        case ACHIEV_CRIT_DENYING_THE_SCION_10:
+            if (instance->IsRegularDifficulty())
+            {
+                for (std::list<uint64>::iterator i = m_lDenyingScionGUIDList.begin(); i != m_lDenyingScionGUIDList.end(); i++)
+                    if (pSource->GetGUID() == *i)
+                        return true;
+            }
+            break;
+        case ACHIEV_CRIT_DENYING_THE_SCION_25:
+            if (!instance->IsRegularDifficulty())
+            {
+                for (std::list<uint64>::iterator i = m_lDenyingScionGUIDList.begin(); i != m_lDenyingScionGUIDList.end(); i++)
+                    if (pSource->GetGUID() == *i)
+                        return true;
+            }
+            break;
+    }
+
+    return false;
+}
+
+InstanceData* GetInstanceData_Instance_eye_of_eternity(Map* pMap)
+{
+    return new Instance_eye_of_eternity(pMap);
 }
 
 void AddSC_instance_eye_of_eternity()
@@ -202,6 +218,6 @@ void AddSC_instance_eye_of_eternity()
     Script* pNewScript;
     pNewScript = new Script;
     pNewScript->Name = "instance_eye_of_eternity";
-    pNewScript->GetInstanceData = &GetInstanceData_instance_eye_of_eternity;
+    pNewScript->GetInstanceData = &GetInstanceData_Instance_eye_of_eternity;
     pNewScript->RegisterSelf();
 }
