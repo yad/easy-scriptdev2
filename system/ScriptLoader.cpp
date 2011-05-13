@@ -380,7 +380,7 @@ extern void AddSC_boss_auriaya();
 extern void AddSC_boss_freya();
 extern void AddSC_boss_hodir();
 extern void AddSC_boss_ignis();
-// extern void AddSC_boss_iron_council();
+extern void AddSC_boss_assembly_of_iron();
 extern void AddSC_boss_kologarn();
 // extern void AddSC_boss_leviathan();
 extern void AddSC_boss_mimiron();
@@ -903,7 +903,7 @@ void AddScripts()
     AddSC_boss_freya();
     AddSC_boss_hodir();
     AddSC_boss_ignis();
-    // AddSC_boss_iron_council();
+    AddSC_boss_assembly_of_iron();
     AddSC_boss_kologarn();
     // AddSC_boss_leviathan();
     AddSC_boss_mimiron();
