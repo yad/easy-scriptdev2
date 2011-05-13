@@ -610,7 +610,7 @@ bool GossipHello_npc_death_knight_initiate(Player* pPlayer, Creature* pCreature)
     if (pPlayer->GetQuestStatus(QUEST_DEATH_CHALLENGE) == QUEST_STATUS_INCOMPLETE)
     {
         pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ACCEPT_DUEL, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
-        pPlayer->SEND_GOSSIP_MENU(13433, pCreature->GetGUID());
+        pPlayer->SEND_GOSSIP_MENU(13433, pCreature->GetObjectGuid());
         return true;
     }
     return false;
@@ -819,7 +819,7 @@ bool QuestAccept_npc_koltira_deathweaver(Player* pPlayer, Creature* pCreature, c
         pCreature->SetStandState(UNIT_STAND_STATE_STAND);
 
         if (npc_koltira_deathweaverAI* pEscortAI = dynamic_cast<npc_koltira_deathweaverAI*>(pCreature->AI()))
-            pEscortAI->Start(false, pPlayer->GetGUID(), pQuest);
+            pEscortAI->Start(false, pPlayer, pQuest);
     }
     return true;
 }
@@ -3676,7 +3676,7 @@ CreatureAI* GetAI_npc_highlord_darion_mograine(Creature* pCreature)
 }
 
 CreatureAI* GetAI_npc_koltira_orbaz_tassarian_dawn_of_light(Creature* pCreature)
-{ 
+{
      return new npc_koltira_orbaz_tassarian_dawn_of_lightAI (pCreature);
 }
 
