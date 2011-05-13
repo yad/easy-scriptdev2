@@ -577,7 +577,7 @@ struct MANGOS_DLL_DECL npc_tyrion_spybotAI : public npc_escortAI
                                 if (Player* pPlayer = GetPlayerForEscort())
                                {
                                     if (npc_lord_gregor_lescovarAI* pEscortAI = dynamic_cast<npc_lord_gregor_lescovarAI*>(pLescovar->AI()))
-                                        pEscortAI->Start(true, pPlayer->GetGUID());
+                                        pEscortAI->Start(true, pPlayer);
                                     
                                 }
                             }
@@ -613,7 +613,7 @@ bool QuestAccept_npc_tyrion(Player* pPlayer, Creature* pCreature, const Quest* p
         {
             if (npc_tyrion_spybotAI* pEscortAI = dynamic_cast<npc_tyrion_spybotAI*>(pTyrionSpybot->AI()))
              {                         
-                pEscortAI->Start(true, pPlayer->GetGUID(), pQuest);
+                pEscortAI->Start(true, pPlayer, pQuest);
             }
             return true;
         }

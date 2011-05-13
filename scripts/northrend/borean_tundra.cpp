@@ -1480,7 +1480,7 @@ bool QuestAccept_npc_mootoo_the_younger(Player* pPlayer, Creature* pCreature, co
         DoScriptText(SAY_1, pCreature);
 
 		if (npc_mootoo_the_youngerAI* pEscortAI = dynamic_cast<npc_mootoo_the_youngerAI*>(pCreature->AI()))
-            	pEscortAI->Start(false, pPlayer->GetGUID(), pQuest, true);
+            	pEscortAI->Start(false, pPlayer, pQuest, true);
 
     }
     return true;
@@ -1555,7 +1555,7 @@ bool QuestAccept_npc_bonker_togglevolt(Player* pPlayer, Creature* pCreature, con
 	        DoScriptText(SAY_bonker_2, pCreature, pPlayer);
             
 			if (npc_bonker_togglevoltAI* pEscortAI = dynamic_cast<npc_bonker_togglevoltAI*>(pCreature->AI()))
-            		pEscortAI->Start(false, pPlayer->GetGUID(), pQuest, true);
+            		pEscortAI->Start(false, pPlayer, pQuest, true);
         }
         return true;
     }

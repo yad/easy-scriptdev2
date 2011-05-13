@@ -780,7 +780,7 @@ bool QuestAccept_npc_kurenai_captive(Player* pPlayer, Creature* pCreature, const
             pCreature->SetStandState(UNIT_STAND_STATE_STAND);
             pCreature->setFaction(FACTION_ESCORT_A_NEUTRAL_ACTIVE);
 
-            pEscortAI->Start(true, pPlayer->GetGUID(), pQuest);
+            pEscortAI->Start(true, pPlayer, pQuest);
 
             DoScriptText(SAY_START, pCreature);
 
