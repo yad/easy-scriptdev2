@@ -620,7 +620,7 @@ struct MANGOS_DLL_DECL boss_thorimAI : public ScriptedAI
 
     // mob list check
     std::list<Creature*> lIronDwarfes;
-    std::list<uint64> m_lOrbsGUIDList;
+    GUIDList m_lOrbsGUIDList;
 
     void Reset()
     {

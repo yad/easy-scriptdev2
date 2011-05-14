@@ -65,7 +65,7 @@ struct MANGOS_DLL_DECL boss_ichoronAI : public ScriptedAI
         Reset();
     }
     ScriptedInstance *m_pInstance;
-    std::list<uint64> m_lWaterElementsGUIDList;
+    GUIDList m_lWaterElementsGUIDList;
 
     bool m_bIsRegularMode;
     bool m_bIsExploded;
@@ -171,7 +171,7 @@ struct MANGOS_DLL_DECL boss_ichoronAI : public ScriptedAI
         if (m_lWaterElementsGUIDList.empty())
             return;
 
-        for(std::list<uint64>::iterator itr = m_lWaterElementsGUIDList.begin(); itr != m_lWaterElementsGUIDList.end(); ++itr)
+        for(GUIDList::iterator itr = m_lWaterElementsGUIDList.begin(); itr != m_lWaterElementsGUIDList.end(); ++itr)
         {
             if (Creature* pTemp = m_creature->GetMap()->GetCreature(*itr))
             {

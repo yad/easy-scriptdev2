@@ -3,7 +3,8 @@ UPDATE `areatrigger_teleport` SET `required_level` = '80' WHERE `areatrigger_tel
 
 UPDATE `creature` SET `spawntimesecs` = 7200 WHERE `map` = 631 AND (`spawntimesecs` BETWEEN 200 AND 7100 );
 
-DELETE FROM `gameobject` WHERE `guid` = 913334;
+/* YTDB data needs review
+DELETE FROM `gameobject` WHERE `guid` = 913334;*/
 INSERT INTO `gameobject` (`guid`, `id`, `map`, `spawnMask`, `phaseMask`, `position_x`, `position_y`, `position_z`, `orientation`, `rotation0`, `rotation1`, `rotation2`, `rotation3`, `spawntimesecs`, `animprogress`, `state`) VALUES
 (913334, 202244, 631, 3, 1, -209.5, 2211.91, 199.97, 3.07661, 0, 0, 0.999472, 0.0324833, 0, 0, 1);
 
@@ -11,13 +12,14 @@ UPDATE `gameobject_template` SET `flags` = 0, `ScriptName` = 'go_icecrown_telepo
 UPDATE `gameobject` SET `phaseMask` = 1 WHERE `id`  IN (202242,202243,202244,202245,202235,202223,202246);
 DELETE FROM `areatrigger_teleport` WHERE `id` = 5718 AND `target_map` = 631;
 
-DELETE FROM `creature` WHERE `id` = 99322;
-DELETE FROM `creature_template` WHERE `entry` = 99322;
+/* why?
+delete FROM `creature` WHERE `id` = 99322;
+delete FROM `creature_template` WHERE `entry` = 99322;
 DELETE FROM `locales_npc_text` WHERE `entry` = 99322;
 DELETE FROM `npc_text` WHERE `ID` = 99322;
 DELETE FROM `locales_npc_text` WHERE `entry` = 99323;
 DELETE FROM `npc_text` WHERE `ID` = 99323;
-DELETE FROM `gameobject` WHERE `guid` IN (913334);
+DELETE FROM `gameobject` WHERE `guid` IN (913334);*/
 
 UPDATE `instance_template` SET `ScriptName`='instance_icecrown_spire' WHERE `map`=631;
 
@@ -49,7 +51,8 @@ UPDATE `creature_template` SET `ScriptName`='mob_cult_fanatic', `AIName`='' WHER
 -- Marrowgar
 UPDATE `creature_template` SET `ScriptName`='boss_lord_marrowgar' WHERE `entry`= 36612;
 UPDATE `gameobject_template` SET `faction` = '114',`data0` = '0' WHERE `gameobject_template`.`entry` IN (201910,201911);
-UPDATE `gameobject` SET `state` = '1' WHERE `guid` IN (72526,72525);
+/* YTDB data not valid
+UPDATE `gameobject` SET `state` = '1' WHERE `guid` IN (72526,72525);*/
 UPDATE `creature_template` SET `ScriptName`='mob_coldflame', `minlevel` = 82, `maxlevel` = 82, `modelid_1` = 11686, `modelid_2` = 11686, `modelid_3` = 11686, `modelid_4` = 11686, `faction_A` = 14, `faction_H` = 14  WHERE `entry`= 36672;
 UPDATE `creature_template` SET `ScriptName`='mob_bone_spike' WHERE `entry`= 38711;
 
@@ -58,7 +61,8 @@ UPDATE `creature_template` SET `ScriptName`='mob_spire_frostwyrm', `AIName`='' W
 DELETE FROM `creature_ai_scripts` WHERE `creature_id` = 37230;
 UPDATE `creature_template` SET `ScriptName`='mob_frost_giant', `AIName`='' WHERE `entry` IN (38490, 38494) ;
 DELETE FROM `creature_ai_scripts` WHERE `creature_id` IN (38490, 38494);
-DELETE FROM `creature` WHERE `guid` = 94094 AND `id` = 38490;
+/* YTDB data not valid 
+DELETE FROM `creature` WHERE `guid` = 94094 AND `id` = 38490;*/
 
 -- Gunship armory (override)
 DELETE FROM `gameobject` WHERE `id` IN (201872,201873,201874,201875,202177,202178,202179,202180);
@@ -181,6 +185,7 @@ UPDATE `creature_template` SET `faction_A` = 35, `faction_H` = 35 WHERE `entry`=
 UPDATE `creature_template` SET `faction_A` = 14, `faction_H` = 14, `ScriptName`='mob_nightmare_portal', `AIName`='' WHERE `entry`= 38429;
 UPDATE `creature_template` SET `ScriptName`='mob_mana_void', `AIName`='' WHERE `entry`= 38068;
 DELETE FROM `creature` WHERE `guid` = 47738 AND `id` = 38589;
+DELETE FROM `pool_creature` WHERE `guid`=47738;
 
 UPDATE `gameobject_template` SET `faction` = '0',`data0` = '0' WHERE `gameobject_template`.`entry` IN (201375,201373);
 UPDATE `gameobject_template` SET `faction` = '114',`data0` = '0' WHERE `gameobject_template`.`entry` IN (201374);
@@ -200,7 +205,7 @@ UPDATE `gameobject_template` SET `faction` = '114',`data0` = '0' WHERE `gameobje
 UPDATE `gameobject` SET `state` = '1' WHERE `id` IN (201369,201379);
 -- frost bomb target from Lordronn
 DELETE FROM `creature_template_addon` WHERE `entry` = 37186;
-INSERT INTO `creature_template_addon` (`entry`, `auras`) VALUES (37186, '70022 0');
+INSERT INTO `creature_template_addon` (`entry`, `auras`) VALUES (37186, 70022);
 
 
 -- Lich King

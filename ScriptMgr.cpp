@@ -287,7 +287,7 @@ bool GossipSelect(Player* pPlayer, Creature* pCreature, uint32 uiSender, uint32 
     if (!tmpscript || !tmpscript->pGossipSelect)
         return false;
 
-//    pPlayer->PlayerTalkClass->ClearMenus();
+    pPlayer->PlayerTalkClass->ClearMenus();
 //    this expression is wrong, where 'return false' from script's GossipSelect
 //    not return menu ID (cleared in this string) and not allow to work with database-based menus
 

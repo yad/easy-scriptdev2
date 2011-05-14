@@ -456,13 +456,9 @@ struct MANGOS_DLL_DECL npc_silvermoon_harryAI : public ScriptedAI
         {
             if (Player* pPlayer = pDoneBy->GetCharmerOrOwnerPlayerOrPlayerItself())
             {
-                if (!m_bHarryBeaten && pPlayer->GetQuestStatus(QUEST_GAMBLING_DEBT) == QUEST_STATUS_INCOMPLETE)
+                if (pPlayer->GetQuestStatus(QUEST_GAMBLING_DEBT) == QUEST_STATUS_INCOMPLETE)
                 {
                     uiDamage = 0;                           // Take 0 damage
-
-                    m_creature->RemoveAllAuras();
-                    m_creature->DeleteThreatList();
-                    m_creature->CombatStop(true);
 
                     if (m_creature->getFaction() != m_creature->GetCreatureInfo()->faction_A)
                         m_creature->setFaction(m_creature->GetCreatureInfo()->faction_A);
@@ -491,6 +487,14 @@ struct MANGOS_DLL_DECL npc_silvermoon_harryAI : public ScriptedAI
 
         if (!m_creature->SelectHostileTarget() || !m_creature->getVictim())
             return;
+
+        if (m_bHarryBeaten)
+        {                    
+            m_creature->RemoveAllAuras();
+            m_creature->DeleteThreatList();
+            m_creature->CombatStop(true);
+            return;
+        }
 
         if (m_uiScorchTimer < uiDiff)
         {
@@ -571,6 +575,271 @@ bool GossipSelect_npc_silvermoon_harry(Player* pPlayer, Creature* pCreature, uin
     return true;
 }
 
+/*######
+## npc_alliance_banner
+######*/
+
+enum
+{
+    NPC_WINTERSKORN_DEFENDER    = 24015,
+	QUEST_DROP_IT_THEN_ROCK_IT	= 11429
+
+};
+
+struct MANGOS_DLL_DECL npc_bannerAI : public ScriptedAI
+{
+    npc_bannerAI(Creature* pCreature) : ScriptedAI(pCreature) { Reset(); }
+    
+     
+	 uint64 uiWaveTimer;
+     uint32 uiWaveCounter;
+
+     void Reset()
+     {
+		 uiWaveTimer = 2000;
+		 uiWaveCounter = 0;
+     }
+
+     void JustSummoned(Creature* pSummoned)
+     {
+		 pSummoned->Attack(m_creature, true);
+         pSummoned->AddThreat(m_creature, 999.9f, true);
+     }              
+     void UpdateAI(const uint32 uiDiff)
+        {
+				if (uiWaveTimer <= uiDiff)
+				{										
+					if(uiWaveCounter == 4)
+					{
+						if(Player *pPlayer = m_creature->GetMap()->GetPlayer(m_creature->GetOwnerGuid()))
+						{
+							pPlayer->AreaExploredOrEventHappens(QUEST_DROP_IT_THEN_ROCK_IT);
+                            m_creature->ForcedDespawn(1000);
+						}
+					}
+					else m_creature->SummonCreature(NPC_WINTERSKORN_DEFENDER, 1481.52f, -5326.88f, 194.52f, 0, TEMPSUMMON_CORPSE_DESPAWN, 0);	
+				  uiWaveTimer = 5000;
+				  uiWaveCounter++;
+				} else uiWaveTimer -= uiDiff;
+			
+        }
+};
+
+CreatureAI* GetAI_npc_banner(Creature* pCreature)
+{
+    return new npc_bannerAI(pCreature);
+}
+
+/*######
+## npc_king_ymiron
+######*/
+
+enum
+{
+    AC_VRYKUL_SAY_1			= -1799000,
+	AC_VRYKUL_SAY_2			= -1799001,
+	AC_VRYKUL_SAY_3			= -1799002,
+	AC_VRYKUL_SAY_4			= -1799003,
+	AC_VRYKUL_SAY_5			= -1799004,
+    AC_VRYKUL_SAY_6			= -1799005,
+	AC_VRYKUL_SAY_7			= -1799006,
+	AC_VRYKUL_SAY_8	        = -1799008,
+
+    KING_YMIRON_SAY_1       = -1799007, 
+    KING_YMIRON_SAY_2       = -1799009,
+    KING_YMIRON_SAY_3       = -1799010,
+    KING_YMIRON_SAY_4       = -1799012,
+    KING_YMIRON_SAY_5       = -1799013,
+    KING_YMIRON_SAY_6       = -1799014,
+    KING_YMIRON_SAY_7       = -1799015,
+    KING_YMIRON_SAY_8       = -1799016,
+    KING_YMIRON_SAY_9       = -1799018,
+    KING_YMIRON_SAY_10      = -1799020,
+
+    TEXT_EMOTE_1            = -1799011,
+    TEXT_EMOTE_2            = -1799017,
+    TEXT_EMOTE_3            = -1799019,
+
+	NPC_ANCIENT_CITIZEN_M   = 24323,
+    NPC_ANCIENT_CITIZEN_F   = 24322,
+	QUEST_ANGUISH_NIFFLEVAR	= 11344
+
+};
+
+struct MANGOS_DLL_DECL npc_king_ymironAI : public ScriptedAI
+{
+    npc_king_ymironAI(Creature* pCreature) : ScriptedAI(pCreature) { Reset(); }
+    
+     uint64 uiPlayerGUID;
+	 uint64 uiSpeechTimer;
+     bool bEventStarted;
+	 uint32 uiPhase;
+
+     void Reset()
+     {
+         uiPlayerGUID = 0;
+         bEventStarted = false;
+		 uiPhase = 0;
+		 uiSpeechTimer = 2000;
+     }
+
+              
+     void MoveInLineOfSight(Unit *pWho)
+     {
+         ScriptedAI::MoveInLineOfSight(pWho);
+
+
+		 if (pWho->GetTypeId() == TYPEID_PLAYER && m_creature->IsWithinDistInMap(pWho, 40.0f) )
+         {
+             if(!bEventStarted)
+             {
+			    uiPlayerGUID = pWho->GetGUID();
+                bEventStarted = true;  
+             }
+         }
+      }
+     
+     void UpdateAI(const uint32 uiDiff)
+        {
+			if(bEventStarted)
+			{
+				if (uiSpeechTimer <= uiDiff)
+				{
+					switch(uiPhase)
+					{
+						case 0: if(Creature *pFemaleVrykul= GetClosestCreatureWithEntry(m_creature, NPC_ANCIENT_CITIZEN_M, 40.0f))
+									{
+										DoScriptText(AC_VRYKUL_SAY_1, pFemaleVrykul);
+									}
+								uiPhase++; uiSpeechTimer = 5000; break;
+						case 1: if(Creature *pFemaleVrykul= GetClosestCreatureWithEntry(m_creature, NPC_ANCIENT_CITIZEN_F, 40.0f))
+									{
+										DoScriptText(AC_VRYKUL_SAY_2, pFemaleVrykul);
+									}
+								uiPhase++; uiSpeechTimer = 5000; break;
+                        case 2: if(Creature *pFemaleVrykul= GetClosestCreatureWithEntry(m_creature, NPC_ANCIENT_CITIZEN_M, 40.0f))
+									{
+										DoScriptText(AC_VRYKUL_SAY_3, pFemaleVrykul);
+									}
+								uiPhase++; uiSpeechTimer = 5000; break;
+						case 3: if(Creature *pFemaleVrykul= GetClosestCreatureWithEntry(m_creature, NPC_ANCIENT_CITIZEN_F, 40.0f))
+									{
+										DoScriptText(AC_VRYKUL_SAY_4, pFemaleVrykul);
+									}
+								uiPhase++; uiSpeechTimer = 5000; break;
+                        case 4: if(Creature *pFemaleVrykul= GetClosestCreatureWithEntry(m_creature, NPC_ANCIENT_CITIZEN_M, 40.0f))
+									{
+										DoScriptText(AC_VRYKUL_SAY_5, pFemaleVrykul);
+									}
+								uiPhase++; uiSpeechTimer = 5000; break;
+						case 5: if(Creature *pFemaleVrykul= GetClosestCreatureWithEntry(m_creature, NPC_ANCIENT_CITIZEN_F, 40.0f))
+									{
+										DoScriptText(AC_VRYKUL_SAY_6, pFemaleVrykul);
+									}
+								uiPhase++; uiSpeechTimer = 5000; break;
+                        case 6: if(Creature *pFemaleVrykul= GetClosestCreatureWithEntry(m_creature, NPC_ANCIENT_CITIZEN_M, 40.0f))
+									{
+										DoScriptText(AC_VRYKUL_SAY_7, pFemaleVrykul);
+									}
+								uiPhase++; uiSpeechTimer = 5000; break;
+                        case 7: DoScriptText(KING_YMIRON_SAY_1, m_creature); uiPhase++; uiSpeechTimer = 2000; break;
+                        case 8: if(Creature *pFemaleVrykul= GetClosestCreatureWithEntry(m_creature, NPC_ANCIENT_CITIZEN_F, 40.0f))
+									{
+										DoScriptText(AC_VRYKUL_SAY_8, pFemaleVrykul);
+									}
+								uiPhase++; uiSpeechTimer = 5000; break;
+                        case 9: DoScriptText(KING_YMIRON_SAY_2, m_creature); uiPhase++; uiSpeechTimer = 5000; break;
+                        case 10: DoScriptText(TEXT_EMOTE_1, m_creature); uiPhase++; uiSpeechTimer = 5000; break;
+                        case 11: DoScriptText(KING_YMIRON_SAY_3, m_creature); uiPhase++; uiSpeechTimer = 5000; break;
+                        case 12: DoScriptText(KING_YMIRON_SAY_4, m_creature); uiPhase++; uiSpeechTimer = 5000; break;
+                        case 13: DoScriptText(KING_YMIRON_SAY_5, m_creature); uiPhase++; uiSpeechTimer = 5000; break;
+                        case 14: DoScriptText(KING_YMIRON_SAY_6, m_creature); uiPhase++; uiSpeechTimer = 5000; break;
+                        case 15: DoScriptText(KING_YMIRON_SAY_7, m_creature); uiPhase++; uiSpeechTimer = 2000; break;
+                        case 16: DoScriptText(TEXT_EMOTE_2, m_creature); uiPhase++; uiSpeechTimer = 2000; break;
+                        case 17: DoScriptText(KING_YMIRON_SAY_8, m_creature); uiPhase++; uiSpeechTimer = 2000; break;
+                        case 18: DoScriptText(TEXT_EMOTE_3, m_creature); uiPhase++; uiSpeechTimer = 2000; break;
+                        case 19: DoScriptText(KING_YMIRON_SAY_9, m_creature); uiPhase++; uiSpeechTimer = 5000; break;
+                        case 20: { DoScriptText(KING_YMIRON_SAY_10, m_creature);
+								    if (Player *pPlayer = m_creature->GetMap()->GetPlayer(uiPlayerGUID))
+									{
+										pPlayer->AreaExploredOrEventHappens(QUEST_ANGUISH_NIFFLEVAR);
+								    }
+									uiPhase = 0; 
+									bEventStarted = false;
+									m_creature->ForcedDespawn(1000);
+									break;
+								}
+
+					}
+
+				} else uiSpeechTimer -= uiDiff;
+
+			}
+
+        }
+};
+
+
+
+CreatureAI* GetAI_npc_king_ymiron(Creature* pCreature)
+{
+    return new npc_king_ymironAI(pCreature);
+}
+
+/*######
+## npc_feknut_bunny
+######*/
+
+enum
+{
+    NPC_DARKCLAW_BAT        = 23959,
+    SPELL_SUMMON_GUANO      = 43307
+
+};
+
+struct MANGOS_DLL_DECL npc_feknut_bunnyAI : public ScriptedAI
+{
+    npc_feknut_bunnyAI(Creature* pCreature) : ScriptedAI(pCreature) { Reset(); }
+    
+     
+	 uint64 uiCheckTimer;
+     bool bChecked;
+
+     void Reset()
+     {
+		 uiCheckTimer = 1000;
+         bChecked = false;
+     }
+         
+     void UpdateAI(const uint32 uiDiff)
+        {
+            if(!bChecked)
+            {
+                if (uiCheckTimer <= uiDiff)
+                {	
+                    if(Creature *pBat = GetClosestCreatureWithEntry(m_creature, NPC_DARKCLAW_BAT, 35.0f))
+                    {
+                        if(pBat->isAlive())
+                            pBat->CastSpell(m_creature, SPELL_SUMMON_GUANO, false);
+                        bChecked = true;
+                        if(Player *pPlayer = m_creature->GetMap()->GetPlayer(m_creature->GetOwnerGuid()))
+                        {
+                            pBat->Attack(pPlayer, true);
+                            pBat->AddThreat(pPlayer, 999.9f, true);
+                            pBat->GetMotionMaster()->MoveChase(pPlayer);
+
+                        }                            
+                    }        	   
+                } else uiCheckTimer -= uiDiff;
+            }			
+        }
+};
+
+CreatureAI* GetAI_npc_feknut_bunny(Creature* pCreature)
+{
+    return new npc_feknut_bunnyAI(pCreature);
+}
+
 void AddSC_howling_fjord()
 {
     Script* pNewScript;
@@ -614,5 +883,20 @@ void AddSC_howling_fjord()
     pNewScript->GetAI = &GetAI_npc_silvermoon_harry;
     pNewScript->pGossipHello = &GossipHello_npc_silvermoon_harry;
     pNewScript->pGossipSelect = &GossipSelect_npc_silvermoon_harry;
+    pNewScript->RegisterSelf();
+
+    pNewScript = new Script;
+    pNewScript->Name = "npc_banner";
+    pNewScript->GetAI = &GetAI_npc_banner;
+    pNewScript->RegisterSelf();
+
+    pNewScript = new Script;
+    pNewScript->Name = "npc_king_ymiron";
+    pNewScript->GetAI = &GetAI_npc_king_ymiron;
+    pNewScript->RegisterSelf();
+
+    pNewScript = new Script;
+    pNewScript->Name = "npc_feknut_bunny";
+    pNewScript->GetAI = &GetAI_npc_feknut_bunny;
     pNewScript->RegisterSelf();
 }

@@ -1,10 +1,13 @@
 -- Remove old versions
+/* unknown YTDB data
+DELETE FROM `creature` WHERE `guid` IN (4456649,4456653,4458724,4458725,4458738,4458739,4458740,4458741,4459981,4459615); 
+*/
 DELETE FROM `creature` WHERE `id` IN (27731,27734,28249,27736,27915,30571,26499,26497,26528,27891,27892,27884,32273,28439);
 
 UPDATE `creature` SET `spawntimesecs`= 36000 WHERE `id` IN (31127, 31126, 28167, 28169);
-REPLACE INTO `spell_script_target` (`entry`, `type`, `targetEntry`) values('58825','1','27733');
-REPLACE INTO `spell_area` (`spell`, `area`, `quest_start`, `quest_start_active`, `quest_end`, `aura_spell`, `racemask`, `gender`, `autocast`) values('35481','4100','0','0','0','0','0','1','1');
-REPLACE INTO `spell_area` (`spell`, `area`, `quest_start`, `quest_start_active`, `quest_end`, `aura_spell`, `racemask`, `gender`, `autocast`) values('35480','4100','0','0','0','0','0','0','1');
+REPLACE INTO `spell_script_target` (`entry`, `type`, `targetEntry`) VALUES('58825','1','27733');
+REPLACE INTO `spell_area` (`spell`, `area`, `quest_start`, `quest_start_active`, `quest_end`, `aura_spell`, `racemask`, `gender`, `autocast`) VALUES('35481','4100','0','0','0','0','0','1','1');
+REPLACE INTO `spell_area` (`spell`, `area`, `quest_start`, `quest_start_active`, `quest_end`, `aura_spell`, `racemask`, `gender`, `autocast`) VALUES('35480','4100','0','0','0','0','0','0','1');
 REPLACE INTO `spell_script_target` (`entry`, `type`, `targetEntry`) VALUES ('58825', '1', '27733');
 
 UPDATE `instance_template` SET `ScriptName` = 'instance_culling_of_stratholme' WHERE map=595;
@@ -36,7 +39,7 @@ UPDATE `creature_template` SET `ScriptName`='boss_malganis' WHERE entry=26533;
 UPDATE `creature_template` SET `ScriptName`='npc_time_riftCS' WHERE entry=28409;
 UPDATE `creature_template` SET `ScriptName`='boss_infinite_corruptor' WHERE entry=32273;
 
-DELETE FROM `creature` WHERE `id` in (27915, 26499, 26497, 26528, 27891, 27892, 32273, 28439);
+DELETE FROM `creature` WHERE `id` IN (27915, 26499, 26497, 26528, 27891, 27892, 32273, 28439);
 INSERT INTO `creature` (id, map, spawnMask, phaseMask, modelid, equipment_id, position_x, position_y, position_z, orientation, spawntimesecs, spawndist, currentwaypoint, curhealth, curmana, DeathState, MovementType) VALUES
 (27915, 595, 3, 1, 0, 0, 1812.49, 1284.81, 142.248, 4.03364, 300, 0, 0, 17010, 0, 0, 0),
 (26499, 595, 3, 1, 0, 1613, 1920.87, 1287.12, 142.935, 6.25562, 43200, 0, 0, 44100, 7988, 0, 0),

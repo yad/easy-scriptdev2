@@ -17,13 +17,14 @@
 /* ScriptData
 SDName: Bloodmyst_Isle
 SD%Complete: 80
-SDComment: Quest support: 9670, 9756(gossip items text needed).
+SDComment: Quest support: 9670, 9756(gossip items text needed), 9740.
 SDCategory: Bloodmyst Isle
 EndScriptData */
 
 /* ContentData
 mob_webbed_creature
 npc_captured_sunhawk_agent
+go_sunhawk_portal_controller
 EndContentData */
 
 #include "precompiled.h"
@@ -120,18 +121,50 @@ bool GossipSelect_npc_captured_sunhawk_agent(Player* pPlayer, Creature* pCreatur
     return true;
 }
 
+enum
+{
+    NPC_PORTAL_CONTROLLER   = 17886,
+    GO_PORTAL_CONTROLLER    = 184850,
+    GO_THE_SUN_GATE         = 182026
+};
+
+bool GOUse_go_sunhawk_portal_controller(Player* pPlayer, GameObject* pGo)
+{
+    if (Creature* pNPCPortalController = GetClosestCreatureWithEntry(pGo, NPC_PORTAL_CONTROLLER, INTERACTION_DISTANCE))
+        pNPCPortalController->ForcedDespawn();
+
+    std::list<GameObject*>lControllers;
+    GetGameObjectListWithEntryInGrid(lControllers, pGo, GO_PORTAL_CONTROLLER, DEFAULT_VISIBILITY_DISTANCE);
+
+    for (std::list<GameObject*>::iterator itr = lControllers.begin(); itr != lControllers.end(); ++itr)
+    {
+        if (*itr && (*itr)->isSpawned() && ((*itr)->GetGUID() != pGo->GetGUID()))
+            return false;
+    }
+
+    if (GameObject* pTheSunGate = GetClosestGameObjectWithEntry(pGo, GO_THE_SUN_GATE, DEFAULT_VISIBILITY_DISTANCE))
+        pTheSunGate->RemoveFlag(GAMEOBJECT_FLAGS, GO_FLAG_UNK1);
+
+    return false;
+}
+
 void AddSC_bloodmyst_isle()
 {
-    Script *newscript;
+    Script *pNewScript;
 
-    newscript = new Script;
-    newscript->Name = "mob_webbed_creature";
-    newscript->GetAI = &GetAI_mob_webbed_creature;
-    newscript->RegisterSelf();
+    pNewScript = new Script;
+    pNewScript->Name = "go_sunhawk_portal_controller";
+    pNewScript->pGOUse = &GOUse_go_sunhawk_portal_controller;
+    pNewScript->RegisterSelf();
 
-    newscript = new Script;
-    newscript->Name = "npc_captured_sunhawk_agent";
-    newscript->pGossipHello =  &GossipHello_npc_captured_sunhawk_agent;
-    newscript->pGossipSelect = &GossipSelect_npc_captured_sunhawk_agent;
-    newscript->RegisterSelf();
+    pNewScript = new Script;
+    pNewScript->Name = "mob_webbed_creature";
+    pNewScript->GetAI = &GetAI_mob_webbed_creature;
+    pNewScript->RegisterSelf();
+
+    pNewScript = new Script;
+    pNewScript->Name = "npc_captured_sunhawk_agent";
+    pNewScript->pGossipHello =  &GossipHello_npc_captured_sunhawk_agent;
+    pNewScript->pGossipSelect = &GossipSelect_npc_captured_sunhawk_agent;
+    pNewScript->RegisterSelf();
 }

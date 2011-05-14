@@ -24,6 +24,7 @@ EndScriptData */
 #include "precompiled.h"
 #include "halls_of_lightning.h"
 
+
 enum
 {
     SAY_AGGRO                           = -1602018,

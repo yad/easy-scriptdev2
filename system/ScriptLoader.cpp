@@ -217,6 +217,8 @@ extern void AddSC_boss_epoch_hunter();
 extern void AddSC_boss_lieutenant_drake();
 extern void AddSC_instance_old_hillsbrad();
 extern void AddSC_old_hillsbrad();
+extern void AddSC_dire_maul();                              // dire_maul
+extern void AddSC_instance_dire_maul();
 extern void AddSC_boss_celebras_the_cursed();               //maraudon
 extern void AddSC_boss_landslide();
 extern void AddSC_boss_noxxion();
@@ -245,6 +247,7 @@ extern void AddSC_instance_wailing_caverns();               // wailing_caverns
 extern void AddSC_wailing_caverns();
 extern void AddSC_boss_zumrah();                            // zulfarrak
 extern void AddSC_instance_zulfarrak();
+extern void AddSC_zulfarrak();
 
 // culling of stratholme
 extern void AddSC_boss_lord_epoch();
@@ -380,18 +383,17 @@ extern void AddSC_boss_auriaya();
 extern void AddSC_boss_freya();
 extern void AddSC_boss_hodir();
 extern void AddSC_boss_ignis();
-extern void AddSC_boss_iron_council();
+extern void AddSC_boss_assembly_of_iron();
 extern void AddSC_boss_kologarn();
-extern void AddSC_boss_leviathan();
+// extern void AddSC_boss_leviathan();
 extern void AddSC_boss_mimiron();
 extern void AddSC_boss_razorscale();
 extern void AddSC_boss_thorim();
-extern void AddSC_boss_vezax();
+// extern void AddSC_boss_vezax();
 extern void AddSC_boss_xt002();
 extern void AddSC_boss_yogg_saron();
 extern void AddSC_instance_ulduar();
 extern void AddSC_ulduar();
-extern void AddSC_ulduar_teleport();
 extern void AddSC_boss_ingvar();                            //utgarde_keep
 extern void AddSC_boss_keleseth();
 extern void AddSC_boss_skarvald_and_dalronn();
@@ -453,7 +455,7 @@ extern void AddSC_instance_ruby_sanctum();                  // Ruby Sanctum
 extern void AddSC_ruby_sanctum();
 extern void AddSC_boss_halion();
 extern void AddSC_boss_ragefire();
-extern void AddSC_boss_zarithian();
+// extern void AddSC_boss_zarithian();
 extern void AddSC_boss_baltharus();
 
 //outland
@@ -514,8 +516,6 @@ extern void AddSC_instance_arcatraz();
 extern void AddSC_boss_high_botanist_freywinn();            //TK, botanica
 extern void AddSC_boss_laj();
 extern void AddSC_boss_warp_splinter();
-extern void AddSC_boss_kaelthas();                          //TK, the_eye
-extern void AddSC_boss_void_reaver();
 extern void AddSC_boss_alar();                              // TK, the_eye
 extern void AddSC_boss_high_astromancer_solarian();
 extern void AddSC_boss_kaelthas();
@@ -753,6 +753,8 @@ void AddScripts()
     AddSC_boss_epoch_hunter();
     AddSC_boss_lieutenant_drake();
     AddSC_instance_old_hillsbrad();
+    AddSC_dire_maul();                                      // dire_maul
+    AddSC_instance_dire_maul();
     AddSC_old_hillsbrad();
     AddSC_boss_celebras_the_cursed();                       //maraudon
     AddSC_boss_landslide();
@@ -781,6 +783,7 @@ void AddScripts()
     AddSC_instance_wailing_caverns();                       // wailing_caverns
     AddSC_wailing_caverns();
     AddSC_boss_zumrah();                                    // zulfarrak
+    AddSC_zulfarrak();
     AddSC_instance_zulfarrak();
 
     AddSC_ashenvale();
@@ -905,18 +908,17 @@ void AddScripts()
     AddSC_boss_freya();
     AddSC_boss_hodir();
     AddSC_boss_ignis();
-    AddSC_boss_iron_council();
+    AddSC_boss_assembly_of_iron();
     AddSC_boss_kologarn();
-    AddSC_boss_leviathan();
+    // AddSC_boss_leviathan();
     AddSC_boss_mimiron();
     AddSC_boss_razorscale();
     AddSC_boss_thorim();
-    AddSC_boss_vezax();
+    // AddSC_boss_vezax();
     AddSC_boss_xt002();
     AddSC_boss_yogg_saron();
     AddSC_instance_ulduar();
     AddSC_ulduar();
-    AddSC_ulduar_teleport();
     AddSC_boss_ingvar();                                    //utgarde_keep
     AddSC_boss_keleseth();
     AddSC_boss_skarvald_and_dalronn();
@@ -948,7 +950,7 @@ void AddScripts()
     AddSC_boss_lavanthor();
     AddSC_violet_hold();
 
-    AddSC_instance_icecrown_spire();
+    // AddSC_instance_icecrown_spire();
     AddSC_icecrown_spire();
     AddSC_icecrown_teleporter();
     AddSC_boss_lord_marrowgar();
@@ -978,7 +980,7 @@ void AddScripts()
     AddSC_ruby_sanctum();
     AddSC_boss_halion();
     AddSC_boss_ragefire();
-    AddSC_boss_zarithian();
+    //AddSC_boss_zarithian();
     AddSC_boss_baltharus();
 
     //outland
@@ -1039,8 +1041,6 @@ void AddScripts()
     AddSC_boss_high_botanist_freywinn();                    //TK, botanica
     AddSC_boss_laj();
     AddSC_boss_warp_splinter();
-    AddSC_boss_kaelthas();                                  //TK, the_eye
-    AddSC_boss_void_reaver();
     AddSC_boss_alar();                                      // TK, the_eye
     AddSC_boss_high_astromancer_solarian();
     AddSC_boss_kaelthas();

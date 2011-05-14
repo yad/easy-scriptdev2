@@ -1,4 +1,4 @@
-/* Copyright (C) 2006 - 2011 ScriptDev2 <http://www.scriptdev2.com/>
+/* Copyright (C) 2006 - 2011 ScriptDev2 <https://scriptdev2.svn.sourceforge.net/>
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -40,17 +40,20 @@ enum
     EMOTE_DEFENSIVE_STANCE                  = -1602010,
 
     SPELL_DEFENSIVE_STANCE                  = 53790,
+    //SPELL_DEFENSIVE_AURA                    = 41105,
     SPELL_SPELL_REFLECTION                  = 36096,
     SPELL_PUMMEL                            = 12555,
     SPELL_KNOCK_AWAY                        = 52029,
     SPELL_IRONFORM                          = 52022,
 
     SPELL_BERSEKER_STANCE                   = 53791,
+    //SPELL_BERSEKER_AURA                     = 41107,
     SPELL_INTERCEPT                         = 58769,
     SPELL_WHIRLWIND                         = 52027,
     SPELL_CLEAVE                            = 15284,
 
     SPELL_BATTLE_STANCE                     = 53792,
+    //SPELL_BATTLE_AURA                       = 41106,
     SPELL_MORTAL_STRIKE                     = 16856,
     SPELL_SLAM                              = 52026,
 
@@ -62,6 +65,10 @@ enum
     SPELL_ARC_WELD                          = 59085,
     SPELL_RENEW_STEEL_N                     = 52774,
     SPELL_RENEW_STEEL_H                     = 59160,
+
+    EQUIP_SWORD                             = 37871,
+    EQUIP_SHIELD                            = 35642,
+    EQUIP_MACE                              = 43623,
 
     STANCE_DEFENSIVE                        = 0,
     STANCE_BERSERKER                        = 1,
@@ -79,7 +86,6 @@ struct MANGOS_DLL_DECL boss_bjarngrimAI : public ScriptedAI
         m_pInstance = (ScriptedInstance*)pCreature->GetInstanceData();
         m_bIsRegularMode = pCreature->GetMap()->IsRegularDifficulty();
         m_uiStance = STANCE_DEFENSIVE;
-        memset(&m_auiStormforgedLieutenantGUID, 0, sizeof(m_auiStormforgedLieutenantGUID));
         Reset();
     }
 
@@ -106,7 +112,7 @@ struct MANGOS_DLL_DECL boss_bjarngrimAI : public ScriptedAI
     uint32 m_uiMortalStrike_Timer;
     uint32 m_uiSlam_Timer;
 
-    uint64 m_auiStormforgedLieutenantGUID[2];
+    std::list<uint64> lLieutenants;
 
     void Reset()
     {
@@ -129,20 +135,23 @@ struct MANGOS_DLL_DECL boss_bjarngrimAI : public ScriptedAI
         m_uiMortalStrike_Timer = 8000;
         m_uiSlam_Timer = 10000;
 
-        for(uint8 i = 0; i < 2; ++i)
+        for(std::list<uint64>::iterator itr = lLieutenants.begin(); itr != lLieutenants.end(); ++itr)
         {
-            if (Creature* pStormforgedLieutenant = m_creature->GetMap()->GetCreature(m_auiStormforgedLieutenantGUID[i]))
+            if (Creature* pLieutenant = m_creature->GetMap()->GetCreature(*itr))
             {
-                if (!pStormforgedLieutenant->isAlive())
-                    pStormforgedLieutenant->Respawn();
+                if (!pLieutenant->isAlive())
+                    pLieutenant->Respawn();
             }
         }
 
         if (m_uiStance != STANCE_DEFENSIVE)
         {
+            DoRemoveStanceAura(m_uiStance);
             DoCastSpellIfCan(m_creature, SPELL_DEFENSIVE_STANCE);
             m_uiStance = STANCE_DEFENSIVE;
         }
+
+        SetEquipmentSlots(false, EQUIP_SWORD, EQUIP_SHIELD, EQUIP_NO_CHANGE);
 
         if (m_pInstance)
             m_pInstance->SetData(TYPE_BJARNGRIM, NOT_STARTED);
@@ -152,8 +161,12 @@ struct MANGOS_DLL_DECL boss_bjarngrimAI : public ScriptedAI
     {
         DoScriptText(SAY_AGGRO, m_creature);
 
-        //must get both lieutenants here and make sure they are with him
-        m_creature->CallForHelp(30.0f);
+        for(std::list<uint64>::iterator itr = lLieutenants.begin(); itr != lLieutenants.end(); ++itr)
+        {
+            Creature* pLieutenant = m_creature->GetMap()->GetCreature(*itr);
+            if (pLieutenant && pLieutenant->isAlive())
+                pLieutenant->AI()->AttackStart(pWho);           
+        }
 
         if (m_pInstance)
             m_pInstance->SetData(TYPE_BJARNGRIM, IN_PROGRESS);
@@ -177,6 +190,23 @@ struct MANGOS_DLL_DECL boss_bjarngrimAI : public ScriptedAI
             m_pInstance->SetData(TYPE_BJARNGRIM, DONE);
     }
 
+    //TODO: remove when removal is done by mangos
+    void DoRemoveStanceAura(uint8 uiStance)
+    {
+        switch(uiStance)
+        {
+            case STANCE_DEFENSIVE:
+                m_creature->RemoveAurasDueToSpell(SPELL_DEFENSIVE_STANCE);
+                break;
+            case STANCE_BERSERKER:
+                m_creature->RemoveAurasDueToSpell(SPELL_BERSEKER_STANCE);
+                break;
+            case STANCE_BATTLE:
+                m_creature->RemoveAurasDueToSpell(SPELL_BATTLE_STANCE);
+                break;
+        }
+    }
+
     void UpdateAI(const uint32 uiDiff)
     {
         //Return since we have no target
@@ -189,6 +219,8 @@ struct MANGOS_DLL_DECL boss_bjarngrimAI : public ScriptedAI
             //wait for current spell to finish before change stance
             if (m_creature->IsNonMeleeSpellCasted(false))
                 return;
+
+            DoRemoveStanceAura(m_uiStance);
 
             int uiTempStance = rand()%(3-1);
 
@@ -203,16 +235,19 @@ struct MANGOS_DLL_DECL boss_bjarngrimAI : public ScriptedAI
                     DoScriptText(SAY_DEFENSIVE_STANCE, m_creature);
                     DoScriptText(EMOTE_DEFENSIVE_STANCE, m_creature);
                     DoCastSpellIfCan(m_creature, SPELL_DEFENSIVE_STANCE);
+                    SetEquipmentSlots(false, EQUIP_SWORD, EQUIP_SHIELD, EQUIP_NO_CHANGE);
                     break;
                 case STANCE_BERSERKER:
                     DoScriptText(SAY_BERSEKER_STANCE, m_creature);
                     DoScriptText(EMOTE_BERSEKER_STANCE, m_creature);
                     DoCastSpellIfCan(m_creature, SPELL_BERSEKER_STANCE);
+                    SetEquipmentSlots(false, EQUIP_SWORD, EQUIP_SWORD, EQUIP_NO_CHANGE);
                     break;
                 case STANCE_BATTLE:
                     DoScriptText(SAY_BATTLE_STANCE, m_creature);
                     DoScriptText(EMOTE_BATTLE_STANCE, m_creature);
                     DoCastSpellIfCan(m_creature, SPELL_BATTLE_STANCE);
+                    SetEquipmentSlots(false, EQUIP_MACE, EQUIP_UNEQUIP, EQUIP_NO_CHANGE);
                     break;
             }
 
@@ -323,16 +358,19 @@ struct MANGOS_DLL_DECL mob_stormforged_lieutenantAI : public ScriptedAI
 {
     mob_stormforged_lieutenantAI(Creature *pCreature) : ScriptedAI(pCreature)
     {
-        m_pInstance = (ScriptedInstance*)pCreature->GetInstanceData();
+        m_pInstance = ((ScriptedInstance*)pCreature->GetInstanceData());
         m_bIsRegularMode = pCreature->GetMap()->IsRegularDifficulty();
+        bLieutenantLocked = false;
         Reset();
     }
 
     ScriptedInstance* m_pInstance;
     bool m_bIsRegularMode;
+    bool bLieutenantLocked;
 
     uint32 m_uiArcWeld_Timer;
     uint32 m_uiRenewSteel_Timer;
+    float fAngle;
 
     void Reset()
     {
@@ -344,19 +382,34 @@ struct MANGOS_DLL_DECL mob_stormforged_lieutenantAI : public ScriptedAI
     {
         if (m_pInstance)
         {
-            if (Creature* pBjarngrim = m_pInstance->instance->GetCreature(m_pInstance->GetData64(DATA_BJARNGRIM)))
-            {
-                if (pBjarngrim->isAlive() && !pBjarngrim->getVictim())
-                    pBjarngrim->AI()->AttackStart(pWho);
-            }
+            Creature* pBjarngrim = m_pInstance->instance->GetCreature(m_pInstance->GetData64(DATA_BJARNGRIM));
+            if (pBjarngrim && pBjarngrim->isAlive())
+                pBjarngrim->AI()->AttackStart(pWho);
         }
     }
 
     void UpdateAI(const uint32 uiDiff)
     {
-        //Return since we have no target
         if (!m_creature->SelectHostileTarget() || !m_creature->getVictim())
+        {
+            // move follow Bjarngrim
+            if (m_pInstance && m_creature->GetMotionMaster()->GetCurrentMovementGeneratorType() != FOLLOW_MOTION_TYPE)
+            {
+                if (Creature* pBjarngrim = m_creature->GetMap()->GetCreature(m_pInstance->GetData64(DATA_BJARNGRIM)))
+                {
+                    if (!bLieutenantLocked && pBjarngrim->AI())
+                    {
+                        fAngle = ((boss_bjarngrimAI*)pBjarngrim->AI())->lLieutenants.empty() ? 0.75* M_PI_F : 1.25* M_PI_F;
+                        ((boss_bjarngrimAI*)pBjarngrim->AI())->lLieutenants.push_back(m_creature->GetGUID());                        
+                        bLieutenantLocked = true;
+                    }
+
+                    m_creature->GetMotionMaster()->Clear();
+                    m_creature->GetMotionMaster()->MoveFollow(pBjarngrim, INTERACTION_DISTANCE, fAngle);
+                }
+            }
             return;
+        }
 
         if (m_uiArcWeld_Timer < uiDiff)
         {
@@ -370,7 +423,7 @@ struct MANGOS_DLL_DECL mob_stormforged_lieutenantAI : public ScriptedAI
         {
             if (m_pInstance)
             {
-                if (Creature* pBjarngrim = m_pInstance->instance->GetCreature(m_pInstance->GetData64(DATA_BJARNGRIM)))
+                if (Creature* pBjarngrim = m_creature->GetMap()->GetCreature(m_pInstance->GetData64(DATA_BJARNGRIM)))
                 {
                     if (pBjarngrim->isAlive())
                         DoCastSpellIfCan(pBjarngrim, m_bIsRegularMode ? SPELL_RENEW_STEEL_N : SPELL_RENEW_STEEL_H);

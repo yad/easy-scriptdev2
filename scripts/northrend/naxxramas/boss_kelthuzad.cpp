@@ -1,4 +1,4 @@
-/* Copyright (C) 2006 - 2011 ScriptDev2 <http://www.scriptdev2.com/>
+/* Copyright (C) 2006 - 2010 ScriptDev2 <https://scriptdev2.svn.sourceforge.net/>
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -83,8 +83,6 @@ enum
     MAX_SOLDIER_COUNT                   = 71,
     MAX_ABOMINATION_COUNT               = 8,
     MAX_BANSHEE_COUNT                   = 8,
-
-    ACHIEV_REQ_KILLED_ABOMINATIONS      = 18,
 };
 
 static float M_F_ANGLE = 0.2f;                              // to adjust for map rotation
@@ -132,7 +130,7 @@ struct MANGOS_DLL_DECL boss_kelthuzadAI : public ScriptedAI
     uint32 m_uiAbominationCount;
     uint32 m_uiSummonIntroTimer;
     uint32 m_uiIntroPackCount;
-    uint32 m_uiKilledAbomination;
+    uint32 m_uiCantGetEnoughCounter; // achievement counter
 
     GUIDSet m_lIntroMobsSet;
     GUIDSet m_lAddsSet;
@@ -149,6 +147,7 @@ struct MANGOS_DLL_DECL boss_kelthuzadAI : public ScriptedAI
         m_uiGuardiansCount      = 0;
         m_uiSummonIntroTimer    = 0;
         m_uiIntroPackCount      = 0;
+        m_uiCantGetEnoughCounter = 0;
 
         m_uiPhase1Timer         = 228000;                   //Phase 1 lasts "3 minutes and 48 seconds"
         m_uiSoldierTimer        = 5000;
@@ -157,7 +156,6 @@ struct MANGOS_DLL_DECL boss_kelthuzadAI : public ScriptedAI
         m_uiSoldierCount        = 0;
         m_uiBansheeCount        = 0;
         m_uiAbominationCount    = 0;
-        m_uiKilledAbomination   = 0;
         m_uiPhase               = PHASE_INTRO;
 
         // it may be some spell should be used instead, to control the intro phase
@@ -180,7 +178,12 @@ struct MANGOS_DLL_DECL boss_kelthuzadAI : public ScriptedAI
         DespawnAdds();
 
         if (m_pInstance)
+        {
             m_pInstance->SetData(TYPE_KELTHUZAD, DONE);
+
+            if (m_uiCantGetEnoughCounter >= 18)
+                m_pInstance->SetData(TYPE_ACHI_CANT_GET_ENOUGH, DONE);
+        }
     }
 
     void JustReachedHome()
@@ -225,7 +228,7 @@ struct MANGOS_DLL_DECL boss_kelthuzadAI : public ScriptedAI
                     if (pCreature->isAlive())
                     {
                         pCreature->AI()->EnterEvadeMode();
-                        pCreature->ForcedDespawn(15000);
+                        pCreature->ForcedDespawn(2000);
                     }
                 }
             }
@@ -268,7 +271,7 @@ struct MANGOS_DLL_DECL boss_kelthuzadAI : public ScriptedAI
         MaNGOS::NormalizeMapCoord(fY);
 
         uint32 uiNpcEntry = NPC_SOUL_WEAVER;
-
+        
         for(uint8 uiI = 0; uiI < 14; ++uiI)
         {
             if (uiI > 0)
@@ -347,18 +350,13 @@ struct MANGOS_DLL_DECL boss_kelthuzadAI : public ScriptedAI
     {
         switch(pSummoned->GetEntry())
         {
+            case NPC_UNSTOPPABLE_ABOM:
+                if (m_uiPhase == PHASE_INTRO)
+                    m_uiCantGetEnoughCounter++;
             case NPC_GUARDIAN:
             case NPC_SOLDIER_FROZEN:
             case NPC_SOUL_WEAVER:
                 m_lAddsSet.erase(pSummoned->GetGUID());
-                break;
-            case NPC_UNSTOPPABLE_ABOM:
-                m_lAddsSet.erase(pSummoned->GetGUID());
-
-                ++m_uiKilledAbomination;
-                if (m_uiKilledAbomination >= ACHIEV_REQ_KILLED_ABOMINATIONS)
-                    m_pInstance->SetSpecialAchievementCriteria(TYPE_ACHIEV_GET_ENOUGH, true);
-
                 break;
         }
     }
@@ -367,6 +365,35 @@ struct MANGOS_DLL_DECL boss_kelthuzadAI : public ScriptedAI
     {
         if (uiMotionType == POINT_MOTION_TYPE && uiPointId == 0)
             pSummoned->SetInCombatWithZone();
+    }
+
+    Unit* SelectTargetWithMana()
+    {
+        ThreatList const& m_threatlist = m_creature->getThreatManager().getThreatList();
+
+        if (m_threatlist.empty())
+            return NULL;
+
+        GUIDList manaPositive;
+        for (ThreatList::const_iterator itr = m_threatlist.begin(); itr!= m_threatlist.end(); ++itr)
+        {
+            if (Unit* pTemp = m_creature->GetMap()->GetUnit((*itr)->getUnitGuid()))
+            {
+                //player and has mana
+                if ((pTemp->GetTypeId() == TYPEID_PLAYER) && (pTemp->getPowerType() == POWER_MANA))
+                    manaPositive.push_back(pTemp->GetGUID());
+            }
+        }
+
+        if (!manaPositive.empty())
+        {
+            GUIDList::iterator m_uiPlayerGUID = manaPositive.begin();
+            advance(m_uiPlayerGUID, (rand()%manaPositive.size()));
+
+            if (Player* pTemp = m_creature->GetMap()->GetPlayer(*m_uiPlayerGUID))
+                return pTemp;
+        }
+        return NULL;
     }
 
     void UpdateAI(const uint32 uiDiff)
@@ -473,9 +500,7 @@ struct MANGOS_DLL_DECL boss_kelthuzadAI : public ScriptedAI
 
             if (m_uiManaDetonationTimer < uiDiff)
             {
-                Unit* pTarget = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM, 0);
-
-                if (pTarget && pTarget->GetTypeId() == TYPEID_PLAYER && pTarget->getPowerType() == POWER_MANA)
+                if (Unit* pTarget = SelectTargetWithMana())
                 {
                     if (DoCastSpellIfCan(pTarget, SPELL_MANA_DETONATION) == CAST_OK)
                     {
@@ -493,7 +518,8 @@ struct MANGOS_DLL_DECL boss_kelthuzadAI : public ScriptedAI
             {
                 if (Unit* pTarget = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM, 0))
                 {
-                    if (DoCastSpellIfCan(pTarget, SPELL_SHADOW_FISSURE) == CAST_OK)
+                    Player *pPlayerTarget = pTarget->GetCharmerOrOwnerPlayerOrPlayerItself();
+                    if (DoCastSpellIfCan(pPlayerTarget ? pPlayerTarget : pTarget, SPELL_SHADOW_FISSURE) == CAST_OK)
                     {
                         if (urand(0, 1))
                             DoScriptText(SAY_SPECIAL3_MANA_DET, m_creature);
@@ -507,12 +533,19 @@ struct MANGOS_DLL_DECL boss_kelthuzadAI : public ScriptedAI
 
             if (m_uiFrostBlastTimer < uiDiff)
             {
-                if (DoCastSpellIfCan(m_creature->getVictim(), SPELL_FROST_BLAST) == CAST_OK)
+                if (Unit* pTarget = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM, (m_bIsRegularMode ? 1 : 0)))
                 {
-                    if (urand(0, 1))
-                        DoScriptText(SAY_FROST_BLAST, m_creature);
+                    Player *pPlayerTarget = pTarget->GetCharmerOrOwnerPlayerOrPlayerItself();
+                    if (pPlayerTarget && (m_bIsRegularMode || pPlayerTarget != m_creature->getVictim()))
+                    {
+                        if (DoCastSpellIfCan(pPlayerTarget, SPELL_FROST_BLAST) == CAST_OK)
+                        {
+                            if (urand(0, 1))
+                                DoScriptText(SAY_FROST_BLAST, m_creature);
 
-                    m_uiFrostBlastTimer = urand(30000, 60000);
+                            m_uiFrostBlastTimer = urand(30000, 60000);
+                        }
+                    }
                 }
             }
             else
