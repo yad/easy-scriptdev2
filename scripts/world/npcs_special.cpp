@@ -44,6 +44,7 @@ npc_sayge               100%    Darkmoon event fortune teller, buff player based
 npc_tabard_vendor        50%    allow recovering quest related tabards, achievement related ones need core support
 npc_locksmith            75%    list of keys needs to be confirmed
 npc_death_knight_gargoyle       AI for summoned gargoyle of deathknights
+mob_risen_ghoul          90%    Death Knight's Risen Ghoul and Army of the Dead Ghoul. Emote handling needs further research
 EndContentData */
 
 /*########
@@ -108,7 +109,7 @@ struct MANGOS_DLL_DECL npc_air_force_botsAI : public ScriptedAI
     npc_air_force_botsAI(Creature* pCreature) : ScriptedAI(pCreature)
     {
         m_pSpawnAssoc = NULL;
-        m_uiSpawnedGUID = 0;
+        m_spawnedGuid = ObjectGuid();
 
         // find the correct spawnhandling
         static uint32 uiEntryCount = sizeof(m_aSpawnAssociations)/sizeof(SpawnAssociation);
@@ -138,7 +139,7 @@ struct MANGOS_DLL_DECL npc_air_force_botsAI : public ScriptedAI
     }
 
     SpawnAssociation* m_pSpawnAssoc;
-    uint64 m_uiSpawnedGUID;
+    ObjectGuid m_spawnedGuid;
 
     void Reset() { }
 
@@ -147,7 +148,7 @@ struct MANGOS_DLL_DECL npc_air_force_botsAI : public ScriptedAI
         Creature* pSummoned = m_creature->SummonCreature(m_pSpawnAssoc->m_uiSpawnedCreatureEntry, 0.0f, 0.0f, 0.0f, 0.0f, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 300000);
 
         if (pSummoned)
-            m_uiSpawnedGUID = pSummoned->GetGUID();
+            m_spawnedGuid = pSummoned->GetObjectGuid();
         else
         {
             error_db_log("SD2: npc_air_force_bots: wasn't able to spawn creature %u", m_pSpawnAssoc->m_uiSpawnedCreatureEntry);
@@ -159,7 +160,7 @@ struct MANGOS_DLL_DECL npc_air_force_botsAI : public ScriptedAI
 
     Creature* GetSummonedGuard()
     {
-        Creature* pCreature = m_creature->GetMap()->GetCreature(m_uiSpawnedGUID);
+        Creature* pCreature = m_creature->GetMap()->GetCreature(m_spawnedGuid);
 
         if (pCreature && pCreature->isAlive())
             return pCreature;
@@ -180,11 +181,11 @@ struct MANGOS_DLL_DECL npc_air_force_botsAI : public ScriptedAI
             if (!pPlayerTarget)
                 return;
 
-            Creature* pLastSpawnedGuard = m_uiSpawnedGUID == 0 ? NULL : GetSummonedGuard();
+            Creature* pLastSpawnedGuard = m_spawnedGuid.IsEmpty() ? NULL : GetSummonedGuard();
 
             // prevent calling GetCreature at next MoveInLineOfSight call - speedup
             if (!pLastSpawnedGuard)
-                m_uiSpawnedGUID = 0;
+                m_spawnedGuid.Clear();
 
             switch(m_pSpawnAssoc->m_SpawnType)
             {
@@ -479,7 +480,7 @@ struct MANGOS_DLL_DECL npc_doctorAI : public ScriptedAI
 {
     npc_doctorAI(Creature* pCreature) : ScriptedAI(pCreature) {Reset();}
 
-    uint64 Playerguid;
+    ObjectGuid m_playerGuid;
 
     uint32 SummonPatient_Timer;
     uint32 SummonPatientCount;
@@ -493,7 +494,7 @@ struct MANGOS_DLL_DECL npc_doctorAI : public ScriptedAI
 
     void Reset()
     {
-        Playerguid = 0;
+        m_playerGuid.Clear();
 
         SummonPatient_Timer = 10000;
         SummonPatientCount = 0;
@@ -522,12 +523,12 @@ struct MANGOS_DLL_DECL npc_injured_patientAI : public ScriptedAI
 {
     npc_injured_patientAI(Creature* pCreature) : ScriptedAI(pCreature) {Reset();}
 
-    uint64 Doctorguid;
+    ObjectGuid m_doctorGuid;
     Location* Coord;
 
     void Reset()
     {
-        Doctorguid = 0;
+        m_doctorGuid.Clear();
         Coord = NULL;
 
         //no select
@@ -562,9 +563,9 @@ struct MANGOS_DLL_DECL npc_injured_patientAI : public ScriptedAI
         {
             if ((((Player*)caster)->GetQuestStatus(6624) == QUEST_STATUS_INCOMPLETE) || (((Player*)caster)->GetQuestStatus(6622) == QUEST_STATUS_INCOMPLETE))
             {
-                if (Doctorguid)
+                if (!m_doctorGuid.IsEmpty())
                 {
-                    if (Creature* pDoctor = m_creature->GetMap()->GetCreature(Doctorguid))
+                    if (Creature* pDoctor = m_creature->GetMap()->GetCreature(m_doctorGuid))
                     {
                         if (npc_doctorAI* pDocAI = dynamic_cast<npc_doctorAI*>(pDoctor->AI()))
                             pDocAI->PatientSaved(m_creature, (Player*)caster, Coord);
@@ -620,9 +621,9 @@ struct MANGOS_DLL_DECL npc_injured_patientAI : public ScriptedAI
             m_creature->SetDeathState(JUST_DIED);
             m_creature->SetFlag(UNIT_DYNAMIC_FLAGS, UNIT_DYNFLAG_DEAD);
 
-            if (Doctorguid)
+            if (!m_doctorGuid.IsEmpty())
             {
-                if (Creature* pDoctor = m_creature->GetMap()->GetCreature(Doctorguid))
+                if (Creature* pDoctor = m_creature->GetMap()->GetCreature(m_doctorGuid))
                 {
                     if (npc_doctorAI* pDocAI = dynamic_cast<npc_doctorAI*>(pDoctor->AI()))
                         pDocAI->PatientDied(Coord);
@@ -643,7 +644,7 @@ npc_doctor (continue)
 
 void npc_doctorAI::BeginEvent(Player* pPlayer)
 {
-    Playerguid = pPlayer->GetGUID();
+    m_playerGuid = pPlayer->GetObjectGuid();
 
     SummonPatient_Timer = 10000;
     SummonPatientCount = 0;
@@ -668,7 +669,7 @@ void npc_doctorAI::BeginEvent(Player* pPlayer)
 
 void npc_doctorAI::PatientDied(Location* Point)
 {
-    Player* pPlayer = m_creature->GetMap()->GetPlayer(Playerguid);
+    Player* pPlayer = m_creature->GetMap()->GetPlayer(m_playerGuid);
 
     if (pPlayer && ((pPlayer->GetQuestStatus(6624) == QUEST_STATUS_INCOMPLETE) || (pPlayer->GetQuestStatus(6622) == QUEST_STATUS_INCOMPLETE)))
     {
@@ -694,7 +695,7 @@ void npc_doctorAI::PatientDied(Location* Point)
 
 void npc_doctorAI::PatientSaved(Creature* soldier, Player* pPlayer, Location* Point)
 {
-    if (pPlayer && Playerguid == pPlayer->GetGUID())
+    if (pPlayer && m_playerGuid == pPlayer->GetObjectGuid())
     {
         if ((pPlayer->GetQuestStatus(QUEST_TRIAGE_A) == QUEST_STATUS_INCOMPLETE) || (pPlayer->GetQuestStatus(QUEST_TRIAGE_H) == QUEST_STATUS_INCOMPLETE))
         {
@@ -767,7 +768,7 @@ void npc_doctorAI::UpdateAI(const uint32 diff)
 
                 if (pPatientAI)
                 {
-                    pPatientAI->Doctorguid = m_creature->GetGUID();
+                    pPatientAI->m_doctorGuid = m_creature->GetObjectGuid();
 
                     if (Point)
                         pPatientAI->Coord = Point;
@@ -801,8 +802,6 @@ CreatureAI* GetAI_npc_doctor(Creature* pCreature)
 ## npc_garments_of_quests
 ######*/
 
-//TODO: get text for each NPC
-
 enum
 {
     SPELL_LESSER_HEAL_R2    = 2052,
@@ -835,39 +834,39 @@ enum
 
 struct MANGOS_DLL_DECL npc_garments_of_questsAI : public npc_escortAI
 {
-    npc_garments_of_questsAI(Creature* pCreature) : npc_escortAI(pCreature) {Reset();}
+    npc_garments_of_questsAI(Creature* pCreature) : npc_escortAI(pCreature) { Reset(); }
 
-    uint64 caster;
+    ObjectGuid m_playerGuid;
 
-    bool bIsHealed;
-    bool bCanRun;
+    bool m_bIsHealed;
+    bool m_bCanRun;
 
-    uint32 RunAwayTimer;
+    uint32 m_uiRunAwayTimer;
 
     void Reset()
     {
-        caster = 0;
+        m_playerGuid = ObjectGuid();
 
-        bIsHealed = false;
-        bCanRun = false;
+        m_bIsHealed = false;
+        m_bCanRun = false;
 
-        RunAwayTimer = 5000;
+        m_uiRunAwayTimer = 5000;
 
         m_creature->SetStandState(UNIT_STAND_STATE_KNEEL);
-        //expect database to have RegenHealth=0
+        // expect database to have RegenHealth=0
         m_creature->SetHealth(int(m_creature->GetMaxHealth()*0.7));
     }
 
-    void SpellHit(Unit* pCaster, const SpellEntry *Spell)
+    void SpellHit(Unit* pCaster, const SpellEntry* pSpell)
     {
-        if (Spell->Id == SPELL_LESSER_HEAL_R2 || Spell->Id == SPELL_FORTITUDE_R1)
+        if (pSpell->Id == SPELL_LESSER_HEAL_R2 || pSpell->Id == SPELL_FORTITUDE_R1)
         {
-            //not while in combat
+            // not while in combat
             if (m_creature->isInCombat())
                 return;
 
-            //nothing to be done now
-            if (bIsHealed && bCanRun)
+            // nothing to be done now
+            if (m_bIsHealed && m_bCanRun)
                 return;
 
             if (pCaster->GetTypeId() == TYPEID_PLAYER)
@@ -877,125 +876,125 @@ struct MANGOS_DLL_DECL npc_garments_of_questsAI : public npc_escortAI
                     case ENTRY_SHAYA:
                         if (((Player*)pCaster)->GetQuestStatus(QUEST_MOON) == QUEST_STATUS_INCOMPLETE)
                         {
-                            if (bIsHealed && !bCanRun && Spell->Id == SPELL_FORTITUDE_R1)
+                            if (m_bIsHealed && !m_bCanRun && pSpell->Id == SPELL_FORTITUDE_R1)
                             {
-                                DoScriptText(SAY_SHAYA_THANKS,m_creature,pCaster);
-                                bCanRun = true;
+                                DoScriptText(SAY_SHAYA_THANKS, m_creature, pCaster);
+                                m_bCanRun = true;
                             }
-                            else if (!bIsHealed && Spell->Id == SPELL_LESSER_HEAL_R2)
+                            else if (!m_bIsHealed && pSpell->Id == SPELL_LESSER_HEAL_R2)
                             {
-                                caster = pCaster->GetGUID();
+                                m_playerGuid = pCaster->GetObjectGuid();
                                 m_creature->SetStandState(UNIT_STAND_STATE_STAND);
-                                DoScriptText(SAY_COMMON_HEALED,m_creature,pCaster);
-                                bIsHealed = true;
+                                DoScriptText(SAY_COMMON_HEALED, m_creature, pCaster);
+                                m_bIsHealed = true;
                             }
                         }
                         break;
                     case ENTRY_ROBERTS:
                         if (((Player*)pCaster)->GetQuestStatus(QUEST_LIGHT_1) == QUEST_STATUS_INCOMPLETE)
                         {
-                            if (bIsHealed && !bCanRun && Spell->Id == SPELL_FORTITUDE_R1)
+                            if (m_bIsHealed && !m_bCanRun && pSpell->Id == SPELL_FORTITUDE_R1)
                             {
-                                DoScriptText(SAY_ROBERTS_THANKS,m_creature,pCaster);
-                                bCanRun = true;
+                                DoScriptText(SAY_ROBERTS_THANKS, m_creature, pCaster);
+                                m_bCanRun = true;
                             }
-                            else if (!bIsHealed && Spell->Id == SPELL_LESSER_HEAL_R2)
+                            else if (!m_bIsHealed && pSpell->Id == SPELL_LESSER_HEAL_R2)
                             {
-                                caster = pCaster->GetGUID();
+                                m_playerGuid = pCaster->GetObjectGuid();
                                 m_creature->SetStandState(UNIT_STAND_STATE_STAND);
-                                DoScriptText(SAY_COMMON_HEALED,m_creature,pCaster);
-                                bIsHealed = true;
+                                DoScriptText(SAY_COMMON_HEALED, m_creature, pCaster);
+                                m_bIsHealed = true;
                             }
                         }
                         break;
                     case ENTRY_DOLF:
                         if (((Player*)pCaster)->GetQuestStatus(QUEST_LIGHT_2) == QUEST_STATUS_INCOMPLETE)
                         {
-                            if (bIsHealed && !bCanRun && Spell->Id == SPELL_FORTITUDE_R1)
+                            if (m_bIsHealed && !m_bCanRun && pSpell->Id == SPELL_FORTITUDE_R1)
                             {
-                                DoScriptText(SAY_DOLF_THANKS,m_creature,pCaster);
-                                bCanRun = true;
+                                DoScriptText(SAY_DOLF_THANKS, m_creature, pCaster);
+                                m_bCanRun = true;
                             }
-                            else if (!bIsHealed && Spell->Id == SPELL_LESSER_HEAL_R2)
+                            else if (!m_bIsHealed && pSpell->Id == SPELL_LESSER_HEAL_R2)
                             {
-                                caster = pCaster->GetGUID();
+                                m_playerGuid = pCaster->GetObjectGuid();
                                 m_creature->SetStandState(UNIT_STAND_STATE_STAND);
-                                DoScriptText(SAY_COMMON_HEALED,m_creature,pCaster);
-                                bIsHealed = true;
+                                DoScriptText(SAY_COMMON_HEALED, m_creature, pCaster);
+                                m_bIsHealed = true;
                             }
                         }
                         break;
                     case ENTRY_KORJA:
                         if (((Player*)pCaster)->GetQuestStatus(QUEST_SPIRIT) == QUEST_STATUS_INCOMPLETE)
                         {
-                            if (bIsHealed && !bCanRun && Spell->Id == SPELL_FORTITUDE_R1)
+                            if (m_bIsHealed && !m_bCanRun && pSpell->Id == SPELL_FORTITUDE_R1)
                             {
-                                DoScriptText(SAY_KORJA_THANKS,m_creature,pCaster);
-                                bCanRun = true;
+                                DoScriptText(SAY_KORJA_THANKS, m_creature, pCaster);
+                                m_bCanRun = true;
                             }
-                            else if (!bIsHealed && Spell->Id == SPELL_LESSER_HEAL_R2)
+                            else if (!m_bIsHealed && pSpell->Id == SPELL_LESSER_HEAL_R2)
                             {
-                                caster = pCaster->GetGUID();
+                                m_playerGuid = pCaster->GetObjectGuid();
                                 m_creature->SetStandState(UNIT_STAND_STATE_STAND);
-                                DoScriptText(SAY_COMMON_HEALED,m_creature,pCaster);
-                                bIsHealed = true;
+                                DoScriptText(SAY_COMMON_HEALED, m_creature, pCaster);
+                                m_bIsHealed = true;
                             }
                         }
                         break;
                     case ENTRY_DG_KEL:
                         if (((Player*)pCaster)->GetQuestStatus(QUEST_DARKNESS) == QUEST_STATUS_INCOMPLETE)
                         {
-                            if (bIsHealed && !bCanRun && Spell->Id == SPELL_FORTITUDE_R1)
+                            if (m_bIsHealed && !m_bCanRun && pSpell->Id == SPELL_FORTITUDE_R1)
                             {
-                                DoScriptText(SAY_DG_KEL_THANKS,m_creature,pCaster);
-                                bCanRun = true;
+                                DoScriptText(SAY_DG_KEL_THANKS, m_creature, pCaster);
+                                m_bCanRun = true;
                             }
-                            else if (!bIsHealed && Spell->Id == SPELL_LESSER_HEAL_R2)
+                            else if (!m_bIsHealed && pSpell->Id == SPELL_LESSER_HEAL_R2)
                             {
-                                caster = pCaster->GetGUID();
+                                m_playerGuid = pCaster->GetObjectGuid();
                                 m_creature->SetStandState(UNIT_STAND_STATE_STAND);
-                                DoScriptText(SAY_COMMON_HEALED,m_creature,pCaster);
-                                bIsHealed = true;
+                                DoScriptText(SAY_COMMON_HEALED, m_creature, pCaster);
+                                m_bIsHealed = true;
                             }
                         }
                         break;
                 }
 
-                //give quest credit, not expect any special quest objectives
-                if (bCanRun)
-                    ((Player*)pCaster)->TalkedToCreature(m_creature->GetEntry(),m_creature->GetGUID());
+                // give quest credit, not expect any special quest objectives
+                if (m_bCanRun)
+                    ((Player*)pCaster)->TalkedToCreature(m_creature->GetEntry(), m_creature->GetObjectGuid());
             }
         }
     }
 
-    void WaypointReached(uint32 uiPoint)
-    {
-    }
+    void WaypointReached(uint32 uiPointId) {}
 
-    void UpdateEscortAI(const uint32 diff)
+    void UpdateEscortAI(const uint32 uiDiff)
     {
-        if (bCanRun && !m_creature->isInCombat())
+        if (m_bCanRun && !m_creature->isInCombat())
         {
-            if (RunAwayTimer <= diff)
+            if (m_uiRunAwayTimer <= uiDiff)
             {
-                if (Player* pPlayer = m_creature->GetMap()->GetPlayer(caster))
+                if (Player* pPlayer = m_creature->GetMap()->GetPlayer(m_playerGuid))
                 {
                     switch(m_creature->GetEntry())
                     {
-                        case ENTRY_SHAYA: DoScriptText(SAY_SHAYA_GOODBYE, m_creature, pPlayer); break;
+                        case ENTRY_SHAYA:   DoScriptText(SAY_SHAYA_GOODBYE, m_creature, pPlayer);   break;
                         case ENTRY_ROBERTS: DoScriptText(SAY_ROBERTS_GOODBYE, m_creature, pPlayer); break;
-                        case ENTRY_DOLF: DoScriptText(SAY_DOLF_GOODBYE, m_creature, pPlayer); break;
-                        case ENTRY_KORJA: DoScriptText(SAY_KORJA_GOODBYE, m_creature, pPlayer); break;
-                        case ENTRY_DG_KEL: DoScriptText(SAY_DG_KEL_GOODBYE, m_creature, pPlayer); break;
+                        case ENTRY_DOLF:    DoScriptText(SAY_DOLF_GOODBYE, m_creature, pPlayer);    break;
+                        case ENTRY_KORJA:   DoScriptText(SAY_KORJA_GOODBYE, m_creature, pPlayer);   break;
+                        case ENTRY_DG_KEL:  DoScriptText(SAY_DG_KEL_GOODBYE, m_creature, pPlayer);  break;
                     }
 
                     Start(true);
                 }
                 else
-                    EnterEvadeMode();                       //something went wrong
+                    EnterEvadeMode();                       // something went wrong
 
-                RunAwayTimer = 30000;
-            }else RunAwayTimer -= diff;
+                m_uiRunAwayTimer = 30000;
+            }
+            else
+                m_uiRunAwayTimer -= uiDiff;
         }
 
         if (!m_creature->SelectHostileTarget() || !m_creature->getVictim())
@@ -1076,7 +1075,7 @@ bool GossipHello_npc_innkeeper(Player* pPlayer, Creature* pCreature)
             pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ITEM_WHAT_TO_DO, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+1);
     }
 
-    pPlayer->TalkedToCreature(pCreature->GetEntry(), pCreature->GetGUID());
+    pPlayer->TalkedToCreature(pCreature->GetEntry(), pCreature->GetObjectGuid());
     pPlayer->SendPreparedGossip(pCreature);
     return true;
 }
@@ -1086,18 +1085,18 @@ bool GossipSelect_npc_innkeeper(Player* pPlayer, Creature* pCreature, uint32 uiS
     switch(uiAction)
     {
         case GOSSIP_ACTION_INFO_DEF+1:
-            pPlayer->SEND_GOSSIP_MENU(TEXT_ID_WHAT_TO_DO, pCreature->GetGUID());
+            pPlayer->SEND_GOSSIP_MENU(TEXT_ID_WHAT_TO_DO, pCreature->GetObjectGuid());
             break;
         case GOSSIP_ACTION_INFO_DEF+2:
             pPlayer->CLOSE_GOSSIP_MENU();
             pCreature->CastSpell(pPlayer, SPELL_TRICK_OR_TREAT, true);
             break;
         case GOSSIP_OPTION_VENDOR:
-            pPlayer->SEND_VENDORLIST(pCreature->GetGUID());
+            pPlayer->SEND_VENDORLIST(pCreature->GetObjectGuid());
             break;
         case GOSSIP_OPTION_INNKEEPER:
             pPlayer->CLOSE_GOSSIP_MENU();
-            pPlayer->SetBindPoint(pCreature->GetGUID());
+            pPlayer->SetBindPoint(pCreature->GetObjectGuid());
             break;
     }
 
@@ -1122,13 +1121,13 @@ enum
 bool GossipHello_npc_kingdom_of_dalaran_quests(Player* pPlayer, Creature* pCreature)
 {
     if (pCreature->isQuestGiver())
-        pPlayer->PrepareQuestMenu(pCreature->GetGUID());
+        pPlayer->PrepareQuestMenu(pCreature->GetObjectGuid());
 
     if (pPlayer->HasItemCount(ITEM_KT_SIGNET,1) && (!pPlayer->GetQuestRewardStatus(QUEST_MAGICAL_KINGDOM_A) ||
         !pPlayer->GetQuestRewardStatus(QUEST_MAGICAL_KINGDOM_H) || !pPlayer->GetQuestRewardStatus(QUEST_MAGICAL_KINGDOM_N)))
         pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ITEM_TELEPORT_TO, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+1);
 
-    pPlayer->SEND_GOSSIP_MENU(pPlayer->GetGossipTextId(pCreature), pCreature->GetGUID());
+    pPlayer->SEND_GOSSIP_MENU(pPlayer->GetGossipTextId(pCreature), pCreature->GetObjectGuid());
     return true;
 }
 
@@ -1162,7 +1161,7 @@ bool GossipHello_npc_lunaclaw_spirit(Player* pPlayer, Creature* pCreature)
     if (pPlayer->GetQuestStatus(QUEST_BODY_HEART_A) == QUEST_STATUS_INCOMPLETE || pPlayer->GetQuestStatus(QUEST_BODY_HEART_H) == QUEST_STATUS_INCOMPLETE)
         pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ITEM_GRANT, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+1);
 
-    pPlayer->SEND_GOSSIP_MENU(TEXT_ID_DEFAULT, pCreature->GetGUID());
+    pPlayer->SEND_GOSSIP_MENU(TEXT_ID_DEFAULT, pCreature->GetObjectGuid());
     return true;
 }
 
@@ -1170,7 +1169,7 @@ bool GossipSelect_npc_lunaclaw_spirit(Player* pPlayer, Creature* pCreature, uint
 {
     if (uiAction == GOSSIP_ACTION_INFO_DEF+1)
     {
-        pPlayer->SEND_GOSSIP_MENU(TEXT_ID_PROGRESS, pCreature->GetGUID());
+        pPlayer->SEND_GOSSIP_MENU(TEXT_ID_PROGRESS, pCreature->GetObjectGuid());
         pPlayer->AreaExploredOrEventHappens((pPlayer->GetTeam() == ALLIANCE) ? QUEST_BODY_HEART_A : QUEST_BODY_HEART_H);
     }
     return true;
@@ -1183,7 +1182,7 @@ bool GossipSelect_npc_lunaclaw_spirit(Player* pPlayer, Creature* pCreature, uint
 bool GossipHello_npc_mount_vendor(Player* pPlayer, Creature* pCreature)
 {
     if (pCreature->isQuestGiver())
-        pPlayer->PrepareQuestMenu(pCreature->GetGUID());
+        pPlayer->PrepareQuestMenu(pCreature->GetObjectGuid());
 
     bool canBuy;
     canBuy = false;
@@ -1197,52 +1196,52 @@ bool GossipHello_npc_mount_vendor(Player* pPlayer, Creature* pCreature)
         case 2357:                                          //Merideth Carlson
         case 4885:                                          //Gregor MacVince
             if (pPlayer->GetReputationRank(72) != REP_EXALTED && race != RACE_HUMAN)
-                pPlayer->SEND_GOSSIP_MENU(5855, pCreature->GetGUID());
+                pPlayer->SEND_GOSSIP_MENU(5855, pCreature->GetObjectGuid());
             else canBuy = true;
             break;
         case 1261:                                          //Veron Amberstill
             if (pPlayer->GetReputationRank(47) != REP_EXALTED && race != RACE_DWARF)
-                pPlayer->SEND_GOSSIP_MENU(5856, pCreature->GetGUID());
+                pPlayer->SEND_GOSSIP_MENU(5856, pCreature->GetObjectGuid());
             else canBuy = true;
             break;
         case 3362:                                          //Ogunaro Wolfrunner
             if (pPlayer->GetReputationRank(76) != REP_EXALTED && race != RACE_ORC)
-                pPlayer->SEND_GOSSIP_MENU(5841, pCreature->GetGUID());
+                pPlayer->SEND_GOSSIP_MENU(5841, pCreature->GetObjectGuid());
             else canBuy = true;
             break;
         case 3685:                                          //Harb Clawhoof
             if (pPlayer->GetReputationRank(81) != REP_EXALTED && race != RACE_TAUREN)
-                pPlayer->SEND_GOSSIP_MENU(5843, pCreature->GetGUID());
+                pPlayer->SEND_GOSSIP_MENU(5843, pCreature->GetObjectGuid());
             else canBuy = true;
             break;
         case 4730:                                          //Lelanai
             if (pPlayer->GetReputationRank(69) != REP_EXALTED && race != RACE_NIGHTELF)
-                pPlayer->SEND_GOSSIP_MENU(5844, pCreature->GetGUID());
+                pPlayer->SEND_GOSSIP_MENU(5844, pCreature->GetObjectGuid());
             else canBuy = true;
             break;
         case 4731:                                          //Zachariah Post
             if (pPlayer->GetReputationRank(68) != REP_EXALTED && race != RACE_UNDEAD)
-                pPlayer->SEND_GOSSIP_MENU(5840, pCreature->GetGUID());
+                pPlayer->SEND_GOSSIP_MENU(5840, pCreature->GetObjectGuid());
             else canBuy = true;
             break;
         case 7952:                                          //Zjolnir
             if (pPlayer->GetReputationRank(530) != REP_EXALTED && race != RACE_TROLL)
-                pPlayer->SEND_GOSSIP_MENU(5842, pCreature->GetGUID());
+                pPlayer->SEND_GOSSIP_MENU(5842, pCreature->GetObjectGuid());
             else canBuy = true;
             break;
         case 7955:                                          //Milli Featherwhistle
             if (pPlayer->GetReputationRank(54) != REP_EXALTED && race != RACE_GNOME)
-                pPlayer->SEND_GOSSIP_MENU(5857, pCreature->GetGUID());
+                pPlayer->SEND_GOSSIP_MENU(5857, pCreature->GetObjectGuid());
             else canBuy = true;
             break;
         case 16264:                                         //Winaestra
             if (pPlayer->GetReputationRank(911) != REP_EXALTED && race != RACE_BLOODELF)
-                pPlayer->SEND_GOSSIP_MENU(10305, pCreature->GetGUID());
+                pPlayer->SEND_GOSSIP_MENU(10305, pCreature->GetObjectGuid());
             else canBuy = true;
             break;
         case 17584:                                         //Torallius the Pack Handler
             if (pPlayer->GetReputationRank(930) != REP_EXALTED && race != RACE_DRAENEI)
-                pPlayer->SEND_GOSSIP_MENU(10239, pCreature->GetGUID());
+                pPlayer->SEND_GOSSIP_MENU(10239, pCreature->GetObjectGuid());
             else canBuy = true;
             break;
     }
@@ -1251,7 +1250,7 @@ bool GossipHello_npc_mount_vendor(Player* pPlayer, Creature* pCreature)
     {
         if (pCreature->isVendor())
             pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_VENDOR, GOSSIP_TEXT_BROWSE_GOODS, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_TRADE);
-        pPlayer->SEND_GOSSIP_MENU(pPlayer->GetGossipTextId(pCreature), pCreature->GetGUID());
+        pPlayer->SEND_GOSSIP_MENU(pPlayer->GetGossipTextId(pCreature), pCreature->GetObjectGuid());
     }
     return true;
 }
@@ -1259,7 +1258,7 @@ bool GossipHello_npc_mount_vendor(Player* pPlayer, Creature* pCreature)
 bool GossipSelect_npc_mount_vendor(Player* pPlayer, Creature* pCreature, uint32 uiSender, uint32 uiAction)
 {
     if (uiAction == GOSSIP_ACTION_TRADE)
-        pPlayer->SEND_VENDORLIST(pCreature->GetGUID());
+        pPlayer->SEND_VENDORLIST(pCreature->GetObjectGuid());
 
     return true;
 }
@@ -1274,23 +1273,24 @@ bool GossipHello_npc_rogue_trainer(Player* pPlayer, Creature* pCreature)
 
    if (pPlayer->getLevel() >= 24 && !pPlayer->HasItemCount(17126,1) && !pPlayer->GetQuestRewardStatus(6681))
         if (pCreature->isQuestGiver())
-           {
+        {
             pPlayer->PrepareGossipMenu(pCreature,50195);
             pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "<Take the letter>", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF);
             pPlayer->SEND_GOSSIP_MENU(5996, pCreature->GetGUID());
             return true;
-           }
+        }
     return false;
 }
 
 bool GossipSelect_npc_rogue_trainer(Player* pPlayer, Creature* pCreature, uint32 uiSender, uint32 uiAction)
 {
-      if (uiAction == GOSSIP_ACTION_INFO_DEF)
-      {
-            pPlayer->CastSpell(pPlayer,21100,false);
-            pPlayer->CLOSE_GOSSIP_MENU();
-            return true;
-      } else return false;
+    if (uiAction == GOSSIP_ACTION_INFO_DEF)
+    {
+        pPlayer->CastSpell(pPlayer,21100,false);
+        pPlayer->CLOSE_GOSSIP_MENU();
+        return true;
+    } 
+    else return false;
 }
 
 /*######
@@ -1310,7 +1310,7 @@ bool GossipSelect_npc_rogue_trainer(Player* pPlayer, Creature* pCreature, uint32
 bool GossipHello_npc_sayge(Player* pPlayer, Creature* pCreature)
 {
     if (pCreature->isQuestGiver())
-        pPlayer->PrepareQuestMenu(pCreature->GetGUID());
+        pPlayer->PrepareQuestMenu(pCreature->GetObjectGuid());
 
     if (pPlayer->HasSpellCooldown(SPELL_INT) ||
         pPlayer->HasSpellCooldown(SPELL_ARM) ||
@@ -1320,11 +1320,11 @@ bool GossipHello_npc_sayge(Player* pPlayer, Creature* pCreature)
         pPlayer->HasSpellCooldown(SPELL_AGI) ||
         pPlayer->HasSpellCooldown(SPELL_STM) ||
         pPlayer->HasSpellCooldown(SPELL_SPI))
-        pPlayer->SEND_GOSSIP_MENU(7393, pCreature->GetGUID());
+        pPlayer->SEND_GOSSIP_MENU(7393, pCreature->GetObjectGuid());
     else
     {
         pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Yes", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+1);
-        pPlayer->SEND_GOSSIP_MENU(7339, pCreature->GetGUID());
+        pPlayer->SEND_GOSSIP_MENU(7339, pCreature->GetObjectGuid());
     }
 
     return true;
@@ -1339,39 +1339,39 @@ void SendAction_npc_sayge(Player* pPlayer, Creature* pCreature, uint32 uiAction)
             pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Turn him over to liege",            GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+3);
             pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Confiscate the corn",               GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+4);
             pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Let him go and have the corn",      GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+5);
-            pPlayer->SEND_GOSSIP_MENU(7340, pCreature->GetGUID());
+            pPlayer->SEND_GOSSIP_MENU(7340, pCreature->GetObjectGuid());
             break;
         case GOSSIP_ACTION_INFO_DEF+2:
             pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Execute your friend painfully",     GOSSIP_SENDER_MAIN+1, GOSSIP_ACTION_INFO_DEF);
             pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Execute your friend painlessly",    GOSSIP_SENDER_MAIN+2, GOSSIP_ACTION_INFO_DEF);
             pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Let your friend go",                GOSSIP_SENDER_MAIN+3, GOSSIP_ACTION_INFO_DEF);
-            pPlayer->SEND_GOSSIP_MENU(7341, pCreature->GetGUID());
+            pPlayer->SEND_GOSSIP_MENU(7341, pCreature->GetObjectGuid());
             break;
         case GOSSIP_ACTION_INFO_DEF+3:
             pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Confront the diplomat",             GOSSIP_SENDER_MAIN+4, GOSSIP_ACTION_INFO_DEF);
             pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Show not so quiet defiance",        GOSSIP_SENDER_MAIN+5, GOSSIP_ACTION_INFO_DEF);
             pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Remain quiet",                      GOSSIP_SENDER_MAIN+2, GOSSIP_ACTION_INFO_DEF);
-            pPlayer->SEND_GOSSIP_MENU(7361, pCreature->GetGUID());
+            pPlayer->SEND_GOSSIP_MENU(7361, pCreature->GetObjectGuid());
             break;
         case GOSSIP_ACTION_INFO_DEF+4:
             pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Speak against your brother openly", GOSSIP_SENDER_MAIN+6, GOSSIP_ACTION_INFO_DEF);
             pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Help your brother in",              GOSSIP_SENDER_MAIN+7, GOSSIP_ACTION_INFO_DEF);
             pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Keep your brother out without letting him know", GOSSIP_SENDER_MAIN+8, GOSSIP_ACTION_INFO_DEF);
-            pPlayer->SEND_GOSSIP_MENU(7362, pCreature->GetGUID());
+            pPlayer->SEND_GOSSIP_MENU(7362, pCreature->GetObjectGuid());
             break;
         case GOSSIP_ACTION_INFO_DEF+5:
             pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Take credit, keep gold",            GOSSIP_SENDER_MAIN+5, GOSSIP_ACTION_INFO_DEF);
             pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Take credit, share the gold",       GOSSIP_SENDER_MAIN+4, GOSSIP_ACTION_INFO_DEF);
             pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Let the knight take credit",        GOSSIP_SENDER_MAIN+3, GOSSIP_ACTION_INFO_DEF);
-            pPlayer->SEND_GOSSIP_MENU(7363, pCreature->GetGUID());
+            pPlayer->SEND_GOSSIP_MENU(7363, pCreature->GetObjectGuid());
             break;
         case GOSSIP_ACTION_INFO_DEF:
             pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Thanks",                            GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+6);
-            pPlayer->SEND_GOSSIP_MENU(7364, pCreature->GetGUID());
+            pPlayer->SEND_GOSSIP_MENU(7364, pCreature->GetObjectGuid());
             break;
         case GOSSIP_ACTION_INFO_DEF+6:
             pCreature->CastSpell(pPlayer, SPELL_FORTUNE, false);
-            pPlayer->SEND_GOSSIP_MENU(7365, pCreature->GetGUID());
+            pPlayer->SEND_GOSSIP_MENU(7365, pCreature->GetObjectGuid());
             break;
     }
 }
@@ -1539,10 +1539,10 @@ bool GossipHello_npc_tabard_vendor(Player* pPlayer, Creature* pCreature)
             pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_LOST_TABARD_OF_SUMMER_FLAMES, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+7);
         }
 
-        pPlayer->SEND_GOSSIP_MENU(pPlayer->GetGossipTextId(pCreature), pCreature->GetGUID());
+        pPlayer->SEND_GOSSIP_MENU(pPlayer->GetGossipTextId(pCreature), pCreature->GetObjectGuid());
     }
     else
-        pPlayer->SEND_VENDORLIST(pCreature->GetGUID());
+        pPlayer->SEND_VENDORLIST(pCreature->GetObjectGuid());
 
     return true;
 }
@@ -1552,7 +1552,7 @@ bool GossipSelect_npc_tabard_vendor(Player* pPlayer, Creature* pCreature, uint32
     switch(uiAction)
     {
         case GOSSIP_ACTION_TRADE:
-            pPlayer->SEND_VENDORLIST(pCreature->GetGUID());
+            pPlayer->SEND_VENDORLIST(pCreature->GetObjectGuid());
             break;
         case GOSSIP_ACTION_INFO_DEF+1:
             pPlayer->CLOSE_GOSSIP_MENU();
@@ -1653,7 +1653,7 @@ bool GossipHello_npc_locksmith(Player* pPlayer, Creature* pCreature)
     if (pPlayer->GetQuestRewardStatus(QUEST_CONTAINMENT) && !pPlayer->HasItemCount(ITEM_VIOLET_HOLD_KEY, 1, true))
         pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_LOST_VIOLET_HOLD_KEY, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF +6);
 
-    pPlayer->SEND_GOSSIP_MENU(pPlayer->GetGossipTextId(pCreature), pCreature->GetGUID());
+    pPlayer->SEND_GOSSIP_MENU(pPlayer->GetGossipTextId(pCreature), pCreature->GetObjectGuid());
 
     return true;
 }
@@ -1870,90 +1870,6 @@ CreatureAI* GetAI_npc_mirror_image(Creature* pCreature)
     return new npc_mirror_imageAI(pCreature);
 };
 
-/*####
- ## npc_snake_trap_serpents - Summonned snake id are 19921 and 19833
- ####*/
-
-#define SPELL_MIND_NUMBING_POISON    25810   //Viper
-#define SPELL_CRIPPLING_POISON       30981   //Viper
-#define SPELL_DEADLY_POISON          34655   //Venomous Snake
-
-#define MOB_VIPER 19921
-#define MOB_VENOM_SNIKE 19833
-
-struct MANGOS_DLL_DECL npc_snake_trap_serpentsAI : public ScriptedAI
-{
-    npc_snake_trap_serpentsAI(Creature *c) : ScriptedAI(c) {Reset();}
-
-    uint32 SpellTimer;
-    Unit* Owner;
-
-    void Reset()
-    {
-        SpellTimer = 500;
-        Owner = m_creature->GetCharmerOrOwner();
-        if (!Owner) return;
-
-        m_creature->SetLevel(Owner->getLevel());
-        m_creature->setFaction(Owner->getFaction());
-    }
-
-    void AttackStart(Unit* pWho)
-    {
-      if (!pWho) return;
-
-      if (m_creature->Attack(pWho, true))
-         {
-            m_creature->SetInCombatWith(pWho);
-            m_creature->AddThreat(pWho, 100.0f);
-            SetCombatMovement(true);
-            m_creature->GetMotionMaster()->MoveChase(pWho);
-         }
-    }
-
-    void UpdateAI(const uint32 diff)
-    {
-        if (!m_creature->getVictim())
-        {
-            if (Owner && Owner->getVictim())
-                AttackStart(Owner->getVictim());
-            return;
-        }
-
-        if (SpellTimer <= diff)
-        {
-            if (m_creature->GetEntry() == MOB_VIPER ) //Viper - 19921
-            {
-                if (!urand(0,2)) //33% chance to cast
-                {
-                    uint32 spell;
-                    if (urand(0,1))
-                        spell = SPELL_MIND_NUMBING_POISON;
-                    else
-                        spell = SPELL_CRIPPLING_POISON;
-                    DoCast(m_creature->getVictim(), spell);
-                }
-
-                SpellTimer = urand(3000, 5000);
-            }
-            else if (m_creature->GetEntry() == MOB_VENOM_SNIKE ) //Venomous Snake - 19833
-            {
-                if (urand(0,1) == 0) //80% chance to cast
-                    DoCast(m_creature->getVictim(), SPELL_DEADLY_POISON);
-                SpellTimer = urand(2500, 4500);
-            }
-        }
-        else SpellTimer -= diff;
-
-        DoMeleeAttackIfReady();
-    }
-};
-
-CreatureAI* GetAI_npc_snake_trap_serpents(Creature* pCreature)
-{
-    return new npc_snake_trap_serpentsAI(pCreature);
-}
-
 struct MANGOS_DLL_DECL npc_rune_blade : public ScriptedAI
 {
     npc_rune_blade(Creature* pCreature) : ScriptedAI(pCreature) {Reset();}
@@ -1997,8 +1913,6 @@ struct MANGOS_DLL_DECL npc_rune_blade : public ScriptedAI
             if (owner->getVictim())
                 AttackStart(owner->getVictim());
         }
-
-        DoMeleeAttackIfReady();
     }
 };
 
@@ -2006,125 +1920,133 @@ CreatureAI* GetAI_npc_rune_blade(Creature* pCreature)
 {
     return new npc_rune_blade(pCreature);
 }
-/*########
-# mob_death_knight_gargoyle AI
-#########*/
 
-// UPDATE `creature_template` SET `ScriptName` = 'mob_death_knight_gargoyle' WHERE `entry` = '27829';
+/*######
+## Ebon Gargoyle(27829)
+######*/
 
-enum GargoyleSpells
-{
-    SPELL_GARGOYLE_STRIKE = 51963      // Don't know if this is the correct spell, it does about 700-800 damage points
-};
+// UPDATE creature_template SET ScriptName = "npc_death_knight_gargoyle" WHERE entry = 27829;
+
+#define SPELL_GARGOYLE_STRIKE 51963
+#define GARGOYLE_STRIKE_RANGE 40.0f
 
 struct MANGOS_DLL_DECL npc_death_knight_gargoyle : public ScriptedAI
 {
     npc_death_knight_gargoyle(Creature* pCreature) : ScriptedAI(pCreature)
     {
+        // "gargoyle flies into the area"
+        pCreature->NearTeleportTo(m_creature->GetPositionX()+5.0f, m_creature->GetPositionY()+5.0f, m_creature->GetPositionZ()+15.0f, m_creature->GetOrientation(), false);
+        m_creature->GetMotionMaster()->MovePoint(0, m_creature->GetPositionX()-5.0f, m_creature->GetPositionY()-5.0f, m_creature->GetPositionZ()-14.0f);
+
+        m_bIsReady = false; 
+        m_uiCreatorGUID = m_creature->GetCreatorGuid();
+
         Reset();
     }
-    uint32 m_uiGargoyleStrikeTimer;
-    bool inCombat;
-    Unit *owner;
 
+    uint64 m_uiTargetGUID;
+    ObjectGuid m_uiCreatorGUID;
+    uint32 m_uiStrikeTimer;
+    bool m_bIsReady;
 
-    void Reset() 
+    void Reset()
     {
-     owner = m_creature->GetOwner();
-     if (!owner) return;
-
-     m_creature->SetLevel(owner->getLevel());
-     m_creature->setFaction(owner->getFaction());
-
-     m_creature->SetUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_NONE);
-     m_creature->SetUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_PVP_ATTACKABLE);
-     m_creature->SetUInt32Value(UNIT_FIELD_BYTES_0, 50331648);
-     m_creature->SetUInt32Value(UNIT_FIELD_BYTES_1, 50331648);
-     m_creature->AddSplineFlag(SPLINEFLAG_FLYING);
-
-     inCombat = false;
-     m_uiGargoyleStrikeTimer = urand(3000, 5000);
-
-     float fPosX, fPosY, fPosZ;
-     owner->GetPosition(fPosX, fPosY, fPosZ);
-
-     m_creature->NearTeleportTo(fPosX, fPosY, fPosZ+10.0f, m_creature->GetAngle(owner));
-
-
-     if (owner && !m_creature->hasUnitState(UNIT_STAT_FOLLOW))
-        {
-            m_creature->GetMotionMaster()->Clear(false);
-            m_creature->GetMotionMaster()->MoveFollow(owner, PET_FOLLOW_DIST + 3.0f, m_creature->GetAngle(owner));
-        }
-
-      if(owner->IsPvP())
-                 m_creature->SetPvP(true);
-      if(owner->IsFFAPvP())
-                 m_creature->SetFFAPvP(true);
+        m_uiTargetGUID = 0;
+        m_uiStrikeTimer = 0;
     }
 
-    void EnterEvadeMode()
+    void MoveInLineOfSight(Unit *pWho)
     {
-     if (m_creature->IsInEvadeMode() || !m_creature->isAlive())
-          return;
+        if (!m_bIsReady)
+            return;
 
-        inCombat = false;
+        ScriptedAI::MoveInLineOfSight(pWho);
+    }
 
-        m_creature->AttackStop();
-        m_creature->CombatStop(true);
-        if (owner && !m_creature->hasUnitState(UNIT_STAT_FOLLOW))
+    void MovementInform(uint32 uiMoveType, uint32 uiPointId)
+    {
+        if (uiMoveType != POINT_MOTION_TYPE)
+            return;
+
+        if (uiPointId == 0)
         {
-            m_creature->GetMotionMaster()->Clear(false);
-            m_creature->GetMotionMaster()->MoveFollow(owner, PET_FOLLOW_DIST + 3.0f, m_creature->GetAngle(owner));
+            m_bIsReady = true;
+            m_creature->GetMotionMaster()->Clear();
         }
     }
 
-    void AttackStart(Unit* pWho)
+    void AttackStart(Unit *pWho)
     {
-      if (!pWho) return;
+        if (pWho)
+            m_uiTargetGUID = pWho->GetGUID();
 
-      if (m_creature->Attack(pWho, true))
-        {
-            m_creature->clearUnitState(UNIT_STAT_FOLLOW);
-            m_creature->SetInCombatWith(pWho);
-            pWho->SetInCombatWith(m_creature);
-            m_creature->AddThreat(pWho, 100.0f);
-            DoStartMovement(pWho, 10.0f);
-            SetCombatMovement(true);
-            inCombat = true;
-        }
+        if (!m_bIsReady)
+            return;
+
+        ScriptedAI::AttackStart(pWho);
     }
 
-    void UpdateAI(const uint32 uiDiff)
+    void UpdateAI(uint32 const uiDiff)
     {
+        if (!m_bIsReady)
+            return;
 
-        if (!owner || !owner->IsInWorld())
+        Player* pOwner = m_creature->GetMap()->GetPlayer(m_uiCreatorGUID);
+        if (!pOwner || !pOwner->IsInWorld())
         {
-            m_creature->ForcedDespawn();
+            m_creature->DealDamage(m_creature, m_creature->GetMaxHealth(), NULL, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NONE, NULL, false);
             return;
         }
 
-        if (!m_creature->getVictim())
-            if (owner && owner->getVictim())
-                AttackStart(owner->getVictim());
+        Unit *pTarget = m_creature->getVictim();
 
-        if (m_creature->getVictim() && m_creature->getVictim() != owner->getVictim())
-                AttackStart(owner->getVictim());
-
-        if (inCombat && !m_creature->getVictim())
+        // check if current target still exists and is attackable
+        if (!pTarget)
         {
-            EnterEvadeMode();
-            return;
+            pTarget = m_creature->GetMap()->GetUnit(m_uiTargetGUID);
+
+            if (!pTarget || !m_creature->CanInitiateAttack() || pTarget && (!pTarget->isTargetableForAttack() ||
+            !m_creature->IsHostileTo(pTarget) || !pTarget->isInAccessablePlaceFor(m_creature)))
+            {
+                // we have no target, so look for the new one
+                if (Unit *pTmp = m_creature->SelectRandomUnfriendlyTarget(0, GARGOYLE_STRIKE_RANGE) )
+                    m_uiTargetGUID = pTmp->GetGUID();
+
+                pTarget = m_creature->GetMap()->GetUnit(m_uiTargetGUID);
+
+                // now check again. if no target found then there is nothing to attack - start following the owner
+                if (!pTarget || !m_creature->CanInitiateAttack() || pTarget && (!pTarget->isTargetableForAttack() ||
+                !m_creature->IsHostileTo(pTarget) || !pTarget->isInAccessablePlaceFor(m_creature)))
+                {
+                    if (m_creature->GetMotionMaster()->GetCurrentMovementGeneratorType() != FOLLOW_MOTION_TYPE)
+                    {
+                        m_creature->InterruptNonMeleeSpells(false);
+                        m_creature->GetMotionMaster()->Clear();
+                        m_creature->GetMotionMaster()->MoveFollow(pOwner, PET_FOLLOW_DIST, PET_FOLLOW_ANGLE);
+                        SetCombatMovement(true);
+                        Reset();
+                    }
+                    return;
+                }
+            }
+
+            if (pTarget)
+            {
+                // ok, we found new target
+                SetCombatMovement(false);
+                m_creature->AI()->AttackStart(pTarget);
+            }
         }
 
-        if (!inCombat) return;
-
-        if (m_uiGargoyleStrikeTimer <= uiDiff)
+        // Gargoyle Strike
+        if (m_uiStrikeTimer <= uiDiff)
         {
-            DoCastSpellIfCan(m_creature->getVictim(), SPELL_GARGOYLE_STRIKE);
-            m_uiGargoyleStrikeTimer = urand(3000, 5000);
+            if (DoCastSpellIfCan(pTarget, SPELL_GARGOYLE_STRIKE) == CAST_OK)
+                m_uiStrikeTimer = 2000;
+            else
+                SetCombatMovement(true);
         }
-        else m_uiGargoyleStrikeTimer -= uiDiff;
+        else m_uiStrikeTimer -= uiDiff;
     }
 };
 
@@ -2293,6 +2215,222 @@ CreatureAI* GetAI_npc_eye_of_kilrogg(Creature* pCreature)
     return new npc_eye_of_kilrogg(pCreature);
 }
 
+/*######
+## npc_experience_eliminator
+######*/
+
+#define GOSSIP_ITEM_STOP_XP_GAIN "I don't want to gain experience anymore."
+#define GOSSIP_CONFIRM_STOP_XP_GAIN "Are you sure you want to stop gaining experience?"
+#define GOSSIP_ITEM_START_XP_GAIN "I want to be able to gain experience again."
+#define GOSSIP_CONFIRM_START_XP_GAIN "Are you sure you want to be able to gain experience once again?"
+
+bool GossipHello_npc_experience_eliminator(Player* pPlayer, Creature* pCreature)
+{
+pPlayer->ADD_GOSSIP_ITEM_EXTENDED(GOSSIP_ICON_CHAT, pPlayer->HasFlag(PLAYER_FLAGS, PLAYER_FLAGS_XP_USER_DISABLED) ? GOSSIP_ITEM_START_XP_GAIN : GOSSIP_ITEM_STOP_XP_GAIN,
+GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+1,
+pPlayer->HasFlag(PLAYER_FLAGS, PLAYER_FLAGS_XP_USER_DISABLED) ? GOSSIP_CONFIRM_START_XP_GAIN : GOSSIP_CONFIRM_STOP_XP_GAIN, 100000, false);
+
+    pPlayer->SEND_GOSSIP_MENU(pPlayer->GetGossipTextId(pCreature), pCreature->GetGUID());
+    return true;
+}
+
+bool GossipSelect_npc_experience_eliminator(Player* pPlayer, Creature* pCreature, uint32 uiSender, uint32 uiAction)
+{
+    if(uiAction == GOSSIP_ACTION_INFO_DEF+1)
+    {
+        // cheater(?) passed through client limitations
+        if(pPlayer->GetMoney() < 100000)
+            return true;
+
+        pPlayer->ModifyMoney(-100000);
+
+        if(pPlayer->HasFlag(PLAYER_FLAGS, PLAYER_FLAGS_XP_USER_DISABLED))
+            pPlayer->RemoveFlag(PLAYER_FLAGS, PLAYER_FLAGS_XP_USER_DISABLED);
+        else
+            pPlayer->SetFlag(PLAYER_FLAGS, PLAYER_FLAGS_XP_USER_DISABLED);
+    }
+    pPlayer->CLOSE_GOSSIP_MENU();
+    return true;
+}
+
+/*######
+## Risen Ghoul, Army of the Dead Ghoul
+######*/
+
+enum
+{
+    ENTRY_AOTD_GHOUL = 24207,
+    SPELL_CLAW = 47468,
+    SPELL_LEAP = 47482,
+    SPELL_AURA_TAUNT = 43264
+};
+
+struct MANGOS_DLL_DECL mob_risen_ghoulAI : public ScriptedAI
+{
+    mob_risen_ghoulAI(Creature* pCreature) : ScriptedAI(pCreature)
+    {
+        m_bIsReady = false;
+        m_bIsSpawned = false;
+        fDist = (m_creature->GetEntry() == ENTRY_AOTD_GHOUL) ? float(urand(1, 5) ) : PET_FOLLOW_DIST;
+        fAngle = PET_FOLLOW_ANGLE;
+        m_uiCreatorGUID = m_creature->GetCreatorGuid();
+        if (Unit* pOwner = m_creature->GetMap()->GetUnit(m_uiCreatorGUID) )
+            fAngle = m_creature->GetAngle(pOwner);
+
+        Reset();
+    }
+
+    Unit* pTarget;
+
+    ObjectGuid m_uiCreatorGUID;
+    uint64 m_uiTargetGUID;
+
+    uint32 m_uiReadyTimer;
+    uint32 m_uiClawTimer;
+    uint32 m_uiLeapTimer;
+
+    bool m_bIsReady;
+    bool m_bIsSpawned;
+
+    float fDist;
+    float fAngle;
+
+
+    void Reset()
+    {
+        pTarget = NULL;
+        m_uiTargetGUID = 0;
+        m_uiReadyTimer = 4000;
+        m_uiClawTimer = urand(3000, 5000);
+        m_uiLeapTimer = urand(1000, 5000);
+    }
+
+    void MoveInLineOfSight(Unit *pWho)
+    {
+        if (!m_bIsReady)
+            return;
+
+        ScriptedAI::MoveInLineOfSight(pWho);
+    }
+
+    void AttackStart(Unit *pWho)
+    {
+        if (!m_bIsReady)
+            return;
+
+        ScriptedAI::AttackStart(pWho);
+    }
+/* this needs further research
+    void ReceiveEmote(Player* pPlayer, uint32 emote)
+    {
+        if (m_creature->GetEntry() == ENTRY_AOTD_GHOUL)
+            return;
+
+        switch(emote)
+        {
+            case TEXTEMOTE_GLARE:
+                m_creature->HandleEmote(EMOTE_ONESHOT_COWER);
+                break;
+            case TEXTEMOTE_COWER:
+                m_creature->HandleEmote(EMOTE_ONESHOT_OMNICAST_GHOUL);
+                break;
+        }
+    }
+*/
+    void UpdateAI(uint32 const uiDiff)
+    {
+        if (!m_bIsReady)
+        {
+            if (!m_bIsSpawned)
+            {
+                m_creature->HandleEmoteCommand(EMOTE_ONESHOT_EMERGE);
+                m_bIsSpawned = true;
+            }
+
+            if (m_uiReadyTimer <= uiDiff)
+            {
+                m_bIsReady = true;
+                if (m_creature->GetEntry() == ENTRY_AOTD_GHOUL)
+                    DoCastSpellIfCan(m_creature, SPELL_AURA_TAUNT, CAST_TRIGGERED);
+            }
+            else m_uiReadyTimer -= uiDiff;
+
+            return;
+        }
+
+        Unit* pOwner = m_creature->GetMap()->GetUnit(m_uiCreatorGUID);
+        if (!pOwner || !pOwner->IsInWorld())
+        {
+            m_creature->DealDamage(m_creature, m_creature->GetMaxHealth(), NULL, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NONE, NULL, false);
+            return;
+        }
+
+        // check if current target still exists and is atatckable
+        if (m_creature->getVictim() )
+            m_uiTargetGUID = m_creature->getVictim()->GetGUID();
+
+        pTarget = m_creature->GetMap()->GetUnit(m_uiTargetGUID);
+
+        if (!pTarget || !m_creature->CanInitiateAttack() || !pTarget->isTargetableForAttack() ||
+        !m_creature->IsHostileTo(pTarget) || !pTarget->isInAccessablePlaceFor(m_creature))
+        {
+            // we have no target, so look for the new one
+            if (Unit *pTmp = m_creature->SelectRandomUnfriendlyTarget(0, 30.0f) )
+                m_uiTargetGUID = pTmp->GetGUID();
+
+            pTarget = m_creature->GetMap()->GetUnit(m_uiTargetGUID);
+
+            // now check again. if no target found then there is nothing to attack - start following the owner
+            if (!pTarget || !m_creature->CanInitiateAttack() || !pTarget->isTargetableForAttack() ||
+            !m_creature->IsHostileTo(pTarget) || !pTarget->isInAccessablePlaceFor(m_creature))
+            {
+                if (m_creature->GetMotionMaster()->GetCurrentMovementGeneratorType() != FOLLOW_MOTION_TYPE)
+                {
+                    m_creature->InterruptNonMeleeSpells(false);
+                    m_creature->GetMotionMaster()->Clear();
+                    m_creature->GetMotionMaster()->MoveFollow(pOwner, fDist, fAngle);
+                    Reset();
+                }
+                return;
+            }
+            if (pTarget)
+                m_creature->AI()->AttackStart(pTarget);
+        }
+
+        // Claw
+        if (m_uiClawTimer <= uiDiff)
+        {
+            DoCastSpellIfCan(pTarget, SPELL_CLAW);
+            m_uiClawTimer = urand(3000, 5000);
+        }
+        else m_uiClawTimer -= uiDiff;
+
+        // Leap
+        if (m_uiLeapTimer <= uiDiff)
+        {
+            if (Unit *pLeapTarget = m_creature->SelectRandomUnfriendlyTarget(m_creature->getVictim(), 30.0f) )
+            {
+                if (pLeapTarget != pTarget)
+                {
+                    DoCastSpellIfCan(pLeapTarget, SPELL_LEAP, CAST_TRIGGERED);
+                    m_uiLeapTimer = 20000;
+                    m_uiTargetGUID = pLeapTarget->GetGUID();
+                    m_creature->AI()->AttackStart(pLeapTarget);
+                    return;
+                }
+            }
+        }
+        else m_uiLeapTimer -= uiDiff;
+
+        DoMeleeAttackIfReady();
+    }
+};
+ 
+CreatureAI* GetAI_mob_risen_ghoul(Creature* pCreature)
+{
+    return new mob_risen_ghoulAI (pCreature);
+};
+
 void AddSC_npcs_special()
 {
     Script* newscript;
@@ -2389,11 +2527,6 @@ void AddSC_npcs_special()
     newscript->RegisterSelf();
 
     newscript = new Script;
-    newscript->Name = "npc_snake_trap_serpents";
-    newscript->GetAI = &GetAI_npc_snake_trap_serpents;
-    newscript->RegisterSelf();
-
-    newscript = new Script;
     newscript->Name = "npc_runeblade";
     newscript->GetAI = &GetAI_npc_rune_blade;
     newscript->RegisterSelf();
@@ -2416,5 +2549,16 @@ void AddSC_npcs_special()
     newscript = new Script;
     newscript->Name = "npc_eye_of_kilrogg";
     newscript->GetAI = &GetAI_npc_eye_of_kilrogg;
+    newscript->RegisterSelf();
+
+    newscript = new Script;
+    newscript->Name = "npc_experience_eliminator";
+    newscript->pGossipHello = &GossipHello_npc_experience_eliminator;
+    newscript->pGossipSelect = &GossipSelect_npc_experience_eliminator;
+    newscript->RegisterSelf();
+    
+    newscript = new Script;
+    newscript->Name = "mob_risen_ghoul";
+    newscript->GetAI = &GetAI_mob_risen_ghoul;
     newscript->RegisterSelf();
 }

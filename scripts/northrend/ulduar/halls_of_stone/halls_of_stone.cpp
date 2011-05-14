@@ -151,7 +151,7 @@ struct MANGOS_DLL_DECL mob_tribuna_controllerAI : public ScriptedAI
     ScriptedInstance* m_pInstance;
     bool m_bIsRegularMode;
 
-    std::list<uint64> m_lKaddrakGUIDList;
+    GUIDList m_lKaddrakGUIDList;
     //std::list<Creature*> m_lMarnakGUIDList;
     //std::list<Creature*> m_lAbedneumGUIDList;
 
@@ -222,7 +222,7 @@ struct MANGOS_DLL_DECL mob_tribuna_controllerAI : public ScriptedAI
             {
                 if (Unit* pTarget = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM, 0))
                     if (!m_lKaddrakGUIDList.empty())
-                        for(std::list<uint64>::iterator itr = m_lKaddrakGUIDList.begin(); itr != m_lKaddrakGUIDList.end(); ++itr)
+                        for(GUIDList::iterator itr = m_lKaddrakGUIDList.begin(); itr != m_lKaddrakGUIDList.end(); ++itr)
                             if (Creature* pCreature = m_creature->GetMap()->GetCreature(*itr))
                                 if (pCreature->isAlive())
                                     pCreature->CastSpell(pTarget, m_bIsRegularMode ? SPELL_GLARE_OF_THE_TRIBUNAL_H : SPELL_GLARE_OF_THE_TRIBUNAL, true);
@@ -291,7 +291,7 @@ struct MANGOS_DLL_DECL npc_brann_hosAI : public npc_escortAI
     uint32 m_uiPhase_timer;
 
     uint64 m_uiControllerGUID;
-    std::list<uint64> m_lDwarfGUIDList;
+    GUIDList m_lDwarfGUIDList;
 
     void Reset()
     {
@@ -382,7 +382,7 @@ struct MANGOS_DLL_DECL npc_brann_hosAI : public npc_escortAI
         if (m_lDwarfGUIDList.empty())
             return;
 
-        for(std::list<uint64>::iterator itr = m_lDwarfGUIDList.begin(); itr != m_lDwarfGUIDList.end(); ++itr)
+        for(GUIDList::iterator itr = m_lDwarfGUIDList.begin(); itr != m_lDwarfGUIDList.end(); ++itr)
         {
             if (Creature* pTemp = m_creature->GetMap()->GetCreature(*itr))
             {
@@ -731,7 +731,7 @@ bool GossipHello_npc_brann_hos(Player* pPlayer, Creature* pCreature)
         m_pInstance = (ScriptedInstance*)pCreature->GetInstanceData();
 
     if (pCreature->isQuestGiver())
-        pPlayer->PrepareQuestMenu(pCreature->GetGUID());
+        pPlayer->PrepareQuestMenu(pCreature->GetObjectGuid());
 
 if (m_pInstance->GetData(TYPE_BRANN) != DONE)
     pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ITEM_START, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+1);
@@ -739,7 +739,7 @@ if (m_pInstance->GetData(TYPE_BRANN) != DONE)
     pPlayer->SEND_GOSSIP_MENU(TEXT_ID_START, pCreature->GetGUID());
 
     //pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ITEM_PROGRESS, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+2);
-    //pPlayer->SEND_GOSSIP_MENU(TEXT_ID_PROGRESS, pCreature->GetGUID());
+    //pPlayer->SEND_GOSSIP_MENU(TEXT_ID_PROGRESS, pCreature->GetObjectGuid());
     return true;
 }
 
@@ -749,7 +749,7 @@ bool GossipSelect_npc_brann_hos(Player* pPlayer, Creature* pCreature, uint32 uiS
     {
         pPlayer->CLOSE_GOSSIP_MENU();
         ((npc_brann_hosAI*)pCreature->AI())->m_uiStep = 1;
-        ((npc_brann_hosAI*)pCreature->AI())->Start(false, pPlayer->GetGUID());
+        ((npc_brann_hosAI*)pCreature->AI())->Start(false, pPlayer);
     }
 
     return true;
