@@ -383,24 +383,22 @@ CreatureAI* GetAI_npc_deacying_ghoul(Creature* pCreature)
 }
 
 /*######
-## npc_gorebag
+## npc_flying_fiend_vehicle
 ######*/
 
 enum
 {
-    SAY_1               = -1999852,
-    SAY_2               = -1999853,
-    SAY_3               = -1999854,
-    SAY_4               = -1999855,
-    SAY_5               = -1999856,
-    SAY_6               = -1999857,
+    SAY_1               = -1999810,
+    SAY_2               = -1999809,
+    SAY_3               = -1999808,
+    SAY_4               = -1999807,
+    SAY_5               = -1999806,
+    SAY_6               = -1999805,
 
     SPELL_KILL_CREDIT               = 52220,
     SPELL_SUMMON_GARGOYLE_VEHICLE   = 52194, // force cast 52190
     SPELL_SCOURGE_DISGUISE          = 52193, // force cast 52192
     SPELL_ABANDON_VEHICLE           = 52203,
-    QUEST_REUNITED                  = 12663,
-    NPC_FLYING_FIEND                = 28669,
     NPC_OVERLORD_DRAKURU            = 28717,
     MAX_NODE                        = 35
 };
@@ -457,7 +455,6 @@ struct MANGOS_DLL_DECL npc_flying_fiend_vehicleAI : public ScriptedAI
     npc_flying_fiend_vehicleAI(Creature* pCreature) : ScriptedAI(pCreature) 
     {
         Reset();
-        error_log("npc_flying_fiend_vehicle initiated flightpath for player %u", m_creature->GetCreatorGuid());
         m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
         m_creature->SetOwnerGuid(m_creature->GetCreatorGuid());
         m_creature->SetSpeedRate(MOVE_FLIGHT, 2.0f);
