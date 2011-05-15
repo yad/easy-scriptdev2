@@ -4,28 +4,6 @@
 -- teleporter
 UPDATE gameobject_template SET ScriptName = "go_ulduar_teleporter" WHERE entry = 194569;
 
--- fragments of Val'Anyr
-DELETE FROM creature_loot_template WHERE item = 45038;
-INSERT INTO creature_loot_template VALUES
-(33190, 45038, 6, 2, 1, 1, 0, 0, 0), -- Ignis 6%
-(33724, 45038, 4, 2, 1, 1, 0, 0, 0), -- Razorscale %
-(33885, 45038, 7, 3, 1, 1, 0, 0, 0), -- XT-002 normal %
-(33692, 45038, 4, 3, 1, 1, 0, 0, 0), -- Runemaster %
-(33694, 45038, 4, 2, 1, 1, 0, 0, 0), -- Stormcaller %
-(33693, 45038, 7, 4, 1, 1, 0, 0, 0), --  Steelbreaker %
-(34175, 45038, 6, 2, 1, 1, 0, 0, 0); -- Auriaya %
-
-DELETE FROM gameobject_loot_template WHERE item = 45038;
-INSERT INTO gameobject_loot_template VALUES
-(26929, 45038, 10, 2, 1, 1, 0, 0, 0), -- Kologarn %
-(27079, 45038, 18, 7, 1, 1, 0, 0, 0), -- Freya normal
-(26962, 45038, 25, 7, 1, 1, 0, 0, 0), -- Freya hard
-(26946, 45038,  7, 5, 1, 1, 0, 0, 0); -- Hodir normal
-
-DELETE FROM reference_loot_template WHERE item = 45038;
-INSERT INTO reference_loot_template VALUES
-(33886, 45038, 14, 3, 1, 1, 18, 603, 38); -- XT-002 hard %
-
 -- Trash loot
 -- 10man
 UPDATE `creature_template` SET `lootid` = 33115 WHERE `entry` IN (34183, 34197, 34133, 34193, 33354, 33755, 33754, 33431, 34085, 33430, 34190, 34198, 33526, 34199, 34086, 33525, 33355, 34069, 33527, 34267, 34196, 33699, 33722, 34191, 33818, 33819, 33822, 33824, 34134, 34135, 34273, 34271, 34269);
@@ -729,3 +707,27 @@ INSERT INTO `achievement_criteria_requirement` VALUES
 (10184, 18, 0, 0),
 (10399, 18, 0, 0),
 (10243, 18, 0, 0);
+
+
+-- fragments of Val'Anyr
+-- ! ALWAYS ADD AT THE END DUE TO DELETE STATEMENTS ABOVE !
+DELETE FROM creature_loot_template WHERE item = 45038;
+INSERT INTO creature_loot_template VALUES
+(33190, 45038, 6, 2, 1, 1, 0, 0, 0), -- Ignis 6%
+(33724, 45038, 4, 2, 1, 1, 0, 0, 0), -- Razorscale %
+(33885, 45038, 7, 3, 1, 1, 0, 0, 0), -- XT-002 normal %
+(33692, 45038, 4, 3, 1, 1, 0, 0, 0), -- Runemaster %
+(33694, 45038, 4, 2, 1, 1, 0, 0, 0), -- Stormcaller %
+(33693, 45038, 7, 4, 1, 1, 0, 0, 0), --  Steelbreaker %
+(34175, 45038, 6, 2, 1, 1, 0, 0, 0); -- Auriaya %
+
+DELETE FROM gameobject_loot_template WHERE item = 45038;
+INSERT INTO gameobject_loot_template VALUES
+(26929, 45038, 10, 2, 1, 1, 0, 0, 0), -- Kologarn %
+(27079, 45038, 18, 7, 1, 1, 0, 0, 0), -- Freya normal
+(26962, 45038, 25, 7, 1, 1, 0, 0, 0), -- Freya hard
+(26946, 45038,  7, 5, 1, 1, 0, 0, 0); -- Hodir normal
+
+DELETE FROM reference_loot_template WHERE item = 45038;
+INSERT INTO reference_loot_template VALUES
+(33886, 45038, 14, 3, 1, 1, 18, 603, 38); -- XT-002 hard %
