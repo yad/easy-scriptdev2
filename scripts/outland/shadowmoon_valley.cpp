@@ -33,9 +33,9 @@ npc_karynaku
 npc_oronok_tornheart
 npc_wilda
 mob_torloth
+npc_lord_illidan_stormrage
 npc_totem_of_spirits
 event_spell_soul_captured_credit
-npc_lord_illidan_stormrage
 go_crystal_prison
 EndContentData */
 
@@ -241,7 +241,7 @@ struct MANGOS_DLL_DECL mob_mature_netherwing_drakeAI : public ScriptedAI
 {
     mob_mature_netherwing_drakeAI(Creature* pCreature) : ScriptedAI(pCreature) { Reset(); }
 
-    uint64 uiPlayerGUID;
+    ObjectGuid m_playerGuid;
 
     bool bCanEat;
     bool bIsEating;
@@ -251,7 +251,7 @@ struct MANGOS_DLL_DECL mob_mature_netherwing_drakeAI : public ScriptedAI
 
     void Reset()
     {
-        uiPlayerGUID = 0;
+        m_playerGuid.Clear();
 
         bCanEat = false;
         bIsEating = false;
@@ -267,7 +267,7 @@ struct MANGOS_DLL_DECL mob_mature_netherwing_drakeAI : public ScriptedAI
 
         if (pCaster->GetTypeId() == TYPEID_PLAYER && pSpell->Id == SPELL_PLACE_CARCASS && !m_creature->HasAura(SPELL_JUST_EATEN))
         {
-            uiPlayerGUID = pCaster->GetGUID();
+            m_playerGuid = pCaster->GetObjectGuid();
             bCanEat = true;
         }
     }
@@ -293,7 +293,7 @@ struct MANGOS_DLL_DECL mob_mature_netherwing_drakeAI : public ScriptedAI
             {
                 if (bCanEat && !bIsEating)
                 {
-                    if (Player* pPlayer = m_creature->GetMap()->GetPlayer(uiPlayerGUID))
+                    if (Player* pPlayer = m_creature->GetMap()->GetPlayer(m_playerGuid))
                     {
                         GameObject* pGo = pPlayer->GetGameObject(SPELL_PLACE_CARCASS);
 
@@ -328,7 +328,7 @@ struct MANGOS_DLL_DECL mob_mature_netherwing_drakeAI : public ScriptedAI
                     DoCastSpellIfCan(m_creature, SPELL_JUST_EATEN);
                     DoScriptText(SAY_JUST_EATEN, m_creature);
 
-                    if (Player* pPlayer = m_creature->GetMap()->GetPlayer(uiPlayerGUID))
+                    if (Player* pPlayer = m_creature->GetMap()->GetPlayer(m_playerGuid))
                         pPlayer->KilledMonsterCredit(NPC_EVENT_PINGER, m_creature->GetObjectGuid());
 
                     Reset();
@@ -380,12 +380,12 @@ struct MANGOS_DLL_DECL mob_enslaved_netherwing_drakeAI : public ScriptedAI
 {
     mob_enslaved_netherwing_drakeAI(Creature* pCreature) : ScriptedAI(pCreature)
     {
-        PlayerGUID = 0;
+        m_playerGuid = ObjectGuid();
         Tapped = false;
         Reset();
     }
 
-    uint64 PlayerGUID;
+    ObjectGuid m_playerGuid;
     uint32 FlyTimer;
     bool Tapped;
 
@@ -404,7 +404,7 @@ struct MANGOS_DLL_DECL mob_enslaved_netherwing_drakeAI : public ScriptedAI
             if (Player* pPlayer = pCaster->GetCharmerOrOwnerPlayerOrPlayerItself())
             {
                 Tapped = true;
-                PlayerGUID = pPlayer->GetGUID();
+                m_playerGuid = pPlayer->GetObjectGuid();
 
                 m_creature->setFaction(FACTION_FRIENDLY);
 
@@ -433,12 +433,12 @@ struct MANGOS_DLL_DECL mob_enslaved_netherwing_drakeAI : public ScriptedAI
                 {
                     Tapped = false;
 
-                    if (Player* pPlayer = m_creature->GetMap()->GetPlayer(PlayerGUID))
+                    if (Player* pPlayer = m_creature->GetMap()->GetPlayer(m_playerGuid))
                     {
                         if (pPlayer->GetQuestStatus(QUEST_FORCE_OF_NELT) == QUEST_STATUS_INCOMPLETE)
                         {
                             DoCastSpellIfCan(pPlayer, SPELL_FORCE_OF_NELTHARAKU, CAST_TRIGGERED);
-                            PlayerGUID = 0;
+                            m_playerGuid.Clear();
 
                             float dx, dy, dz;
 
@@ -491,14 +491,14 @@ struct MANGOS_DLL_DECL npc_dragonmaw_peonAI : public ScriptedAI
 {
     npc_dragonmaw_peonAI(Creature* pCreature) : ScriptedAI(pCreature) { Reset(); }
 
-    uint64 m_uiPlayerGUID;
+    ObjectGuid m_playerGuid;
     uint32 m_uiPoisonTimer;
     uint32 m_uiMoveTimer;
     uint32 m_uiEatTimer;
 
     void Reset()
     {
-        m_uiPlayerGUID = 0;
+        m_playerGuid.Clear();
         m_uiPoisonTimer = 0;
         m_uiMoveTimer = 0;
         m_uiEatTimer = 0;
@@ -506,12 +506,13 @@ struct MANGOS_DLL_DECL npc_dragonmaw_peonAI : public ScriptedAI
         SetEquipmentSlots(true);
     }
 
-    bool SetPlayerTarget(uint64 uiPlayerGUID)
+    bool SetPlayerTarget(ObjectGuid playerGuid)
     {
-        if (m_uiPlayerGUID)
+        // Check if event already started
+        if (!m_playerGuid.IsEmpty())
             return false;
 
-        m_uiPlayerGUID = uiPlayerGUID;
+        m_playerGuid = playerGuid;
         m_uiMoveTimer = 500;
         return true;
     }
@@ -539,14 +540,11 @@ struct MANGOS_DLL_DECL npc_dragonmaw_peonAI : public ScriptedAI
 
     void UpdateAI(const uint32 uiDiff)
     {
-        if (!m_creature->isAlive())
-            return;
-
         if (m_uiMoveTimer)
         {
             if (m_uiMoveTimer <= uiDiff)
             {
-                if (Player* pPlayer = m_creature->GetMap()->GetPlayer(m_uiPlayerGUID))
+                if (Player* pPlayer = m_creature->GetMap()->GetPlayer(m_playerGuid))
                 {
                     GameObject* pMutton = pPlayer->GetGameObject(SPELL_SERVING_MUTTON);
 
@@ -591,7 +589,7 @@ struct MANGOS_DLL_DECL npc_dragonmaw_peonAI : public ScriptedAI
         {
             if (m_uiPoisonTimer <= uiDiff)
             {
-                if (Player* pPlayer = m_creature->GetMap()->GetPlayer(m_uiPlayerGUID))
+                if (Player* pPlayer = m_creature->GetMap()->GetPlayer(m_playerGuid))
                     pPlayer->KilledMonsterCredit(NPC_DRAGONMAW_KILL_CREDIT, m_creature->GetObjectGuid());
 
                 m_uiPoisonTimer = 0;
@@ -621,7 +619,7 @@ bool EffectDummyCreature_npc_dragonmaw_peon(Unit* pCaster, uint32 uiSpellId, Spe
     if (!pPeonAI)
         return false;
 
-    if (pPeonAI->SetPlayerTarget(pCaster->GetGUID()))
+    if (pPeonAI->SetPlayerTarget(pCaster->GetObjectGuid()))
     {
         pCreatureTarget->HandleEmote(EMOTE_ONESHOT_NONE);
         return true;
@@ -1170,8 +1168,8 @@ struct MANGOS_DLL_DECL mob_torlothAI : public ScriptedAI
 {
     mob_torlothAI(Creature* pCreature) : ScriptedAI(pCreature) {Reset();}
 
-    uint64 m_uiLordIllidanGUID;
-    uint64 m_uiPlayerGUID;
+    ObjectGuid m_lordIllidanGuid;
+    ObjectGuid m_playerGuid;
 
     uint32 m_uiCleaveTimer;
     uint32 m_uiShadowfuryTimer;
@@ -1181,8 +1179,8 @@ struct MANGOS_DLL_DECL mob_torlothAI : public ScriptedAI
 
     void Reset()
     {
-        m_uiLordIllidanGUID = 0;
-        m_uiPlayerGUID = 0;
+        m_lordIllidanGuid.Clear();
+        m_playerGuid.Clear();
 
         m_uiAnimationCount = 0;
         m_uiAnimationTimer = 4000;
@@ -1206,7 +1204,7 @@ struct MANGOS_DLL_DECL mob_torlothAI : public ScriptedAI
 
         if (TorlothAnim[m_uiAnimationCount].uiCreature == LORD_ILLIDAN)
         {
-            pCreature = m_creature->GetMap()->GetCreature(m_uiLordIllidanGUID);
+            pCreature = m_creature->GetMap()->GetCreature(m_lordIllidanGuid);
 
             if (!pCreature)
             {
@@ -1229,7 +1227,7 @@ struct MANGOS_DLL_DECL mob_torlothAI : public ScriptedAI
                 m_creature->SetStandState(UNIT_STAND_STATE_STAND);
                 break;
             case 5:
-                if (Player* pTarget = m_creature->GetMap()->GetPlayer(m_uiPlayerGUID))
+                if (Player* pTarget = m_creature->GetMap()->GetPlayer(m_playerGuid))
                 {
                     m_creature->AddThreat(pTarget);
                     m_creature->SetFacingToObject(pTarget);
@@ -1238,7 +1236,7 @@ struct MANGOS_DLL_DECL mob_torlothAI : public ScriptedAI
                 break;
             case 6:
             {
-                if (Player* pTarget = m_creature->GetMap()->GetPlayer(m_uiPlayerGUID))
+                if (Player* pTarget = m_creature->GetMap()->GetPlayer(m_playerGuid))
                 {
                     SetCombatMovement(true);
                     m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
@@ -1259,7 +1257,7 @@ struct MANGOS_DLL_DECL mob_torlothAI : public ScriptedAI
         {
             pPlayer->GroupEventHappens(QUEST_BATTLE_OF_THE_CRIMSON_WATCH, m_creature);
 
-            if (Creature* pLordIllidan = m_creature->GetMap()->GetCreature(m_uiLordIllidanGUID))
+            if (Creature* pLordIllidan = m_creature->GetMap()->GetCreature(m_lordIllidanGuid))
             {
                 DoScriptText(SAY_EVENT_COMPLETED, pLordIllidan, pPlayer);
                 pLordIllidan->AI()->EnterEvadeMode();
@@ -1315,170 +1313,6 @@ CreatureAI* GetAI_mob_torloth(Creature* pCreature)
     return new mob_torlothAI(pCreature);
 }
 
-/*######
-## npc_totem_of_spirits
-######*/
-
-enum
-{
-    QUEST_SPIRITS_FIRE_AND_EARTH        = 10458,
-    QUEST_SPIRITS_WATER                 = 10480,
-    QUEST_SPIRITS_AIR                   = 10481,
-
-    // quest 10458, 10480, 10481
-    SPELL_ELEMENTAL_SIEVE               = 36035,
-    NPC_TOTEM_OF_SPIRITS                = 21071,
-    NPC_EARTH_SPIRIT                    = 21050,            // to be killed
-    NPC_FIERY_SPIRIT                    = 21061,
-    NPC_WATER_SPIRIT                    = 21059,
-    NPC_AIR_SPIRIT                      = 21060,
-    SPELL_EARTH_CAPTURED                = 36025,            // dummies (having visual effects)
-    SPELL_FIERY_CAPTURED                = 36115,
-    SPELL_WATER_CAPTURED                = 36170,
-    SPELL_AIR_CAPTURED                  = 36181,
-    SPELL_EARTH_CAPTURED_CREDIT         = 36108,            // event 13513
-    SPELL_FIERY_CAPTURED_CREDIT         = 36117,            // event 13514
-    SPELL_WATER_CAPTURED_CREDIT         = 36171,            // event 13515
-    SPELL_AIR_CAPTURED_CREDIT           = 36182,            // event 13516
-    EVENT_EARTH                         = 13513,
-    EVENT_FIERY                         = 13514,
-    EVENT_WATER                         = 13515,
-    EVENT_AIR                           = 13516,
-    NPC_CREDIT_MARKER_EARTH             = 21092,            // quest objective npc's
-    NPC_CREDIT_MARKER_FIERY             = 21094,
-    NPC_CREDIT_MARKER_WATER             = 21095,
-    NPC_CREDIT_MARKER_AIR               = 21096,
-};
-
-struct MANGOS_DLL_DECL npc_totem_of_spiritsAI : public ScriptedPetAI
-{
-    npc_totem_of_spiritsAI(Creature* pCreature) : ScriptedPetAI(pCreature) { Reset(); }
-
-    void Reset() {}
-
-    void MoveInLineOfSight(Unit* pWho) {}
-    void UpdateAI(const uint32 uiDiff) {}
-    void AttackedBy(Unit* pAttacker) {}
-
-    void OwnerKilledUnit(Unit* pVictim)
-    {
-        if (pVictim->GetTypeId() != TYPEID_UNIT)
-            return;
-
-        uint32 uiEntry = pVictim->GetEntry();
-
-        // make elementals cast the sieve is only way to make it work properly, due to the spell target modes 22/7
-        if (uiEntry == NPC_EARTH_SPIRIT || uiEntry == NPC_FIERY_SPIRIT || uiEntry == NPC_WATER_SPIRIT || uiEntry == NPC_AIR_SPIRIT)
-            pVictim->CastSpell(pVictim, SPELL_ELEMENTAL_SIEVE, true);
-    }
-};
-
-CreatureAI* GetAI_npc_totem_of_spirits(Creature* pCreature)
-{
-    return new npc_totem_of_spiritsAI(pCreature);
-}
-
-bool EffectDummyCreature_npc_totem_of_spirits(Unit* pCaster, uint32 uiSpellId, SpellEffectIndex uiEffIndex, Creature* pCreatureTarget)
-{
-    if (uiEffIndex != EFFECT_INDEX_0)
-        return false;
-
-    switch(uiSpellId)
-    {
-        case SPELL_EARTH_CAPTURED:
-        {
-            pCaster->CastSpell(pCaster, SPELL_EARTH_CAPTURED_CREDIT, true);
-            return true;
-        }
-        case SPELL_FIERY_CAPTURED:
-        {
-            pCaster->CastSpell(pCaster, SPELL_FIERY_CAPTURED_CREDIT, true);
-            return true;
-        }
-        case SPELL_WATER_CAPTURED:
-        {
-            pCaster->CastSpell(pCaster, SPELL_WATER_CAPTURED_CREDIT, true);
-            return true;
-        }
-        case SPELL_AIR_CAPTURED:
-        {
-            pCaster->CastSpell(pCaster, SPELL_AIR_CAPTURED_CREDIT, true);
-            return true;
-        }
-    }
-
-    return false;
-}
-
-bool EffectAuraDummy_npc_totem_of_spirits(const Aura* pAura, bool bApply)
-{
-    if (pAura->GetId() != SPELL_ELEMENTAL_SIEVE)
-        return true;
-
-    if (pAura->GetEffIndex() != EFFECT_INDEX_0)
-        return true;
-
-    if (bApply)                                             // possible it should be some visual effects, using "enraged soul" npc and "Cosmetic: ... soul" spell
-        return true;
-
-    Creature* pCreature = (Creature*)pAura->GetTarget();
-    Unit* pCaster = pAura->GetCaster();
-
-    // aura only affect the spirit totem, since this is the one that need to be in range.
-    // It is possible though, that player is the one who should actually have the aura
-    // and check for presense of spirit totem, but then we can't script the dummy.
-    if (!pCreature || !pCreature->IsPet() || !pCaster)
-        return true;
-
-    // Need to expect the enraged elementals to be caster of aura
-    switch(pCaster->GetEntry())
-    {
-        case NPC_EARTH_SPIRIT:
-            pCreature->CastSpell(pCreature, SPELL_EARTH_CAPTURED, true);
-            break;
-        case NPC_FIERY_SPIRIT:
-            pCreature->CastSpell(pCreature, SPELL_FIERY_CAPTURED, true);
-            break;
-        case NPC_WATER_SPIRIT:
-            pCreature->CastSpell(pCreature, SPELL_WATER_CAPTURED, true);
-            break;
-        case NPC_AIR_SPIRIT:
-            pCreature->CastSpell(pCreature, SPELL_AIR_CAPTURED, true);
-            break;
-    }
-
-    return true;
-}
-
-bool ProcessEventId_event_spell_soul_captured_credit(uint32 uiEventId, Object* pSource, Object* pTarget, bool bIsStart)
-{
-    if (bIsStart && pSource->GetTypeId() == TYPEID_UNIT)
-    {
-        Player* pOwner = (Player*)((Creature*)pSource)->GetOwner();
-
-        if (!pOwner)
-            return true;
-
-        switch(uiEventId)
-        {
-            case EVENT_EARTH:
-                pOwner->KilledMonsterCredit(NPC_CREDIT_MARKER_EARTH);
-                return true;
-            case EVENT_FIERY:
-                pOwner->KilledMonsterCredit(NPC_CREDIT_MARKER_FIERY);
-                return true;
-            case EVENT_WATER:
-                pOwner->KilledMonsterCredit(NPC_CREDIT_MARKER_WATER);
-                return true;
-            case EVENT_AIR:
-                pOwner->KilledMonsterCredit(NPC_CREDIT_MARKER_AIR);
-                return true;
-        }
-    }
-
-    return false;
-}
-
 /*#####
 # npc_lord_illidan_stormrage
 #####*/
@@ -1487,7 +1321,7 @@ struct MANGOS_DLL_DECL npc_lord_illidan_stormrageAI : public Scripted_NoMovement
 {
     npc_lord_illidan_stormrageAI(Creature* pCreature) : Scripted_NoMovementAI(pCreature) {Reset();}
 
-    uint64 m_uiPlayerGUID;
+    ObjectGuid m_playerGuid;
     uint32 m_uiWaveTimer;
     uint32 m_uiAnnounceTimer;
     uint32 m_uiCheckTimer;
@@ -1500,7 +1334,7 @@ struct MANGOS_DLL_DECL npc_lord_illidan_stormrageAI : public Scripted_NoMovement
 
     void Reset()
     {
-        m_uiPlayerGUID = 0;
+        m_playerGuid.Clear();
 
         m_uiWaveTimer = 10000;
         m_uiAnnounceTimer = 7000;
@@ -1517,7 +1351,7 @@ struct MANGOS_DLL_DECL npc_lord_illidan_stormrageAI : public Scripted_NoMovement
     void StartEvent(Player* pPlayer)
     {
         m_bEventStarted = true;
-        m_uiPlayerGUID = pPlayer->GetGUID();
+        m_playerGuid = pPlayer->GetObjectGuid();
     }
 
     void SummonWave()
@@ -1569,20 +1403,20 @@ struct MANGOS_DLL_DECL npc_lord_illidan_stormrageAI : public Scripted_NoMovement
         // increment mob count
         ++m_uiMobCount;
 
-        if (!m_uiPlayerGUID)
+        if (m_playerGuid.IsEmpty())
             return;
 
         if (pSummoned->GetEntry() == NPC_TORLOTH_THE_MAGNIFICENT)
         {
             if (mob_torlothAI* pTorlothAI = dynamic_cast<mob_torlothAI*>(pSummoned->AI()))
             {
-                pTorlothAI->m_uiLordIllidanGUID = m_creature->GetGUID();
-                pTorlothAI->m_uiPlayerGUID = m_uiPlayerGUID;
+                pTorlothAI->m_lordIllidanGuid = m_creature->GetObjectGuid();
+                pTorlothAI->m_playerGuid = m_playerGuid;
             }
         }
         else
         {
-            if (Player* pTarget = m_creature->GetMap()->GetPlayer(m_uiPlayerGUID))
+            if (Player* pTarget = m_creature->GetMap()->GetPlayer(m_playerGuid))
             {
                 float fLocX, fLocY, fLocZ;
                 pTarget->GetPosition(fLocX, fLocY, fLocZ);
@@ -1602,7 +1436,7 @@ struct MANGOS_DLL_DECL npc_lord_illidan_stormrageAI : public Scripted_NoMovement
 
     void CheckEventFail()
     {
-        Player* pPlayer = m_creature->GetMap()->GetPlayer(m_uiPlayerGUID);
+        Player* pPlayer = m_creature->GetMap()->GetPlayer(m_playerGuid);
 
         if (!pPlayer)
             return;
@@ -1664,7 +1498,7 @@ struct MANGOS_DLL_DECL npc_lord_illidan_stormrageAI : public Scripted_NoMovement
 
     void UpdateAI(const uint32 uiDiff)
     {
-        if (!m_uiPlayerGUID || !m_bEventStarted)
+        if (m_playerGuid.IsEmpty() || !m_bEventStarted)
             return;
 
         if (!m_uiMobCount && m_uiWaveCount < 4)
