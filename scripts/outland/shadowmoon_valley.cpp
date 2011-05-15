@@ -43,6 +43,183 @@ EndContentData */
 #include "escort_ai.h"
 #include "pet_ai.h"
 
+/*######
+## Quest To Legion Hold (10596/10563)
+######*/
+
+enum
+{
+    QUEST_LEGIONHOLD_A  = 10563,
+    QUEST_LEGIONHOLD_H  = 10596,
+
+    NPC_DEATHBRINGER    = 21633,
+    NPC_IMAGE           = 21502,
+
+    AURA_BOX            = 37097,
+
+    // He should respawn after image gone!
+    GAMEOBJECT_INFERNAL = 184834,
+
+    //Texts
+    DEATHBRINGER1       = -1602043,
+    DEATHBRINGER2       = -1602044,
+    DEATHBRINGER3       = -1602045,
+    DEATHBRINGER4       = -1602046,
+
+    WARBRINGER1         = -1602047,
+    WARBRINGER2         = -1602048,
+    WARBRINGER3         = -1602049,
+    WARBRINGER4         = -1602050
+};
+
+struct MANGOS_DLL_DECL npc_razuunAI : public ScriptedAI
+{
+    npc_razuunAI(Creature* pCreature) : ScriptedAI(pCreature){Reset();}
+
+    uint8 m_uiPhase;
+    uint32 m_uiTextTimer;
+    uint64 m_uiPlayerGUID;
+    bool IsRunning;
+
+    void Reset()
+    {     
+        m_uiPhase = 0;
+        m_uiTextTimer = 4000;
+        m_uiPlayerGUID = 0;
+        IsRunning = false;
+        m_creature->SetVisibility(VISIBILITY_OFF);
+    }
+
+    void StartEvent(Player* pPlayer)
+    {
+        if(!IsRunning)
+        {
+            if(Creature* pDeathBringer = GetClosestCreatureWithEntry(m_creature, NPC_DEATHBRINGER, 100.0f))
+            {
+                if(pDeathBringer && pDeathBringer->isAlive())
+                {
+                    m_uiPlayerGUID = pPlayer->GetGUID();
+                    m_uiPhase = 1;
+                    IsRunning = true;
+
+                    if(m_creature->GetVisibility() == VISIBILITY_OFF)
+                        m_creature->SetVisibility(VISIBILITY_ON);
+                }
+            }
+        }
+    }
+    void UpdateAI(const uint32 uiDiff)
+    {
+        if(!IsRunning)
+        return;  
+            
+        if(m_uiTextTimer <= uiDiff)
+        {
+            Creature* pDeathBringer = GetClosestCreatureWithEntry(m_creature, NPC_DEATHBRINGER, 100.0f);
+            GameObject* pGo = GetClosestGameObjectWithEntry(m_creature, GAMEOBJECT_INFERNAL, 5.0f);
+
+            if(pGo)
+               pGo->Delete();
+
+            switch(m_uiPhase)
+            {
+                case 1:
+                    //Using NON_ATTACKABLE Flag - Crash-fix
+                    pDeathBringer->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+                    pDeathBringer->GetMotionMaster()->MovePoint(1, -3304.0f, 2930.0f, 170.923f);
+                    m_uiTextTimer = 6000;
+                    m_uiPhase++;
+                    break;
+                case 2:
+                    pDeathBringer->SetOrientation(5.60f);
+                    m_uiTextTimer = 1000;
+                    m_uiPhase++;
+                case 3:
+                    pDeathBringer->HandleEmote(16);
+                    m_uiTextTimer = 2000;
+                    m_uiPhase++;
+                case 4:
+                    DoScriptText(DEATHBRINGER1, pDeathBringer);
+                    m_uiTextTimer = 5000;
+                    m_uiPhase++;
+                    break;
+                case 5:
+                    DoScriptText(WARBRINGER1, m_creature);
+                    m_uiTextTimer = 5000;
+                    m_uiPhase++;
+                    break;
+                case 6:
+                    DoScriptText(DEATHBRINGER2, pDeathBringer);
+                    m_uiTextTimer = 5000;
+                    m_uiPhase++;
+                    break;
+                case 7:
+                    DoScriptText(WARBRINGER2, m_creature);
+                    m_uiTextTimer = 5000;
+                    m_uiPhase++;
+                    break;
+                case 8:
+                    DoScriptText(DEATHBRINGER3, pDeathBringer);
+                    m_uiTextTimer = 5000;
+                    m_uiPhase++;
+                    break;
+                case 9:
+                    DoScriptText(WARBRINGER3, m_creature);
+                    m_uiTextTimer = 5000;
+                    m_uiPhase++;
+                    break;
+                case 10:
+                    DoScriptText(DEATHBRINGER4, pDeathBringer);
+                    m_uiTextTimer = 5000;
+                    m_uiPhase++;
+                    break;
+                case 11:
+                    DoScriptText(WARBRINGER4, m_creature);
+                    m_uiTextTimer = 1000;
+                    m_uiPhase++;
+                    break;
+                case 12:
+                    if(m_uiPlayerGUID != 0)
+                        m_creature->GetMap()->GetPlayer(m_uiPlayerGUID)->KilledMonsterCredit(NPC_IMAGE);
+
+                    m_uiPhase = 0;
+                    IsRunning = false;
+
+                    if(m_creature->GetVisibility() == VISIBILITY_ON)
+                        m_creature->SetVisibility(VISIBILITY_OFF);
+
+                    pDeathBringer->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+                    break;
+                default:
+                    break;
+            }         
+        }
+        else m_uiTextTimer -= uiDiff;
+    }
+};
+
+CreatureAI* GetAI_npc_razuun(Creature* pCreature)
+{
+    return new npc_razuunAI(pCreature);
+}
+
+bool AreaTrigger_at_legionhold(Player* pPlayer, AreaTriggerEntry const* pAt)
+{
+    if(pPlayer->GetQuestStatus(QUEST_LEGIONHOLD_A) == QUEST_STATUS_INCOMPLETE || pPlayer->GetQuestStatus(QUEST_LEGIONHOLD_H) == QUEST_STATUS_INCOMPLETE)
+    {
+        if(pPlayer->HasAura(AURA_BOX) && pPlayer->GetTypeId() == TYPEID_PLAYER)
+        { 
+            if (Creature* pRazuun = GetClosestCreatureWithEntry(pPlayer, NPC_IMAGE, 100.0f))
+            {
+                if (npc_razuunAI* RazuunAI = dynamic_cast<npc_razuunAI*>(pRazuun->AI()))
+                    if(!RazuunAI->IsRunning)
+                        RazuunAI->StartEvent(pPlayer);
+            }
+        }
+    }
+    return true;
+}
+
 /*#####
 # mob_mature_netherwing_drake
 #####*/
@@ -1539,180 +1716,167 @@ bool GOQuestAccept_GO_crystal_prison(Player* pPlayer, GameObject* pGo, Quest con
 }
 
 /*######
-## Quest To Legion Hold (10596/10563)
+## npc_totem_of_spirits
 ######*/
 
 enum
 {
-    QUEST_LEGIONHOLD_A  = 10563,
-    QUEST_LEGIONHOLD_H  = 10596,
+    QUEST_SPIRITS_FIRE_AND_EARTH        = 10458,
+    QUEST_SPIRITS_WATER                 = 10480,
+    QUEST_SPIRITS_AIR                   = 10481,
 
-    NPC_DEATHBRINGER    = 21633,
-    NPC_IMAGE           = 21502,
-
-    AURA_BOX            = 37097,
-
-    // He should respawn after image gone!
-    GAMEOBJECT_INFERNAL = 184834,
-
-    //Texts
-    DEATHBRINGER1       = -1602043,
-    DEATHBRINGER2       = -1602044,
-    DEATHBRINGER3       = -1602045,
-    DEATHBRINGER4       = -1602046,
-
-    WARBRINGER1         = -1602047,
-    WARBRINGER2         = -1602048,
-    WARBRINGER3         = -1602049,
-    WARBRINGER4         = -1602050
+    // quest 10458, 10480, 10481
+    SPELL_ELEMENTAL_SIEVE               = 36035,
+    NPC_TOTEM_OF_SPIRITS                = 21071,
+    NPC_EARTH_SPIRIT                    = 21050,            // to be killed
+    NPC_FIERY_SPIRIT                    = 21061,
+    NPC_WATER_SPIRIT                    = 21059,
+    NPC_AIR_SPIRIT                      = 21060,
+    SPELL_EARTH_CAPTURED                = 36025,            // dummies (having visual effects)
+    SPELL_FIERY_CAPTURED                = 36115,
+    SPELL_WATER_CAPTURED                = 36170,
+    SPELL_AIR_CAPTURED                  = 36181,
+    SPELL_EARTH_CAPTURED_CREDIT         = 36108,            // event 13513
+    SPELL_FIERY_CAPTURED_CREDIT         = 36117,            // event 13514
+    SPELL_WATER_CAPTURED_CREDIT         = 36171,            // event 13515
+    SPELL_AIR_CAPTURED_CREDIT           = 36182,            // event 13516
+    EVENT_EARTH                         = 13513,
+    EVENT_FIERY                         = 13514,
+    EVENT_WATER                         = 13515,
+    EVENT_AIR                           = 13516,
+    NPC_CREDIT_MARKER_EARTH             = 21092,            // quest objective npc's
+    NPC_CREDIT_MARKER_FIERY             = 21094,
+    NPC_CREDIT_MARKER_WATER             = 21095,
+    NPC_CREDIT_MARKER_AIR               = 21096,
 };
 
-struct MANGOS_DLL_DECL npc_razuunAI : public ScriptedAI
+struct MANGOS_DLL_DECL npc_totem_of_spiritsAI : public ScriptedPetAI
 {
-    npc_razuunAI(Creature* pCreature) : ScriptedAI(pCreature){Reset();}
+    npc_totem_of_spiritsAI(Creature* pCreature) : ScriptedPetAI(pCreature) { Reset(); }
 
-    uint8 m_uiPhase;
-    uint32 m_uiTextTimer;
-    uint64 m_uiPlayerGUID;
-    bool IsRunning;
+    void Reset() {}
 
-    void Reset()
-    {     
-        m_uiPhase = 0;
-        m_uiTextTimer = 4000;
-        m_uiPlayerGUID = 0;
-        IsRunning = false;
-        m_creature->SetVisibility(VISIBILITY_OFF);
-    }
+    void MoveInLineOfSight(Unit* pWho) {}
+    void UpdateAI(const uint32 uiDiff) {}
+    void AttackedBy(Unit* pAttacker) {}
 
-    void StartEvent(Player* pPlayer)
+    void OwnerKilledUnit(Unit* pVictim)
     {
-        if(!IsRunning)
-        {
-            if(Creature* pDeathBringer = GetClosestCreatureWithEntry(m_creature, NPC_DEATHBRINGER, 100.0f))
-            {
-                if(pDeathBringer && pDeathBringer->isAlive())
-                {
-                    m_uiPlayerGUID = pPlayer->GetGUID();
-                    m_uiPhase = 1;
-                    IsRunning = true;
+        if (pVictim->GetTypeId() != TYPEID_UNIT)
+            return;
 
-                    if(m_creature->GetVisibility() == VISIBILITY_OFF)
-                        m_creature->SetVisibility(VISIBILITY_ON);
-                }
-            }
-        }
-    }
-    void UpdateAI(const uint32 uiDiff)
-    {
-        if(!IsRunning)
-        return;  
-            
-        if(m_uiTextTimer <= uiDiff)
-        {
-            Creature* pDeathBringer = GetClosestCreatureWithEntry(m_creature, NPC_DEATHBRINGER, 100.0f);
-            GameObject* pGo = GetClosestGameObjectWithEntry(m_creature, GAMEOBJECT_INFERNAL, 5.0f);
+        uint32 uiEntry = pVictim->GetEntry();
 
-            if(pGo)
-               pGo->Delete();
-
-            switch(m_uiPhase)
-            {
-                case 1:
-                    //Using NON_ATTACKABLE Flag - Crash-fix
-                    pDeathBringer->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
-                    pDeathBringer->GetMotionMaster()->MovePoint(1, -3304.0f, 2930.0f, 170.923f);
-                    m_uiTextTimer = 6000;
-                    m_uiPhase++;
-                    break;
-                case 2:
-                    pDeathBringer->SetOrientation(5.60f);
-                    m_uiTextTimer = 1000;
-                    m_uiPhase++;
-                case 3:
-                    pDeathBringer->HandleEmote(16);
-                    m_uiTextTimer = 2000;
-                    m_uiPhase++;
-                case 4:
-                    DoScriptText(DEATHBRINGER1, pDeathBringer);
-                    m_uiTextTimer = 5000;
-                    m_uiPhase++;
-                    break;
-                case 5:
-                    DoScriptText(WARBRINGER1, m_creature);
-                    m_uiTextTimer = 5000;
-                    m_uiPhase++;
-                    break;
-                case 6:
-                    DoScriptText(DEATHBRINGER2, pDeathBringer);
-                    m_uiTextTimer = 5000;
-                    m_uiPhase++;
-                    break;
-                case 7:
-                    DoScriptText(WARBRINGER2, m_creature);
-                    m_uiTextTimer = 5000;
-                    m_uiPhase++;
-                    break;
-                case 8:
-                    DoScriptText(DEATHBRINGER3, pDeathBringer);
-                    m_uiTextTimer = 5000;
-                    m_uiPhase++;
-                    break;
-                case 9:
-                    DoScriptText(WARBRINGER3, m_creature);
-                    m_uiTextTimer = 5000;
-                    m_uiPhase++;
-                    break;
-                case 10:
-                    DoScriptText(DEATHBRINGER4, pDeathBringer);
-                    m_uiTextTimer = 5000;
-                    m_uiPhase++;
-                    break;
-                case 11:
-                    DoScriptText(WARBRINGER4, m_creature);
-                    m_uiTextTimer = 1000;
-                    m_uiPhase++;
-                    break;
-                case 12:
-                    if(m_uiPlayerGUID != 0)
-                        m_creature->GetMap()->GetPlayer(m_uiPlayerGUID)->KilledMonsterCredit(NPC_IMAGE);
-
-                    m_uiPhase = 0;
-                    IsRunning = false;
-
-                    if(m_creature->GetVisibility() == VISIBILITY_ON)
-                        m_creature->SetVisibility(VISIBILITY_OFF);
-
-                    pDeathBringer->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
-                    break;
-                default:
-                    break;
-            }         
-        }
-        else m_uiTextTimer -= uiDiff;
+        // make elementals cast the sieve is only way to make it work properly, due to the spell target modes 22/7
+        if (uiEntry == NPC_EARTH_SPIRIT || uiEntry == NPC_FIERY_SPIRIT || uiEntry == NPC_WATER_SPIRIT || uiEntry == NPC_AIR_SPIRIT)
+            pVictim->CastSpell(pVictim, SPELL_ELEMENTAL_SIEVE, true);
     }
 };
 
-CreatureAI* GetAI_npc_razuun(Creature* pCreature)
+CreatureAI* GetAI_npc_totem_of_spirits(Creature* pCreature)
 {
-    return new npc_razuunAI(pCreature);
+    return new npc_totem_of_spiritsAI(pCreature);
 }
 
-bool AreaTrigger_at_legionhold(Player* pPlayer, AreaTriggerEntry const* pAt)
+bool EffectDummyCreature_npc_totem_of_spirits(Unit* pCaster, uint32 uiSpellId, SpellEffectIndex uiEffIndex, Creature* pCreatureTarget)
 {
-    if(pPlayer->GetQuestStatus(QUEST_LEGIONHOLD_A) == QUEST_STATUS_INCOMPLETE || pPlayer->GetQuestStatus(QUEST_LEGIONHOLD_H) == QUEST_STATUS_INCOMPLETE)
+    if (uiEffIndex != EFFECT_INDEX_0)
+        return false;
+
+    switch(uiSpellId)
     {
-        if(pPlayer->HasAura(AURA_BOX) && pPlayer->GetTypeId() == TYPEID_PLAYER)
-        { 
-            if (Creature* pRazuun = GetClosestCreatureWithEntry(pPlayer, NPC_IMAGE, 100.0f))
-            {
-                if (npc_razuunAI* RazuunAI = dynamic_cast<npc_razuunAI*>(pRazuun->AI()))
-                    if(!RazuunAI->IsRunning)
-                        RazuunAI->StartEvent(pPlayer);
-            }
+        case SPELL_EARTH_CAPTURED:
+        {
+            pCaster->CastSpell(pCaster, SPELL_EARTH_CAPTURED_CREDIT, true);
+            return true;
+        }
+        case SPELL_FIERY_CAPTURED:
+        {
+            pCaster->CastSpell(pCaster, SPELL_FIERY_CAPTURED_CREDIT, true);
+            return true;
+        }
+        case SPELL_WATER_CAPTURED:
+        {
+            pCaster->CastSpell(pCaster, SPELL_WATER_CAPTURED_CREDIT, true);
+            return true;
+        }
+        case SPELL_AIR_CAPTURED:
+        {
+            pCaster->CastSpell(pCaster, SPELL_AIR_CAPTURED_CREDIT, true);
+            return true;
         }
     }
+
+    return false;
+}
+
+bool EffectAuraDummy_npc_totem_of_spirits(const Aura* pAura, bool bApply)
+{
+    if (pAura->GetId() != SPELL_ELEMENTAL_SIEVE)
+        return true;
+
+    if (pAura->GetEffIndex() != EFFECT_INDEX_0)
+        return true;
+
+    if (bApply)                                             // possible it should be some visual effects, using "enraged soul" npc and "Cosmetic: ... soul" spell
+        return true;
+
+    Creature* pCreature = (Creature*)pAura->GetTarget();
+    Unit* pCaster = pAura->GetCaster();
+
+    // aura only affect the spirit totem, since this is the one that need to be in range.
+    // It is possible though, that player is the one who should actually have the aura
+    // and check for presense of spirit totem, but then we can't script the dummy.
+    if (!pCreature || !pCreature->IsPet() || !pCaster)
+        return true;
+
+    // Need to expect the enraged elementals to be caster of aura
+    switch(pCaster->GetEntry())
+    {
+        case NPC_EARTH_SPIRIT:
+            pCreature->CastSpell(pCreature, SPELL_EARTH_CAPTURED, true);
+            break;
+        case NPC_FIERY_SPIRIT:
+            pCreature->CastSpell(pCreature, SPELL_FIERY_CAPTURED, true);
+            break;
+        case NPC_WATER_SPIRIT:
+            pCreature->CastSpell(pCreature, SPELL_WATER_CAPTURED, true);
+            break;
+        case NPC_AIR_SPIRIT:
+            pCreature->CastSpell(pCreature, SPELL_AIR_CAPTURED, true);
+            break;
+    }
+
     return true;
+}
+
+bool ProcessEventId_event_spell_soul_captured_credit(uint32 uiEventId, Object* pSource, Object* pTarget, bool bIsStart)
+{
+    if (bIsStart && pSource->GetTypeId() == TYPEID_UNIT)
+    {
+        Player* pOwner = (Player*)((Creature*)pSource)->GetOwner();
+
+        if (!pOwner)
+            return true;
+
+        switch(uiEventId)
+        {
+            case EVENT_EARTH:
+                pOwner->KilledMonsterCredit(NPC_CREDIT_MARKER_EARTH);
+                return true;
+            case EVENT_FIERY:
+                pOwner->KilledMonsterCredit(NPC_CREDIT_MARKER_FIERY);
+                return true;
+            case EVENT_WATER:
+                pOwner->KilledMonsterCredit(NPC_CREDIT_MARKER_WATER);
+                return true;
+            case EVENT_AIR:
+                pOwner->KilledMonsterCredit(NPC_CREDIT_MARKER_AIR);
+                return true;
+        }
+    }
+
+    return false;
 }
 
 void AddSC_shadowmoon_valley()
@@ -1802,7 +1966,6 @@ void AddSC_shadowmoon_valley()
     newscript->Name = "go_crystal_prison";
     newscript->pQuestAcceptGO = &GOQuestAccept_GO_crystal_prison;
     newscript->RegisterSelf();
-
     newscript = new Script;
     newscript->Name = "npc_razuun";
     newscript->GetAI = &GetAI_npc_razuun;

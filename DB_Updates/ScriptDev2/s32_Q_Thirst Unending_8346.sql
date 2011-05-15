@@ -1,0 +1,5 @@
+-- KilledMonsterCredit() used by spelleffect:134 ignores cases when quest template required spell cast
+-- so untill implementation some kind of exception or special hadling this hack is required
+INSERT IGNORE INTO `creature_ai_scripts` (`id`, `creature_id`, `event_type`, `event_inverse_phase_mask`, `event_chance`, `event_flags`, `event_param1`, `event_param2`, `event_param3`, `event_param4`, `action1_type`, `action1_param1`, `action1_param2`, `action1_param3`, `action2_type`, `action2_param1`, `action2_param2`, `action2_param3`, `action3_type`, `action3_param1`, `action3_param2`, `action3_param3`, `comment`) VALUES
+('1527403','15274','8','0','100','0','28730','-1','0','0','16','15468','28730','6','0','0','0','0','0','0','0','0','Mana Wyrm - Cast Quest Credit 8346 on Arcane Torrent Spellhit (Quest: 8346)'),
+('1527404','15274','8','0','100','0','25046','-1','0','0','16','15468','25046','6','0','0','0','0','0','0','0','0','Mana Wyrm - Cast Quest Credit 8346 on Arcane Torrent Spellhit (Quest: 8346)');
