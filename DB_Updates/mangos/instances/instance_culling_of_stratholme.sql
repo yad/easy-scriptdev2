@@ -41,6 +41,6 @@ INSERT INTO creature (id, map, spawnMask, phaseMask, modelid, equipment_id, posi
 UPDATE gameobject_template SET flags=0 WHERE entry IN (190663,193597);
 
 DELETE FROM gameobject WHERE id IN (190663,193597);
-INSERT INTO `gameobject` (`guid`, `id`, `map`, `spawnMask`, `phaseMask`, `position_x`, `position_y`, `position_z`, `orientation`, `rotation0`, `rotation1`, `rotation2`, `rotation3`, `spawntimesecs`, `animprogress`, `state`) VALUES
-(67603, 190663, 595, 1, 1, 2288.35, 1498.73, 128.414, -0.994837, 0, 0, 0, 1, -604800, 255, 1),
-(82708, 193597, 595, 2, 1, 2288.35, 1498.73, 128.414, -0.994837, 0, 0, 0, 1, -86400, 255, 1);
+INSERT INTO `gameobject` (`id`, `map`, `spawnMask`, `phaseMask`, `position_x`, `position_y`, `position_z`, `orientation`, `rotation0`, `rotation1`, `rotation2`, `rotation3`, `spawntimesecs`, `animprogress`, `state`) VALUES
+(190663, 595, 1, 1, 2288.35, 1498.73, 128.414, -0.994837, 0, 0, 0, 1, -604800, 255, 1),
+(193597, 595, 2, 1, 2288.35, 1498.73, 128.414, -0.994837, 0, 0, 0, 1, -86400, 255, 1);

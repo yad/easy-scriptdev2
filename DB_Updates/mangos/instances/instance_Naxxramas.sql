@@ -61,19 +61,7 @@ Spell1 = 54097,
 mechanic_immune_mask = mechanic_immune_mask &~1
 WHERE entry = 29274;
 
-DELETE FROM script_texts WHERE entry IN (-1999776,-1999775);
-INSERT INTO script_texts (`entry`,`content_default`,`type`,`comment`) VALUES
-(-1999776,'%s goes into a frenzy!',3,'Grand Widow Faerlina - EMOTE_FRENZY'),
-(-1999775,'%s is affected by Widow\'s Embrace!',3,'Grand Widow Faerlina - EMOTE_WIDOWS_EMBRACE');
-
 ###################   boss_gluth  ##############################################################
-
-DELETE FROM script_texts WHERE entry IN (-1999781,-1999780,-1999779,-1533119);
-INSERT INTO script_texts (`entry`,`content_default`,`type`,`comment`) VALUES
-(-1999781, '%s deciamtes all nearby flesh',3,'Gluth - Decimated Players'),
-(-1999780, '%s devours all nearby zombies',2,'Gluth - Decimated Zombie'),
-(-1999779, '%s becomes enraged',3,'Gluth - Periodic Enrage'),
-(-1533119, '%s spots zombie to devour!',2,'Gluth - Spoted Zombie');
 
 UPDATE creature_template SET speed_run = 0.8, ScriptName = 'mob_zombie_chow' WHERE entry IN (16360, 30303);
 
@@ -106,11 +94,6 @@ DELETE FROM gameobject WHERE id = 181356;
 INSERT INTO `gameobject` (`guid`, `id`, `map`, `spawnMask`, `phaseMask`, `position_x`, `position_y`, `position_z`, `orientation`, `rotation0`, `rotation1`, `rotation2`, `rotation3`, `spawntimesecs`, `animprogress`, `state`) VALUES
 ('507500','181356','533','3','1','3522.39','-5236.78','137.709','4.50295','0','0','0.296306','0.955093','604800','0','1');
 UPDATE gameobject_template SET size = 1.5 WHERE entry = 181356;
-
--- FrostWyrm areatriggers (triggers Intro event reset/start)
-DELETE FROM areatrigger_scripts WHERE entry IN (4167);
-INSERT INTO areatrigger_scripts VALUES
-(4167, 'at_naxxramas');
 
 -- Wing Buffet - unable to attack/be attacked while spawed (invisible)
 UPDATE creature_template SET 
@@ -188,13 +171,6 @@ INSERT INTO `creature_movement` (`id`, `point`, `position_x`, `position_y`, `pos
 DELETE FROM creature WHERE id = 15989;
 INSERT INTO `creature` (`guid`, `id`, `map`, `spawnMask`, `phaseMask`, `modelid`, `equipment_id`, `position_x`, `position_y`, `position_z`, `orientation`, `spawntimesecs`, `spawndist`, `currentwaypoint`, `curhealth`, `curmana`, `DeathState`, `MovementType`) VALUES
 ('133932','15989','533','3','1','16033','0','3522.39','-5236.78','137.709','4.50295','604800','0','0','4183500','0','0','0');*/
-
-DELETE FROM script_texts WHERE entry IN (-1999768,-1999767,-1533083,-1533082);
-INSERT INTO script_texts (`entry`,`content_default`,`type`,`comment`) VALUES
-(-1999768, '%s lifts off into the air',3,'Sapphiron goes up'),
-(-1999767, '%s resumes to hit attacks',3,'Sapphiron returns to fight'),
-(-1533083, '%s enrages!',3,'sapphiron EMOTE_ENRAGE'),
-(-1533082,'%s takes in a deep breath...',3,'sapphiron EMOTE_BREATH');
 
 ####################   boss_kelthuzad    #########################################################
 

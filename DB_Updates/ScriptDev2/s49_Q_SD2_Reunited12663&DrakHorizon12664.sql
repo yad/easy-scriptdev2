@@ -1,8 +1,3 @@
-UPDATE creature_template SET
-ScriptName = 'npc_flying_fiend_vehicle',
-InhabitType = 4
-WHERE entry = 28669;
-
 DELETE FROM script_texts WHERE entry BETWEEN -1999810 AND -1999805;
 INSERT INTO script_texts (`entry`,`content_default`,`content_loc1`,`content_loc2`,`content_loc3`,`content_loc4`,`content_loc5`,`content_loc6`,`content_loc7`,`content_loc8`,`sound`,`type`,`language`,`emote`,`comment`) VALUES
 (-1999810,'Come to me now, $n. I must be speakin\' wit ya.',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,4,0,0,'npc_flying_fiend_vehicle'),

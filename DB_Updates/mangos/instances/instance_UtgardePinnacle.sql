@@ -31,7 +31,7 @@ REPLACE INTO spell_script_target (entry, type, targetEntry) values
 (48385, 1, 27339);
 
 -- vehicle data for Grauf
-UPDATE creature_template SET VehicleEntry=40 WHERE entry IN (26893, 30775);
+UPDATE creature_template SET vehicle_id=40 WHERE entry IN (26893, 30775);
 
 -- immune masks (charm, fear, root, silence, sleep, snare, stun, freeze, knockout, polymorph, banish, shackle, horror, sapped)
 UPDATE creature_template SET mechanic_immune_mask=mechanic_immune_mask|1|16|64|256|512|1024|2048|4096|8192|65536|131072|524288|8388608|536870912

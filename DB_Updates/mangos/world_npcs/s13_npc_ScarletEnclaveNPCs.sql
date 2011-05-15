@@ -1,5 +1,5 @@
 -- ACID scripts for Scarlet Enclave mobs
--- script_texts
+-- creature_ai_texts
 DELETE FROM `creature_ai_texts` WHERE `entry` BETWEEN -286099 AND -286092;
 INSERT INTO `creature_ai_texts` VALUES
 (-286099, "You don't have to do this! Nobody has to die!", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "Scarlet Peasant - Say Fear01"),

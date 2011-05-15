@@ -1,4 +1,4 @@
-DELETE from spell_disabled where entry = 48388;
+-- DELETE from spell_disabled where entry = 48388;
 
 DELETE FROM `spell_area` where `spell` = 48388 and `area` = 4177;
 

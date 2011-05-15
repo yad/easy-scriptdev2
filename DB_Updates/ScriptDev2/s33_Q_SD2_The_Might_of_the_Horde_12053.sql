@@ -1,4 +1,3 @@
-UPDATE creature_template SET ScriptName = 'npc_warsong_battle_standart' WHERE entry = 26678;
 DELETE FROM script_texts WHERE entry IN (-1999890,-1999889,-1999888);
 INSERT INTO script_texts (entry, content_default, TYPE, COMMENT) VALUES
 (-1999890,'Anub\'ar fear nothing, mortal...',0,'npc_warsong_battle_standart SAY_INVIDER_DESTROYED_STANDARD'),

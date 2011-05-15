@@ -1,8 +1,9 @@
 -- Add movement and movement scripts for Dalaran Visitors (by Bastek)
 DELETE FROM creature WHERE id IN (32598, 32601);
-INSERT INTO creature VALUES
-(@guid1, 32598, 571, 1, 1, 0, 0, 5789.176, 305.287, 715.711, 1.360, 5, 5, 0, 8225, 7809, 0, 2),
-(@guid2, 32601, 571, 1, 1, 0, 0, 5844.434, 316.649, 720.824, 1.796, 5, 5, 0, 8225, 7809, 0, 2);
+INSERT INTO creature ( `id`, `map`, `spawnMask`, `phaseMask`, `modelid`, `equipment_id`, `position_x`, `position_y`, `position_z`, `orientation`, `spawntimesecs`, `spawndist`, `currentwaypoint`, `curhealth`, `curmana`, `DeathState`, `MovementType`) 
+VALUES
+(32598, 571, 1, 1, 0, 0, 5789.176, 305.287, 715.711, 1.360, 5, 5, 0, 8225, 7809, 0, 2),
+(32601, 571, 1, 1, 0, 0, 5844.434, 316.649, 720.824, 1.796, 5, 5, 0, 8225, 7809, 0, 2);
 
 UPDATE creature_template SET InhabitType = 3 WHERE entry IN (32596, 32602, 32597, 32596, 32598, 32601);
 UPDATE creature SET position_x = 5793.729, position_y = 313.460, position_z = 688.348, orientation = 1.398, spawntimesecs = 15, MovementType = 2 WHERE id = 32602;
@@ -10,10 +11,10 @@ UPDATE creature SET position_x = 5745.452, position_y = 333.738, position_z = 68
 UPDATE creature SET position_x = 5763.385, position_y = 326.184, position_z = 702.168, orientation = 1.072, spawntimesecs = 25, MovementType = 2 WHERE guid = 103474;
 UPDATE creature SET position_x = 5745.451, position_y = 333.738, position_z = 729.273, orientation = 0.879, spawntimesecs = 25, MovementType = 2 WHERE guid = 103444;
 
-DELETE FROM creature_template_addon WHERE entry IN (32598, 32601);
-INSERT INTO creature_template_addon VALUES
-(32598, 16314, 0, 1, 1, 0, 0, 0, NULL, NULL),
-(32601, 22471, 0, 1, 1, 0, 0, 0, NULL, NULL);
+-- DELETE FROM creature_template_addon WHERE entry IN (32598, 32601);
+-- INSERT INTO creature_template_addon VALUES
+-- (32598, 16314, 0, 1, 1, 0, 0, 0, NULL, NULL),
+-- (32601, 22471, 0, 1, 1, 0, 0, 0, NULL, NULL);
 
 DELETE FROM creature_movement_scripts WHERE id IN (3259701, 3259702);
 INSERT INTO creature_movement_scripts (id, delay, command, datalong, comments) VALUES
