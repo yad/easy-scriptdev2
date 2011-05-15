@@ -185,7 +185,7 @@ INSERT INTO `reference_loot_template` VALUES
 (33725, 45137, 0, 1, 1, 1, 0, 0, 0);
 
 -- ****** XT-002 Deconstructor ******
-UPDATE `creature_template` SET `ScriptName` = "boss_xt_002" WHERE `entry` = 33293;
+UPDATE `creature_template` SET `ScriptName` = "boss_xt002" WHERE `entry` = 33293;
 UPDATE `creature_template` SET `mechanic_immune_mask` = 617299839, `lootid` = `entry` WHERE entry IN (33293, 33885);
 UPDATE `creature_template` SET `mechanic_immune_mask` = 617299839 WHERE entry IN (33329, 33995);
 UPDATE `creature_template` SET `ScriptName` = "mob_xtheart" WHERE `entry` = 33329;
