@@ -81,6 +81,7 @@ enum
     NPC_THADDIUS                = 15928,
     NPC_STALAGG                 = 15929,
     NPC_FEUGEN                  = 15930,
+    NPC_TESLA_COIL              = 16218,
 
     NPC_UNDERSTUDY              = 16803,
     NPC_ZELIEK                  = 16063,

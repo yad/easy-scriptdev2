@@ -70,7 +70,7 @@ INSERT INTO `reference_loot_template` (`entry`,`item`,`ChanceOrQuestChance`,`gro
 
 -- ****** Ignis the Furnace Master ******
 UPDATE `creature_template` SET `ScriptName` = "boss_ignis" WHERE `entry` = 33118;
-UPDATE `creature_template` SET lootid = entry, `mechanic_immune_mask` = 617299839 WHERE entry IN (33118, 33190);
+UPDATE `creature_template` SET lootid = entry WHERE entry IN (33118, 33190);
 UPDATE `creature_template` SET `ScriptName` = "mob_iron_construct" WHERE `entry` = 33121;
 UPDATE `creature_template` SET `AIName` = "EventAI" WHERE `entry` = 33221;
 DELETE FROM `creature_ai_scripts` WHERE `creature_id` = 33221;
@@ -122,7 +122,7 @@ INSERT INTO `reference_loot_template` VALUES
 
 -- ****** Razorscale ******
 UPDATE creature_template SET `ScriptName`="boss_razorscale" WHERE entry=33186;
-UPDATE creature_template SET faction_A = 2150, faction_H = 2150, mechanic_immune_mask=617299803, `lootid` = `entry`, `InhabitType` = 7 WHERE entry IN (33186, 33724);
+UPDATE creature_template SET faction_A = 2150, faction_H = 2150, `lootid` = `entry`, `InhabitType` = 7 WHERE entry IN (33186, 33724);
 -- original x=587.547, y= -174.927, z = 391.517; make the boss fly before encounter starts
 update creature set position_x = 590.346741, position_y = -226.947647, position_z = 460.897583 where id = 33186;
 UPDATE gameobject_template SET flags= 6553648, ScriptName="go_broken_harpoon" WHERE entry = 194565;
@@ -186,8 +186,7 @@ INSERT INTO `reference_loot_template` VALUES
 
 -- ****** XT-002 Deconstructor ******
 UPDATE `creature_template` SET `ScriptName` = "boss_xt002" WHERE `entry` = 33293;
-UPDATE `creature_template` SET `mechanic_immune_mask` = 617299839, `lootid` = `entry` WHERE entry IN (33293, 33885);
-UPDATE `creature_template` SET `mechanic_immune_mask` = 617299839 WHERE entry IN (33329, 33995);
+UPDATE `creature_template` SET `lootid` = `entry` WHERE entry IN (33293, 33885);
 UPDATE `creature_template` SET `ScriptName` = "mob_xtheart" WHERE `entry` = 33329;
 UPDATE `creature_template` SET `ScriptName` = "mob_pummeler" WHERE `entry` = 33344;
 UPDATE `creature_template` SET `ScriptName` = "mob_boombot" WHERE `entry` = 33346;
@@ -263,8 +262,6 @@ UPDATE creature_template SET ScriptName='boss_steelbreaker' WHERE entry = 32867;
 UPDATE creature_template SET ScriptName = 'mob_rune_of_power' WHERE entry = 33705;
 UPDATE creature_template SET ScriptName = 'mob_rune_of_summoning' WHERE entry = 33051;
 UPDATE creature_template SET ScriptName = 'mob_ulduar_lightning_elemental' WHERE entry = 32958;
-UPDATE creature_template SET mechanic_immune_mask = 619397115 WHERE entry IN (32857, 33694, 32927, 33692, 32867, 33693);
-UPDATE creature_template SET mechanic_immune_mask = 619395067 WHERE entry IN (32857, 33694); -- Brundir stunnable
 -- LOOT
 UPDATE creature_template SET lootid = entry WHERE entry IN (32857, 32927, 32867, 33694, 33692, 33693);
 DELETE FROM creature_loot_template WHERE entry IN (32857, 32927, 32867, 33694, 33692, 33693);
@@ -361,7 +358,6 @@ UPDATE creature_template SET ScriptName = "mob_eyebeam_trigger" WHERE entry IN (
 UPDATE creature_template SET scriptname = "mob_kologarn_pit_kill_bunny" WHERE entry = 33742;
 UPDATE creature SET DeathState = 1 WHERE id = 34297;
 UPDATE creature_template SET dmg_multiplier = 0 WHERE entry IN (32934, 32933, 33911, 33910);
-UPDATE creature_template SET mechanic_immune_mask = 617299803 WHERE entry IN (32930, 33909, 32934, 32933, 33911, 33910);
 UPDATE creature_template SET RegenHealth = 1 WHERE entry = 33910;
 UPDATE creature_template SET RegenHealth = 1 WHERE entry = 33911;
 
@@ -395,7 +391,6 @@ UPDATE creature_template SET equipment_id = 103000, scriptname='boss_auriaya' WH
 UPDATE creature_template SET scriptname='mob_feral_defender' WHERE entry IN (34035, 34171);
 UPDATE creature_template SET minlevel=80, maxlevel=80, faction_h=14, faction_a=14, scriptname='mob_seeping_feral_essence' WHERE entry=34098;
 UPDATE creature_template SET ScriptName = 'mob_sanctum_sentry' WHERE entry = 34014;
-UPDATE `creature_template` SET `mechanic_immune_mask` = 619395071 WHERE `entry` IN (33515, 34175, 34035, 34171);
 
 DELETE FROM creature_equip_template WHERE entry = 103000;
 INSERT INTO creature_equip_template values (103000, 45315, 0, 0);
@@ -456,7 +451,6 @@ UPDATE creature_template SET ScriptName = 'boss_elder_stonebark' WHERE entry = 3
 UPDATE creature_template SET ScriptName = 'mob_iron_roots' WHERE entry IN (33088, 33168);
 UPDATE creature_template SET ScriptName = 'mob_freya_ground' WHERE entry IN (33215, 33228, 33170, 33050, 34129);
 UPDATE creature_template SET ScriptName = 'mob_freya_spawned' WHERE entry IN (32916, 32919, 33202, 33203, 32918);
-UPDATE `creature_template` SET `mechanic_immune_mask` = 619397115 WHERE `entry` IN (32906, 32915, 32913, 32914, 33360, 33392, 33393, 33391);
 -- fill some missing data in creature_template (health, level etc.)
 -- UPDATE creature_template SET minhealth = 5856900, maxhealth = 5856900 WHERE entry = 33391; -- Brightleaf 25man
 -- UPDATE creature_template SET minlevel = 80, maxlevel = 80, faction_A = 14, faction_H = 14, armor = 10673, minhealth = 18270, maxhealth = 18270 WHERE entry = 33168; -- Strengthened Iron Roots 10man
@@ -569,7 +563,6 @@ INSERT INTO reference_loot_template VALUES
 
 -- Hodir
 UPDATE creature_template SET ScriptName = 'boss_hodir' WHERE entry = 32845;
-UPDATE `creature_template` SET `mechanic_immune_mask` = 619397115 WHERE `entry` IN (32845, 32846);
 UPDATE creature SET phaseMask = 1 WHERE id IN (32845, 32846, 33325, 32901, 32941, 33333, 33328, 32900, 33332, 32950, 32893, 33327, 33331, 32946, 32897, 33326, 32948, 33330);
 UPDATE creature_template SET ScriptName = 'mob_toasty_fire' WHERE entry = 33342;
 UPDATE creature_template SET ScriptName = 'mob_flashFreeze' WHERE entry IN (32926);

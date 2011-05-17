@@ -55,6 +55,8 @@ instance_naxxramas::instance_naxxramas(Map* pMap) : ScriptedInstance(pMap),
     m_uiPathExitDoorGUID(0),
     m_uiGlutExitDoorGUID(0),
     m_uiThadDoorGUID(0),
+    m_uiThadNoxTeslaFeugenGUID(0),
+    m_uiThadNoxTeslaStalaggGUID(0),
 
     m_uiAnubDoorGUID(0),
     m_uiAnubGateGUID(0),
@@ -100,6 +102,7 @@ void instance_naxxramas::OnCreatureCreate(Creature* pCreature)
         case NPC_THADDIUS:          m_uiThaddiusGUID = pCreature->GetGUID();        break;
         case NPC_STALAGG:           m_uiStalaggGUID = pCreature->GetGUID();         break;
         case NPC_FEUGEN:            m_uiFeugenGUID = pCreature->GetGUID();          break;
+        case NPC_TESLA_COIL:        m_lThadTeslaCoilList.push_back(pCreature->GetGUID()); break;
         case NPC_ZELIEK:            m_uiZeliekGUID = pCreature->GetGUID();          break;
         case NPC_THANE:             m_uiThaneGUID = pCreature->GetGUID();           break;
         case NPC_BLAUMEUX:          m_uiBlaumeuxGUID = pCreature->GetGUID();        break;
@@ -258,6 +261,12 @@ void instance_naxxramas::OnObjectCreate(GameObject* pGo)
             m_uiThadDoorGUID = pGo->GetGUID();
             if (m_auiEncounter[11] == DONE)
                 pGo->SetGoState(GO_STATE_ACTIVE);
+            break;
+        case GO_CONS_NOX_TESLA_FEUGEN:
+            m_uiThadNoxTeslaFeugenGUID = pGo->GetGUID();
+            break;
+        case GO_CONS_NOX_TESLA_STALAGG:
+            m_uiThadNoxTeslaStalaggGUID = pGo->GetGUID();
             break;
 
         case GO_SAPPHIRON_BIRTH:
@@ -660,6 +669,10 @@ uint64 instance_naxxramas::GetData64(uint32 uiData)
             return m_uiSapphironBirthGUID;
         case NPC_KELTHUZAD:
             return m_uiKelthuzadGUID;
+        case GO_CONS_NOX_TESLA_FEUGEN:
+            return m_uiThadNoxTeslaFeugenGUID;
+        case GO_CONS_NOX_TESLA_STALAGG:
+            return m_uiThadNoxTeslaStalaggGUID;
     }
     return 0;
 }
