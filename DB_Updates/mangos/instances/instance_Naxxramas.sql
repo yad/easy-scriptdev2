@@ -108,8 +108,8 @@ INSERT INTO `gameobject` (`guid`, `id`, `map`, `spawnMask`, `phaseMask`, `positi
 UPDATE gameobject_template SET size = 1.5 WHERE entry = 181356;
 
 -- FrostWyrm areatriggers (triggers Intro event reset/start)
-DELETE FROM areatrigger_scripts WHERE entry IN (4167);
-INSERT INTO areatrigger_scripts VALUES
+DELETE FROM scripted_areatrigger WHERE entry IN (4167);
+INSERT INTO scripted_areatrigger VALUES
 (4167, 'at_naxxramas');
 
 -- Wing Buffet - unable to attack/be attacked while spawed (invisible)
@@ -137,7 +137,7 @@ faction_A = 21,
 faction_H = 21,
 unit_flags = unit_flags |0x02000000,
 AIName = '',
-ScriptName = '',
+ScriptName = 'mob_sapphiron_blizzard',
 flags_extra = flags_extra | 128
 WHERE entry IN (16474,30000);
 
