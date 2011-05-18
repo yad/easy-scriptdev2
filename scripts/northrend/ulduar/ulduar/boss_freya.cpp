@@ -1351,8 +1351,8 @@ struct MANGOS_DLL_DECL mob_freya_spawnedAI : public ScriptedAI
         for(int8 i = 0; i < times; ++i)
         {
             for(int8 itr = 0; i < 3; ++i)
-                DoCast(m_creature, SPELL_SPORE_SUMMON_NE + itr);
-            DoCast(m_creature, SPELL_SPORE_SUMMON_NW);
+                m_creature->CastSpell(m_creature->GetPositionX()+frand(-15.0f, 15.0f), m_creature->GetPositionY()+frand(-15.0f, 15.0f), m_creature->GetPositionZ(), SPELL_SPORE_SUMMON_NE + itr, true);
+            m_creature->CastSpell(m_creature->GetPositionX()+frand(-15.0f, 15.0f), m_creature->GetPositionY()+frand(-15.0f, 15.0f), m_creature->GetPositionZ(), SPELL_SPORE_SUMMON_NW, true);
         }
     }
 
