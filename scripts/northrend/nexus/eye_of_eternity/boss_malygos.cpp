@@ -462,13 +462,14 @@ struct MANGOS_DLL_DECL boss_malygosAI : public ScriptedAI
                     {
                         if (Creature* pTemp = pPlayer->SummonCreature(NPC_WYRMREST_SKYTALON, pPlayer->GetPositionX(), pPlayer->GetPositionY(), FLOOR_Z - 40.0f, 0.0f, TEMPSUMMON_TIMED_DESPAWN, 7*DAY*IN_MILLISECONDS))
                         {
+                            pTemp->SetRespawnTime(7*DAY);
+                            pTemp->setFaction(pPlayer->getFaction());
                             pTemp->AddSplineFlag(SPLINEFLAG_FLYING);
                             pTemp->SetSpeedRate(MOVE_FLIGHT, 4.0f, true);
                             pTemp->CastSpell(pTemp, SPELL_FLIGHT, true);
                             m_creature->SetInCombatWith(pTemp);
                             pTemp->SetInCombatWith(m_creature);
-                            if (VehicleKit *pKit = pTemp->GetVehicleKit())
-                                pPlayer->EnterVehicle(pKit);
+                            pPlayer->CastSpell(pTemp, SPELL_VEHICLE_HARDCODED, true);
                         }
                     }
         }
@@ -501,6 +502,23 @@ struct MANGOS_DLL_DECL boss_malygosAI : public ScriptedAI
 
         for (std::list<Creature*>::iterator iter = pCreatures.begin(); iter != pCreatures.end(); ++iter)
             (*iter)->ForcedDespawn();
+    }
+
+    Creature* GetRandomDragonTarget()
+    {
+        std::list<Creature*> lDragons;
+        GetCreatureListWithEntryInGrid(lDragons, m_creature, NPC_WYRMREST_SKYTALON, 120.0f);
+
+        if (!lDragons.empty())
+        {
+            std::list<Creature*>::iterator itr = lDragons.begin();
+            std::advance(itr, urand(0, lDragons.size()-1));
+
+            if ((*itr) && (*itr)->isAlive())
+                return (*itr);
+        }
+
+        return NULL;
     }
 
     void AntiMagicShell()
@@ -976,7 +994,7 @@ struct MANGOS_DLL_DECL boss_malygosAI : public ScriptedAI
                             pPlatform->SetFlag(GAMEOBJECT_FLAGS, GO_FLAG_DESTROYED);
 
 
-                    m_creature->GetMotionMaster()->MovePoint(0, CENTER_X, CENTER_Y, FLOOR_Z + 150.0f, false);
+                    m_creature->GetMotionMaster()->MovePoint(0, CENTER_X, CENTER_Y, FLOOR_Z, false);
                     DoScriptText(SAY_INTRO_PHASE3, m_creature);
 
                     m_uiSubPhase = SUBPHASE_DESTROY_PLATFORM_3;
@@ -1046,21 +1064,16 @@ struct MANGOS_DLL_DECL boss_malygosAI : public ScriptedAI
 
             if (m_uiStaticFieldTimer <= uiDiff)
             {
-                //for (uint8 i = 0; i<=50; ++i)
+                if (Creature* pTarget = GetRandomDragonTarget())
                 {
-                    if (Unit* pTarget = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM, 0))
-                        //if (pTarget->GetEntry() == NPC_WYRMREST_SKYTALON)
-                        {
-                            switch (urand(0, 5))
-                            {
-                                case 0: DoScriptText(SAY_CAST_SPELL1, m_creature); break;
-                                case 1: DoScriptText(SAY_CAST_SPELL2, m_creature); break;
-                                case 2: DoScriptText(SAY_CAST_SPELL3, m_creature); break;
-                            }
-                            DoCast(pTarget, SPELL_STATIC_FIELD_MISSILE);
-                        }
+                    switch (urand(0, 5))
+                    {
+                        case 0: DoScriptText(SAY_CAST_SPELL1, m_creature); break;
+                        case 1: DoScriptText(SAY_CAST_SPELL2, m_creature); break;
+                        case 2: DoScriptText(SAY_CAST_SPELL3, m_creature); break;
+                    }
+                    DoCast(pTarget, SPELL_STATIC_FIELD_MISSILE);
                 }
-
                 m_uiStaticFieldTimer = urand(10000, 16000);
             }
             else
@@ -1068,19 +1081,14 @@ struct MANGOS_DLL_DECL boss_malygosAI : public ScriptedAI
 
             if (m_uiSurgeOfPowerTimer <= uiDiff)
             {
-                //for (uint8 i = 0; i<=50; ++i)
+                if (Creature* pTarget = GetRandomDragonTarget())
                 {
-                    if (Unit* pTarget = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM, 0))
-                        //if (pTarget->GetEntry() == NPC_WYRMREST_SKYTALON)
-                        {
-                            m_uiSubPhase = SUBPHASE_SURGE_OF_POWER;
-                            m_uiTimer = 6500;
-                            if (urand(0, 1))
-                                DoScriptText(SAY_SURGE_OF_POWER, m_creature);
-                            DoCast(pTarget, m_bIsRegularMode ? SPELL_SURGE_OF_POWER : SPELL_SURGE_OF_POWER_H);
-                        }
+                    m_uiSubPhase = SUBPHASE_SURGE_OF_POWER;
+                    m_uiTimer = 6500;
+                    if (urand(0, 1))
+                        DoScriptText(SAY_SURGE_OF_POWER, m_creature);
+                    DoCast(pTarget, m_bIsRegularMode ? SPELL_SURGE_OF_POWER : SPELL_SURGE_OF_POWER_H);
                 }
-
                 m_uiSurgeOfPowerTimer = urand(5000, 15000);
             }
             else
