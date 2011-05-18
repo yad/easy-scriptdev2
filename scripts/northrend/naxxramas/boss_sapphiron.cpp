@@ -59,6 +59,8 @@ enum
     //SPELL_SUMMON_BLIZZARD     = 28560,    // script effect 100yd (not used)
     SPELL_ACTIVATE_BLIZZARD     = 29969,    // dummy
     SPELL_DEACTIVATE_BLIZZARD   = 29970,
+    SPELL_CHILL                 = 28547,    // cast by Blizzard NPC
+    SPELL_CHILL_H               = 55699,    // cast by Blizzard NPC (h)
     SPELL_SAPPHIRON_DIES        = 29357,    // dummy
     SPELL_SAPPHIRON_ACHI_CHECK  = 60539,    // script effect
 
@@ -207,12 +209,7 @@ struct MANGOS_DLL_DECL boss_sapphironAI : public ScriptedAI
         {
             if (SpellAuraHolder *holder = pVictim->GetSpellAuraHolder(SPELL_ICEBOLT))
             {
-                for (int32 i = 0; i < MAX_EFFECT_INDEX; ++i)
-                {
-                    if (Aura *aur = holder->GetAuraByEffectIndex(SpellEffectIndex(i)))
-                        // need to test xd
-                        aur->SetAuraPeriodicTimer(500);
-                }
+                holder->SetAuraDuration(500);
                 holder->SendAuraUpdate(false);
             }
             pVictim->RemoveAurasDueToSpell(SPELL_ICE_BLOCK_VISUAL);
@@ -253,6 +250,10 @@ struct MANGOS_DLL_DECL boss_sapphironAI : public ScriptedAI
         Creature* pWingBuffet = m_creature->GetMap()->GetCreature(m_uiWingBuffetGUID);
         if (pWingBuffet && pWingBuffet->isAlive())
             pWingBuffet->ForcedDespawn();
+
+        // after server crash
+        m_creature->RemoveFlag(UNIT_FIELD_FLAGS, (UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_NOT_SELECTABLE));
+        m_creature->SetVisibility(VISIBILITY_ON);
     }
 
     void MovementInform(uint32 uiMotionType, uint32 uiPointId)
@@ -456,11 +457,90 @@ CreatureAI* GetAI_boss_sapphiron(Creature* pCreature)
     return new boss_sapphironAI(pCreature);
 }
 
+struct MANGOS_DLL_DECL mob_sapphiron_blizzardAI : public ScriptedAI
+{
+    mob_sapphiron_blizzardAI(Creature* pCreature) : ScriptedAI(pCreature)
+    {
+        m_bIsRegularMode = pCreature->GetMap()->IsRegularDifficulty();
+        m_pInstance = (instance_naxxramas*)pCreature->GetInstanceData();
+        Reset();
+    }
+
+    instance_naxxramas *m_pInstance;
+    bool m_bIsRegularMode;
+    bool m_bIsActive;
+    uint32 m_uiChillTimer;
+
+    void Reset()
+    {
+        m_bIsActive    = false;
+        m_uiChillTimer = 0;
+    }
+
+    void AttackStart(Unit *pWho){}
+
+    void UpdateAI(const uint32 uiDiff)
+    {
+        if (m_bIsActive)
+        {
+            if (m_uiChillTimer <= uiDiff)
+            {
+                //DoCastSpellIfCan(m_creature, m_bIsRegularMode ? SPELL_CHILL : SPELL_CHILL_H, CAST_TRIGGERED);
+                float x, y, z;
+                x = m_creature->GetPositionX() + frand(-15.0f, 15.0f);
+                y = m_creature->GetPositionY() + frand(-15.0f, 15.0f);
+                z = m_creature->GetPositionZ();
+
+                m_creature->CastSpell(x, y, z, m_bIsRegularMode ? SPELL_CHILL : SPELL_CHILL_H, true);
+                m_uiChillTimer = 500;
+            }else m_uiChillTimer -= uiDiff;
+        }
+    }
+};
+
+bool EffectDummyNPC_spell_sapphiron_encounter_blizzard(Unit* pCaster, uint32 uiSpellId, SpellEffectIndex uiEffIndex, Creature* pCreatureTarget)
+{
+    if (uiSpellId == SPELL_ACTIVATE_BLIZZARD)
+    {
+        if (uiEffIndex == EFFECT_INDEX_0)
+        {
+            if (mob_sapphiron_blizzardAI *pBlizzard = dynamic_cast<mob_sapphiron_blizzardAI*> (pCreatureTarget->AI()))
+            {
+                pBlizzard->m_bIsActive = true;
+                return true;
+            }
+        }
+    }
+    else if (uiSpellId == SPELL_DEACTIVATE_BLIZZARD)
+    {
+        if (uiEffIndex == EFFECT_INDEX_0)
+        {
+            if (mob_sapphiron_blizzardAI *pBlizzard = dynamic_cast<mob_sapphiron_blizzardAI*> (pCreatureTarget->AI()))
+            {
+                pBlizzard->m_bIsActive = false;
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+CreatureAI* GetAI_mob_sapphiron_blizzard(Creature* pCreature)
+{
+    return new mob_sapphiron_blizzardAI(pCreature);
+}
+
 void AddSC_boss_sapphiron()
 {
     Script* newscript;
     newscript = new Script;
     newscript->Name = "boss_sapphiron";
     newscript->GetAI = &GetAI_boss_sapphiron;
+    newscript->RegisterSelf();
+
+    newscript = new Script;
+    newscript->Name = "mob_sapphiron_blizzard";
+    newscript->GetAI = &GetAI_mob_sapphiron_blizzard;
+    newscript->pEffectDummyNPC = &EffectDummyNPC_spell_sapphiron_encounter_blizzard;
     newscript->RegisterSelf();
 }
