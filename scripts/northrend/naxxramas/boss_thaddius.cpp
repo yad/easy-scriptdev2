@@ -428,8 +428,8 @@ struct MANGOS_DLL_DECL boss_thaddiusAddsAI : public ScriptedAI
     bool m_bBothDead;
 
     uint32 m_uiHoldTimer;
-    //uint32 m_uiWarStompTimer;
     uint32 m_uiReviveTimer;
+    uint32 m_uiMagneticPullTimer;
 
     void Reset()
     {
@@ -438,7 +438,7 @@ struct MANGOS_DLL_DECL boss_thaddiusAddsAI : public ScriptedAI
 
         m_uiReviveTimer = 5*IN_MILLISECONDS;
         m_uiHoldTimer = 2*IN_MILLISECONDS;
-        //m_uiWarStompTimer = urand(8*IN_MILLISECONDS, 10*IN_MILLISECONDS);
+        m_uiMagneticPullTimer = 20*IN_MILLISECONDS;
 
         // We might Reset while faking death, so undo this
         m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
@@ -591,6 +591,15 @@ struct MANGOS_DLL_DECL boss_thaddiusAddsAI : public ScriptedAI
                 m_uiHoldTimer -= uiDiff;
         }
 
+        if (m_uiMagneticPullTimer <= uiDiff)
+        {
+            SetCombatMovement(false);
+            if (m_creature->GetEntry() == NPC_FEUGEN)
+                DoCastSpellIfCan(m_creature, SPELL_MAGNETIC_PULL_B);
+            m_uiHoldTimer = 3000;
+            m_uiMagneticPullTimer = 30*IN_MILLISECONDS;
+        }else m_uiMagneticPullTimer -= uiDiff;
+
         UpdateAddAI(uiDiff);                    // For Add Specific Abilities
 
         DoMeleeAttackIfReady();
@@ -692,13 +701,11 @@ struct MANGOS_DLL_DECL boss_feugenAI : public boss_thaddiusAddsAI
         Reset();
     }
     uint32 m_uiStaticFieldTimer;
-    uint32 m_uiMagneticPullTimer;                                       // TODO, missing
 
     void Reset()
     {
         boss_thaddiusAddsAI::Reset();
         m_uiStaticFieldTimer = urand(10*IN_MILLISECONDS, 15*IN_MILLISECONDS);
-        m_uiMagneticPullTimer = 20*IN_MILLISECONDS;
     }
 
     void Aggro(Unit* pWho)
