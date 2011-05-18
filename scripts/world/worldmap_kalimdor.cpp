@@ -182,65 +182,6 @@ void worldmap_kalimdor::OnPlayerDroppedFlag(Player* pPlayer, uint32 uiSpellId)
     pPlayer->CastSpell(pPlayer, SPELL_SILITHYST_FLAG_DROP, true);
 }
 
-bool AreaTrigger_at_silithus(Player* pPlayer, AreaTriggerEntry const* pAt)
-{
-    if (pPlayer->isGameMaster() || pPlayer->isDead())
-        return false;
-
-    worldmap_kalimdor* pWorldMap = (worldmap_kalimdor*)pPlayer->GetInstanceData();
-
-    if (!pWorldMap)
-        return false;
-
-    if (pAt->id == AREATRIGGER_SILITHUS_ALY)
-    {
-        if(pPlayer->GetTeam() == ALLIANCE && pPlayer->HasAura(SPELL_SILITHYST))
-        {
-            // remove aura
-            pPlayer->RemoveAurasDueToSpell(SPELL_SILITHYST);
-            pWorldMap->SetData(TYPE_ALLIANCE_SILITHYSTS, 1);
-
-            // reward the player
-            pPlayer->CastSpell(pPlayer, SPELL_TRACES_OF_SILITHYST, false);
-            pPlayer->RewardHonor(NULL, 1, HONOR_REWARD_SILITHYST);
-            //pPlayer->GetReputationMgr().ModifyReputation(sFactionStore.LookupEntry(FACTION_CENARION_CIRCLE), REPUTATION_REWARD_SILITHYST);
-
-            // complete quest
-            if (pPlayer->GetQuestStatus(QUEST_SCOURING_DESERT_ALY) == QUEST_STATUS_INCOMPLETE)
-                pPlayer->KilledMonsterCredit(NPC_SILITHUS_DUST_QUEST_ALY);
-        }
-    }
-    else if (pAt->id == AREATRIGGER_SILITHUS_HORDE)
-    {
-        if(pPlayer->GetTeam() == HORDE && pPlayer->HasAura(SPELL_SILITHYST))
-        {
-            // remove aura
-            pPlayer->RemoveAurasDueToSpell(SPELL_SILITHYST);
-            pWorldMap->SetData(TYPE_HORDE_SILITHYSTS, 1);
-
-            // reward the player
-            pPlayer->CastSpell(pPlayer, SPELL_TRACES_OF_SILITHYST, false);
-            pPlayer->RewardHonor(NULL, 1, HONOR_REWARD_SILITHYST);
-            //pPlayer->GetReputationMgr().ModifyReputation(sFactionStore.LookupEntry(FACTION_CENARION_CIRCLE), REPUTATION_REWARD_SILITHYST);
-
-            // complete quest
-            if (pPlayer->GetQuestStatus(QUEST_SCOURING_DESERT_HORDE) == QUEST_STATUS_INCOMPLETE)
-                pPlayer->KilledMonsterCredit(NPC_SILITHUS_DUST_QUEST_HORDE);
-        }
-    }
-
-    return false;
-}
-
-bool GOUse_go_silithyst(Player* pPlayer, GameObject* pGo)
-{
-    // ToDo - in the old DBCs this GO has a spell, so it doesn't need script
-    pPlayer->CastSpell(pPlayer, SPELL_SILITHYST, false);
-    pGo->Delete();
-
-    return true;
-}
-
 InstanceData* GetInstanceData_worldmap_kalimdor(Map* pMap)
 {
     return new worldmap_kalimdor(pMap);
@@ -249,16 +190,6 @@ InstanceData* GetInstanceData_worldmap_kalimdor(Map* pMap)
 void AddSC_worldmap_kalimdor()
 {
     Script* pNewScript;
-
-    pNewScript = new Script;
-    pNewScript->Name = "at_silithus";
-    pNewScript->pAreaTrigger = &AreaTrigger_at_silithus;
-    pNewScript->RegisterSelf();
-
-    pNewScript = new Script;
-    pNewScript->Name = "go_silithyst";
-    pNewScript->pGOUse = &GOUse_go_silithyst;
-    pNewScript->RegisterSelf();
 
     pNewScript = new Script;
     pNewScript->Name = "worldmap_kalimdor";

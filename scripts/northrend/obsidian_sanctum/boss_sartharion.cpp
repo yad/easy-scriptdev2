@@ -1689,7 +1689,7 @@ struct MANGOS_DLL_DECL mob_twilight_whelpAI : public ScriptedAI
         if (m_uiFadeArmorTimer < uiDiff)
         {
             // hack for stacking rules
-            m_creature->CastSpell(m_creature->getVictim(), SPELL_FADE_ARMOR, false, 0, NULL, m_pInstance->GetData64(DATA_TENEBRON) ? m_pInstance->GetData64(DATA_TENEBRON) : ObjectGuid());
+            m_creature->CastSpell(m_creature->getVictim(), SPELL_FADE_ARMOR, false, 0, NULL, m_pInstance->GetData64(DATA_TENEBRON) ? m_pInstance->GetData64(DATA_TENEBRON) : ObjectGuid().GetRawValue());
             m_uiFadeArmorTimer = urand(5000, 10000);
         }
         else
