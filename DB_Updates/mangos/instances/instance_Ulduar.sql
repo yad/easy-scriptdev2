@@ -78,6 +78,13 @@ INSERT INTO `creature_ai_scripts` VALUES
 (3322101, 33221, 0, 0, 100, 2, 3000, 3000, 0, 0, 11, 62548, 0, 0, 20, 0, 0, 0, 21, 0, 0, 0, "Scorch Trigger - Cast Scorch normal"),
 (3322102, 33221, 0, 0, 100, 4, 3000, 3000, 0, 0, 11, 63476, 0, 0, 20, 0, 0, 0, 21, 0, 0, 0, "Scorch Trigger - Cast Scorch heroic"),
 (3322103, 33221, 4, 0, 100, 6, 0, 0, 0, 0, 20, 0, 0, 0, 21, 0, 0, 0, 0, 0, 0, 0, "Scorch Trigger - Disable Combat Movement on Aggro");
+
+-- control vehicle auras
+DELETE FROM spell_script_target WHERE entry = 62708;
+INSERT INTO spell_script_target VALUES
+(62708, 1, 33118),
+(62711, 1, 33118);
+
 -- Ignis loot
 DELETE FROM `creature_loot_template` WHERE `entry` IN (33118, 33190);
 INSERT INTO `creature_loot_template` VALUES
