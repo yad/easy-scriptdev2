@@ -608,7 +608,10 @@ struct MANGOS_DLL_DECL boss_malygosAI : public ScriptedAI
             DoScriptText(SAY_ARCANE_PULSE_WARN, m_creature);
 
             if (Creature* pTemp = m_creature->SummonCreature(NPC_VORTEX, CENTER_X, CENTER_Y, FLOOR_Z, 0, TEMPSUMMON_TIMED_DESPAWN, 9000))
+            {
+                pTemp->setFaction(14);
                 m_creature->CastSpell(m_creature, SPELL_SURGE_OF_POWER_BREATH, false, 0, 0, pTemp->GetGUID());
+            }
 
             m_uiShellTimer = urand(2000, 4000);
             m_bReadyForWPMove = true;
@@ -1218,6 +1221,8 @@ struct MANGOS_DLL_DECL npc_nexus_lordAI : public ScriptedAI
         m_uiHasteTimer = urand(10000, 12000);
     }
 
+    void EnterEvadeMode(){}
+
     void DamageTaken(Unit *pDoneBy, uint32 &uiDamage)
     {
         if (uiDamage > m_creature->GetHealth())
@@ -1324,6 +1329,8 @@ struct MANGOS_DLL_DECL npc_scion_of_eternityAI : public ScriptedAI
         m_uiArcaneBarrageTimer = urand(4000, 12000);
         m_bHasMoved = false;
     }
+
+    void EnterEvadeMode(){}
 
     void DamageTaken(Unit *pDoneBy, uint32 &uiDamage)
     {
