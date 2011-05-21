@@ -29,10 +29,20 @@ UPDATE `creature_template` SET `PowerType` = 3, `InhabitType` = 3 WHERE entry=31
 UPDATE `creature_template` SET speed_walk = 2 WHERE entry IN (30084, 32187); -- speed of power sparks
 UPDATE `creature_template` SET InhabitType = 4 WHERE entry IN (32448, 32295); -- Alexstrasza and gift bunny npc fly
 
-DELETE FROM `spell_script_target` WHERE `entry` IN (56505, 61028);
+DELETE FROM `spell_script_target` WHERE `entry` IN (56505, 61028, 55853, 56263, 56264, 56265, 56266, 61071, 61072, 61073, 61074, 61075);
 INSERT INTO `spell_script_target` VALUES
 (61028, 1, 32448), -- Alexstrasza Gift
-(56505, 1, 28859); -- Surge of Power breath dummy: 30334 casts on Malygos 28859
+(56505, 1, 28859), -- Surge of Power breath dummy: 30334 casts on Malygos 28859
+(55853, 1, 30090), -- vortex
+(56263, 1, 30090), -- vortex
+(56264, 1, 30090), -- vortex
+(56265, 1, 30090), -- vortex
+(56266, 1, 30090), -- vortex
+(61071, 1, 30090), -- vortex
+(61072, 1, 30090), -- vortex
+(61073, 1, 30090), -- vortex
+(61074, 1, 30090), -- vortex
+(61075, 1, 30090); -- vortex
 
 -- Fix Wyrmrest drakes creature info
 UPDATE creature_template SET PowerType = 3, minhealth = 100000, maxhealth = 100000, Spell1 = 56091, Spell2 = 56092, Spell3 = 57090, Spell4 = 57143, Spell5 = 57108, Spell6 = 57092 WHERE entry = 32535;
