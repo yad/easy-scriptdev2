@@ -220,7 +220,10 @@ struct MANGOS_DLL_DECL boss_sapphironAI : public ScriptedAI
             {
                 // find my Iceblock
                 if (GameObject *pGO = m_creature->GetMap()->GetGameObject(itr->second))
+                {
                     pGO->Delete();
+                    m_mIceblocks.erase(itr);
+                }
             }
         }
         else if (spellInfo->Id == SPELL_ICEBOLT)
