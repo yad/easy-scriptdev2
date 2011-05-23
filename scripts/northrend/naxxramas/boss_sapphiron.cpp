@@ -228,8 +228,15 @@ struct MANGOS_DLL_DECL boss_sapphironAI : public ScriptedAI
         }
         else if (spellInfo->Id == SPELL_ICEBOLT)
         {
-            if (GameObject *pGO = pVictim->SummonGameobject(GO_ICEBLOCK, pVictim->GetPositionX(), pVictim->GetPositionY(), pVictim->GetPositionZ(), 0.0f, 30))
-                m_mIceblocks.insert(std::make_pair(pVictim->GetObjectGuid(), pGO->GetObjectGuid()));
+            if (pVictim->HasAura(SPELL_ICEBOLT) && !pVictim->GetGameObject(spellInfo->Id))
+            {
+                if (GameObject *pGO = pVictim->SummonGameobject(GO_ICEBLOCK, pVictim->GetPositionX(), pVictim->GetPositionY(), pVictim->GetPositionZ(), 0.0f, 30))
+                {
+                    pGO->SetSpellId(spellInfo->Id);
+                    pVictim->AddGameObject(pGO);
+                    m_mIceblocks.insert(std::make_pair(pVictim->GetObjectGuid(), pGO->GetObjectGuid()));
+                }
+            }
         }
     }
 
