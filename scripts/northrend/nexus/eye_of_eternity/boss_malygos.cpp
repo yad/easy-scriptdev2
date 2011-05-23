@@ -423,7 +423,7 @@ struct MANGOS_DLL_DECL boss_malygosAI : public ScriptedAI
             pSummoned->ForcedDespawn(30000);
         }
 
-        if (uiEntry == NPC_NEXUS_LORD || uiEntry == NPC_SCION_OF_ETERNITY)
+        if (uiEntry == NPC_SCION_OF_ETERNITY)
         {
             if (Creature* pDisk = pSummoned->SummonCreature(NPC_HOVER_DISK, pSummoned->GetPositionX(), pSummoned->GetPositionY(), pSummoned->GetPositionZ(), 0, TEMPSUMMON_CORPSE_DESPAWN, 0))
             {
@@ -436,6 +436,10 @@ struct MANGOS_DLL_DECL boss_malygosAI : public ScriptedAI
                     pSummoned->EnterVehicle(pDiskVehicle, 0);
                 pSummoned->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
             }
+            pSummoned->SetInCombatWithZone();
+        }
+        else if (uiEntry == NPC_NEXUS_LORD)
+        {
             pSummoned->SetInCombatWithZone();
         }
     }
