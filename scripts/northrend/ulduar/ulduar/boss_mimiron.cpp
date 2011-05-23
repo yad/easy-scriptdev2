@@ -396,7 +396,7 @@ struct MANGOS_DLL_DECL boss_leviathan_mkAI : public ScriptedAI
                     float angle = (float) rand()*360/RAND_MAX + 1;
                     float homeX = m_creature->GetPositionX() + 15*cos(angle*(M_PI/180));
                     float homeY = m_creature->GetPositionY() + 15*sin(angle*(M_PI/180));
-                    m_creature->SummonCreature(MOB_PROXIMITY_MINE, homeX, homeY, m_creature->GetPositionZ(), 0, TEMPSUMMON_TIMED_OR_DEAD_DESPAWN, 7*DAY_IN_MILLISECONDS);
+                    m_creature->SummonCreature(MOB_PROXIMITY_MINE, homeX, homeY, m_creature->GetPositionZ(), 0, TEMPSUMMON_TIMED_OR_DEAD_DESPAWN, 7*DAY * IN_MILLISECONDS);
                 }
                 m_uiMinesTimer = 30000;
             }
@@ -788,7 +788,7 @@ struct MANGOS_DLL_DECL boss_vx001AI : public ScriptedAI
             if(m_uiFrostBombTimer < uiDiff)
             {
                 if(Creature* pFire = SelectRandomFire())
-                    m_creature->SummonCreature(MOB_FROST_BOMB, pFire->GetPositionX(), pFire->GetPositionY(), pFire->GetPositionZ(), 0, TEMPSUMMON_TIMED_OR_DEAD_DESPAWN, 7*DAY_IN_MILLISECONDS);
+                    m_creature->SummonCreature(MOB_FROST_BOMB, pFire->GetPositionX(), pFire->GetPositionY(), pFire->GetPositionZ(), 0, TEMPSUMMON_TIMED_OR_DEAD_DESPAWN, 7*DAY*IN_MILLISECONDS);
                 m_uiFrostBombTimer = urand(50000, 60000);
                 m_uiSpreadFiresTimer = urand(15000, 20000);
             }
@@ -1086,7 +1086,7 @@ struct MANGOS_DLL_DECL boss_aerial_command_unitAI : public ScriptedAI
                 }
                 uint8 m_uiSummonLoc = urand(0, 8);
                 if(m_uiCreatureEntry != 0)
-                    m_creature->SummonCreature(m_uiCreatureEntry, SummonLoc[m_uiSummonLoc].x, SummonLoc[m_uiSummonLoc].y, CENTER_Z, 0, TEMPSUMMON_TIMED_OR_DEAD_DESPAWN, 7*DAY_IN_MILLISECONDS);
+                    m_creature->SummonCreature(m_uiCreatureEntry, SummonLoc[m_uiSummonLoc].x, SummonLoc[m_uiSummonLoc].y, CENTER_Z, 0, TEMPSUMMON_TIMED_OR_DEAD_DESPAWN, 7*DAY*IN_MILLISECONDS);
 
                 m_uiSummonWavesTimer = urand (10000, 15000);
             }
@@ -1376,7 +1376,7 @@ struct MANGOS_DLL_DECL boss_mimironAI : public ScriptedAI
                 if(m_uiPhaseDelayTimer < uiDiff && !m_bHasMoreHp)
                 {
                     DoScriptText(SAY_TORSO_ACTIVE, m_creature);
-                    if(Creature* pTorso = m_creature->SummonCreature(NPC_VX001, CENTER_X, CENTER_Y, CENTER_Z, 0, TEMPSUMMON_TIMED_OR_DEAD_DESPAWN, 7*DAY_IN_MILLISECONDS))
+                    if(Creature* pTorso = m_creature->SummonCreature(NPC_VX001, CENTER_X, CENTER_Y, CENTER_Z, 0, TEMPSUMMON_TIMED_OR_DEAD_DESPAWN, 7*DAY*IN_MILLISECONDS))
                     {
                         if(m_bIsHardMode)
                         {
@@ -1424,7 +1424,7 @@ struct MANGOS_DLL_DECL boss_mimironAI : public ScriptedAI
                 if(m_uiPhaseDelayTimer < uiDiff && !m_bHasMoreHp)
                 {
                     DoScriptText(SAY_HEAD_ACTIVE, m_creature);
-                    if(Creature* pHead = m_creature->SummonCreature(NPC_AERIAL_UNIT, CENTER_X, CENTER_Y, CENTER_Z, 0, TEMPSUMMON_TIMED_OR_DEAD_DESPAWN, 7*DAY_IN_MILLISECONDS))
+                    if(Creature* pHead = m_creature->SummonCreature(NPC_AERIAL_UNIT, CENTER_X, CENTER_Y, CENTER_Z, 0, TEMPSUMMON_TIMED_OR_DEAD_DESPAWN, 7*DAY*IN_MILLISECONDS))
                     {
                         if(m_bIsHardMode)
                         {
@@ -1493,13 +1493,13 @@ struct MANGOS_DLL_DECL boss_mimironAI : public ScriptedAI
                     if(Creature* pTank = m_pInstance->instance->GetCreature(m_uiTankGUID))
                         ((boss_leviathan_mkAI*)pTank->AI())->SetPhase();
 
-                    if(Creature* pTorso = m_creature->SummonCreature(NPC_VX001, CENTER_X, CENTER_Y, CENTER_Z, 0, TEMPSUMMON_TIMED_OR_DEAD_DESPAWN, 7*DAY_IN_MILLISECONDS))
+                    if(Creature* pTorso = m_creature->SummonCreature(NPC_VX001, CENTER_X, CENTER_Y, CENTER_Z, 0, TEMPSUMMON_TIMED_OR_DEAD_DESPAWN, 7*DAY*IN_MILLISECONDS))
                     {
                         ((boss_vx001AI*)pTorso->AI())->SetPhase();
                         m_uiTorsoGUID = pTorso->GetGUID();
                     }
 
-                    if(Creature* pHead = m_creature->SummonCreature(NPC_AERIAL_UNIT, CENTER_X, CENTER_Y, CENTER_Z, 0, TEMPSUMMON_TIMED_OR_DEAD_DESPAWN, 7*DAY_IN_MILLISECONDS))
+                    if(Creature* pHead = m_creature->SummonCreature(NPC_AERIAL_UNIT, CENTER_X, CENTER_Y, CENTER_Z, 0, TEMPSUMMON_TIMED_OR_DEAD_DESPAWN, 7*DAY*IN_MILLISECONDS))
                     {
                         ((boss_aerial_command_unitAI*)pHead->AI())->SetPhase();
                         m_uiHeadGUID = pHead->GetGUID();
