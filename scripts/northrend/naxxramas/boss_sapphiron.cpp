@@ -39,7 +39,6 @@ enum
 
     SPELL_ICEBOLT               = 28522,
     //SPELL_ICEBOLT             = 28526,    // eff 77 implicit 1/0 but with casttime (not used)
-    SPELL_ICE_BLOCK_VISUAL      = 45776,
     SPELL_FROSTBREATH           = 28524,
     SPELL_FROSTBREATH_VISUAL    = 30101,
     SPELL_SAPPHIRONS_WING_BUFFET= 29328,
@@ -68,6 +67,7 @@ enum
 
     POINT_HOME                  = 0,
     NPC_WING_BUFFET             = 17025,
+    GO_ICEBLOCK                 = 181247,   // should be summoned by some spell
 
     PHASE_FIGHT_ON_GROUND       = 0,
     PHASE_RETURN_TO_THE_CENTER  = 1,
@@ -89,6 +89,7 @@ struct MANGOS_DLL_DECL boss_sapphironAI : public ScriptedAI
     bool m_bCastingFrostBreath; // hack part
     bool m_bHundredClub;        // achievement check
     float fHomeX, fHomeY, fHomeZ;
+    std::map<ObjectGuid /*owner*/, ObjectGuid /*GO*/> m_mIceblocks;
 
     int8 m_iIceboltCount;
     uint32 m_uiIceboltTimer;
@@ -120,6 +121,7 @@ struct MANGOS_DLL_DECL boss_sapphironAI : public ScriptedAI
         m_uiWingBuffetGUID  = 0;
         m_bCastingFrostBreath = false;
         m_bHundredClub      = true;
+        m_mIceblocks.clear();
         m_uiHundredClubCheckTimer = 5000;
         m_creature->GetRespawnCoord(fHomeX, fHomeY, fHomeZ);
     }
@@ -212,11 +214,19 @@ struct MANGOS_DLL_DECL boss_sapphironAI : public ScriptedAI
                 holder->SetAuraDuration(500);
                 holder->SendAuraUpdate(false);
             }
-            pVictim->RemoveAurasDueToSpell(SPELL_ICE_BLOCK_VISUAL);
+
+            std::map<ObjectGuid, ObjectGuid>::iterator itr = m_mIceblocks.find(pVictim->GetObjectGuid());
+            if (itr != m_mIceblocks.end())
+            {
+                // find my Iceblock
+                if (GameObject *pGO = m_creature->GetMap()->GetGameObject(itr->second))
+                    pGO->Delete();
+            }
         }
         else if (spellInfo->Id == SPELL_ICEBOLT)
         {
-            pVictim->CastSpell(pVictim, SPELL_ICE_BLOCK_VISUAL, true);
+            if (GameObject *pGO = pVictim->SummonGameobject(GO_ICEBLOCK, pVictim->GetPositionX(), pVictim->GetPositionY(), pVictim->GetPositionZ(), 0.0f, 30))
+                m_mIceblocks.insert(std::make_pair(pVictim->GetObjectGuid(), pGO->GetObjectGuid()));
         }
     }
 
