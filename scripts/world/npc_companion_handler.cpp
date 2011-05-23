@@ -23,8 +23,20 @@ SDCategory: Pet behavior
 INSERT INTO spell_script_target VALUES
 (67400,1,34694);
 
-UPDATE creature_template SET ScriptNAme = 'npc_companion_handler' WHERE entry IN (33205,33198,33200,40198,33274,11327,34694);
-UPDATE creature_template SET ScriptNAme = 'npc_companion_helper' WHERE entry IN (33286);
+UPDATE creature_template SET ScriptNAme = 'npc_companion_handler' WHERE entry IN (
+-- Ammen Vale Lashling, Durotar Scorpion, Elwynn Lamb, Frigid Frostling
+33205,33198,33200,40198,
+-- Mechanopeep,Zergling,Grunty
+33274,11327,34694);
+UPDATE creature_template SET ScriptNAme = 'npc_companion_helper' WHERE entry IN (
+-- Elwynn Wolf
+33286);
+DELETE FROM script_texts WHERE entry BETWEEN -1999799 AND -1999796;
+INSERT INTO `script_texts` (`entry`, `content_default`, `comment`) VALUES
+('-1999799','Feed me, $N',''),
+('-1999798','Feed me all night long',''),
+('-1999797','Cause if you feed me, $N',''),
+('-1999796','I can grow up big and strong','');
 EndScriptData */
 
 #include "precompiled.h"
@@ -32,6 +44,10 @@ EndScriptData */
 
 enum
 {
+
+    NPC_PEANUT                  = 23286,
+    NPC_PEANUT_PERIODIC         = 41019,
+
     NPC_PANDA                   = 11325,
     SPELL_PANDA_SLEEP           = 19231,
     SPELL_PANDA_ROAR            = 40664,
@@ -187,11 +203,8 @@ struct MANGOS_DLL_DECL npc_companion_handlerAI : public ScriptedPetAI
 
     void MoveInLineOfSight(Unit* pWho)
     {
-        pWho->MonsterSay("0",LANG_UNIVERSAL);
         if (!pWho)
             return;
-
-        pWho->MonsterSay("1",LANG_UNIVERSAL);
 
         switch (m_creature->GetEntry())
         {
@@ -243,7 +256,6 @@ struct MANGOS_DLL_DECL npc_companion_handlerAI : public ScriptedPetAI
             }
 
             m_creature->SetUInt32Value(UNIT_NPC_EMOTESTATE, EMOTE_ONESHOT_NONE);
-            m_creature->RemoveAllAuras();
             m_uiBreakAction = m_uiActionTimer + 7000;
         }
         else
@@ -255,6 +267,12 @@ struct MANGOS_DLL_DECL npc_companion_handlerAI : public ScriptedPetAI
     {
         switch(uiPetEntry)
         {
+            case NPC_PEANUT:
+            {
+                if (!m_creature->HasAura(NPC_PEANUT_PERIODIC))
+                    DoCastSpellIfCan(m_creature, NPC_PEANUT_PERIODIC);
+                break;
+            }
             case NPC_PANDA:
             {
                 switch(rand()%2)
@@ -396,7 +414,10 @@ struct MANGOS_DLL_DECL npc_companion_handlerAI : public ScriptedPetAI
                     ++m_uiHelperVar;
                 }
                 else
+                {
+                    m_creature->SetUInt32Value(UNIT_NPC_EMOTESTATE, EMOTE_STATE_NONE);
                     m_uiHelperVar = 0;
+                }
 
                 break;
             }
@@ -435,6 +456,7 @@ CreatureAI* GetAI_npc_companion_handler(Creature* pCreature)
 }
 
 // special cases (non pets)
+// for now only Elwynn Wolf
 struct MANGOS_DLL_DECL npc_companion_helperAI : public ScriptedAI
 {
     npc_companion_helperAI(Creature* pCreature) : ScriptedAI(pCreature){Reset();}
