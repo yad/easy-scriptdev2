@@ -40,6 +40,7 @@ extern void AddSC_spell_scripts();
 extern void AddSC_worldmap_eastern_kingdoms();
 extern void AddSC_worldmap_kalimdor();
 extern void AddSC_worldmap_outland();
+extern void AddSC_npc_companion_handler();
 
 //eastern kingdoms
 extern void AddSC_blackrock_depths();                       //blackrock_depths
@@ -390,7 +391,7 @@ extern void AddSC_boss_kologarn();
 extern void AddSC_boss_mimiron();
 extern void AddSC_boss_razorscale();
 extern void AddSC_boss_thorim();
-// extern void AddSC_boss_vezax();
+extern void AddSC_boss_vezax();
 extern void AddSC_boss_xt002();
 extern void AddSC_boss_yogg_saron();
 extern void AddSC_instance_ulduar();
@@ -578,6 +579,7 @@ void AddScripts()
     AddSC_worldmap_eastern_kingdoms();
     AddSC_worldmap_kalimdor();
     AddSC_worldmap_outland();
+    AddSC_npc_companion_handler();
 
     //eastern kingdoms
     AddSC_blackrock_depths();                               //blackrock_depths
@@ -869,7 +871,7 @@ void AddScripts()
     AddSC_boss_patchwerk();
     AddSC_boss_razuvious();
     AddSC_boss_sapphiron();
-	AddSC_boss_thaddius();
+    AddSC_boss_thaddius();
     AddSC_instance_naxxramas();
 
     AddSC_boss_anomalus();                                  //nexus
@@ -916,7 +918,7 @@ void AddScripts()
     AddSC_boss_mimiron();
     AddSC_boss_razorscale();
     AddSC_boss_thorim();
-    // AddSC_boss_vezax();
+    AddSC_boss_vezax();
     AddSC_boss_xt002();
     AddSC_boss_yogg_saron();
     AddSC_instance_ulduar();

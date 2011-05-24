@@ -8,9 +8,6 @@ UPDATE creature_template SET ScriptName = 'boss_sjonnir' WHERE entry = 27978;
 UPDATE creature_template SET ScriptName='mob_tribuna_controller' WHERE entry=28234;
 UPDATE creature_template SET ScriptName='npc_brann_hos' WHERE entry=28070;
 
-UPDATE creature_template SET mechanic_immune_mask = 545996625  WHERE entry IN (27975, 27978, 31384, 31386);
-UPDATE creature_template SET mechanic_immune_mask = 617299803 WHERE entry IN (27977, 31381);
-
 -- Boss Sjonnir and adds
 UPDATE creature_template SET AIName='EventAI' WHERE entry IN (27979,27982);
 

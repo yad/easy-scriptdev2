@@ -423,7 +423,7 @@ struct MANGOS_DLL_DECL boss_malygosAI : public ScriptedAI
             pSummoned->ForcedDespawn(30000);
         }
 
-        if (uiEntry == NPC_NEXUS_LORD || uiEntry == NPC_SCION_OF_ETERNITY)
+        if (uiEntry == NPC_SCION_OF_ETERNITY)
         {
             if (Creature* pDisk = pSummoned->SummonCreature(NPC_HOVER_DISK, pSummoned->GetPositionX(), pSummoned->GetPositionY(), pSummoned->GetPositionZ(), 0, TEMPSUMMON_CORPSE_DESPAWN, 0))
             {
@@ -436,6 +436,10 @@ struct MANGOS_DLL_DECL boss_malygosAI : public ScriptedAI
                     pSummoned->EnterVehicle(pDiskVehicle, 0);
                 pSummoned->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
             }
+            pSummoned->SetInCombatWithZone();
+        }
+        else if (uiEntry == NPC_NEXUS_LORD)
+        {
             pSummoned->SetInCombatWithZone();
         }
     }
@@ -608,7 +612,10 @@ struct MANGOS_DLL_DECL boss_malygosAI : public ScriptedAI
             DoScriptText(SAY_ARCANE_PULSE_WARN, m_creature);
 
             if (Creature* pTemp = m_creature->SummonCreature(NPC_VORTEX, CENTER_X, CENTER_Y, FLOOR_Z, 0, TEMPSUMMON_TIMED_DESPAWN, 9000))
+            {
+                pTemp->setFaction(14);
                 m_creature->CastSpell(m_creature, SPELL_SURGE_OF_POWER_BREATH, false, 0, 0, pTemp->GetGUID());
+            }
 
             m_uiShellTimer = urand(2000, 4000);
             m_bReadyForWPMove = true;
@@ -931,21 +938,24 @@ struct MANGOS_DLL_DECL boss_malygosAI : public ScriptedAI
                     m_uiTimer -= uiDiff;
             }
 
-            if (m_uiSubPhase != SUBPHASE_DEEP_BREATH && m_uiShellTimer <= uiDiff)
+            if (m_uiSubPhase != SUBPHASE_DEEP_BREATH)
             {
-                m_creature->GetMotionMaster()->Clear();
-                m_creature->StopMoving();
+                if (m_uiShellTimer <= uiDiff)
+                {
+                    m_creature->GetMotionMaster()->Clear();
+                    m_creature->StopMoving();
 
-                if (!urand(0, 3))
-                    DoScriptText(SAY_ARCANE_OVERLOAD, m_creature);
+                    if (!urand(0, 3))
+                        DoScriptText(SAY_ARCANE_OVERLOAD, m_creature);
 
-                AntiMagicShell();
-                m_uiShellTimer = urand(15000, 17000);
-                m_bReadyForWPMove = true;
-                m_uiTimer = 2000;
+                    AntiMagicShell();
+                    m_uiShellTimer = urand(15000, 17000);
+                    m_bReadyForWPMove = true;
+                    m_uiTimer = 2000;
+                }
+                else
+                    m_uiShellTimer -= uiDiff;
             }
-            else
-                m_uiShellTimer -= uiDiff;
 
             if (m_uiDeepBreathTimer <= uiDiff)
             {
@@ -1218,6 +1228,8 @@ struct MANGOS_DLL_DECL npc_nexus_lordAI : public ScriptedAI
         m_uiHasteTimer = urand(10000, 12000);
     }
 
+    void EnterEvadeMode(){}
+
     void DamageTaken(Unit *pDoneBy, uint32 &uiDamage)
     {
         if (uiDamage > m_creature->GetHealth())
@@ -1324,6 +1336,8 @@ struct MANGOS_DLL_DECL npc_scion_of_eternityAI : public ScriptedAI
         m_uiArcaneBarrageTimer = urand(4000, 12000);
         m_bHasMoved = false;
     }
+
+    void EnterEvadeMode(){}
 
     void DamageTaken(Unit *pDoneBy, uint32 &uiDamage)
     {

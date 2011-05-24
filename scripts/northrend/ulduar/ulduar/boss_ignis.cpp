@@ -87,12 +87,9 @@ struct MANGOS_DLL_DECL boss_ignisAI : public ScriptedAI
 
     instance_ulduar* m_pInstance;
     bool m_bIsRegularMode;
-    bool m_bIsSlagPot;
 
     uint32 m_uiScorchTimer;
     uint32 m_uiSlagPotTimer;
-    uint32 m_uiSlagPotSwitchTimer;
-    uint32 m_uiSlagPotExitTimer;
     uint32 m_uiFlameJetsTimer;
     uint32 m_uiActivateConstructTimer;
     uint32 m_uiShatteredTimer;
@@ -104,8 +101,6 @@ struct MANGOS_DLL_DECL boss_ignisAI : public ScriptedAI
         m_uiFlameJetsTimer          = 21000;
         m_uiActivateConstructTimer  = 25000;
         m_uiShatteredTimer          = 0;
-
-        m_bIsSlagPot                = false;
 
         if (m_pInstance)
         {
@@ -207,42 +202,9 @@ struct MANGOS_DLL_DECL boss_ignisAI : public ScriptedAI
             if (Unit* pVictim = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM, 1))
                 if (Player *pTarget = pVictim->GetCharmerOrOwnerPlayerOrPlayerItself())
                     if (DoCastSpellIfCan(pTarget, m_bIsRegularMode ? SPELL_CHARGE_SLAG_POT : SPELL_CHARGE_SLAG_POT_H) == CAST_OK)
-                    {
-                        // Need to test!
-                        //if (m_creature->CreateVehicleKit(342))
-                          if (m_creature->IsVehicle())
-                            pTarget->EnterVehicle(m_creature->GetVehicleKit(), 0);
-                        m_bIsSlagPot = true;
-                        m_uiSlagPotSwitchTimer = 1500;
-                        m_uiSlagPotExitTimer = 10000;
                         m_uiSlagPotTimer = urand(15000, 25000);
-                    }
         }
         else m_uiSlagPotTimer -= uiDiff;
-
-        if (m_bIsSlagPot)
-        {
-            if (m_uiSlagPotSwitchTimer <= uiDiff)
-            {
-                if (VehicleKit *pVehKit = m_creature->GetVehicleKit())
-                    if (Unit *pPassenger = pVehKit->GetPassenger(0))
-                    {
-                        pVehKit->RemovePassenger(pPassenger);
-                        pVehKit->AddPassenger(pPassenger, 1);
-                    }
-                m_uiSlagPotSwitchTimer = 10000;
-            }
-            else m_uiSlagPotSwitchTimer -= uiDiff;
-
-            if (m_uiSlagPotExitTimer <= uiDiff)
-            {
-                if (VehicleKit *pVehKit = m_creature->GetVehicleKit())
-                    pVehKit->RemoveAllPassengers();
-                m_uiSlagPotExitTimer = 10000;
-                m_bIsSlagPot = false;
-            }
-            else m_uiSlagPotExitTimer -= uiDiff;
-        }
 
         if (m_uiFlameJetsTimer <= uiDiff)
         {
