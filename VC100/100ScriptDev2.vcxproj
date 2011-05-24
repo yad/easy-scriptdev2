@@ -596,6 +596,7 @@
     <ClCompile Include="..\scripts\northrend\ulduar\ulduar\boss_algalon.cpp" />
     <ClCompile Include="..\scripts\northrend\ulduar\ulduar\boss_auriaya.cpp" />
     <ClCompile Include="..\scripts\northrend\ulduar\ulduar\boss_freya.cpp" />
+    <ClCompile Include="..\scripts\northrend\ulduar\ulduar\boss_general_vezax.cpp" />
     <ClCompile Include="..\scripts\northrend\ulduar\ulduar\boss_hodir.cpp" />
     <ClCompile Include="..\scripts\northrend\ulduar\ulduar\boss_ignis.cpp" />
     <ClCompile Include="..\scripts\northrend\ulduar\ulduar\boss_kologarn.cpp" />
@@ -724,6 +725,7 @@
     <ClCompile Include="..\scripts\world\item_scripts.cpp" />
     <ClCompile Include="..\scripts\world\mob_generic_creature.cpp" />
     <ClCompile Include="..\scripts\world\npcs_special.cpp" />
+    <ClCompile Include="..\scripts\world\npc_companion_handler.cpp" />
     <ClCompile Include="..\scripts\world\npc_professions.cpp" />
     <ClCompile Include="..\scripts\world\spell_scripts.cpp" />
     <ClCompile Include="..\scripts\world\worldmap_eastern_kingdoms.cpp" />
