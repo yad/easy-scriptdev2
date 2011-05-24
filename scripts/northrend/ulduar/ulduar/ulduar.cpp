@@ -187,6 +187,152 @@ bool GossipSelect_go_ulduar_teleporter(Player* pPlayer, GameObject* pGo, uint32 
     return true;
 }
 
+#define REQUEST_HELP    "Help me fight Yogg-Saron!"
+#define DENY_HELP       "I don't need your help."
+
+/*
+*	Here is the gossip for the keepers images
+*	Each image appears in the centra chamber after the corrupted keeper is defeated
+*	They should be spawned in script, but I added them into the DB by default as invisilbe
+*	After the players make theyr choice if the want help or not, this option is saved and there is no turning back, until raid reset
+*	If they are asked for help, at the beginning of the Yogg encounter each requested keeper will be summoned inside the chamber
+*	There should be more text in the gossip menu, I couldn't find it anywhere yet
+*/
+
+/*#######
+*### Keepers images
+#######*/
+// HODIR
+bool GossipHello_hodir_image(Player* pPlayer, Creature* pCreature)
+{
+    ScriptedInstance *m_pInstance = (ScriptedInstance *) pCreature->GetInstanceData();
+
+    if(m_pInstance && m_pInstance->GetData(TYPE_KEEPER_HODIR) != DONE && m_pInstance->GetData(TYPE_KEEPER_HODIR) != FAIL)
+    {
+        pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, REQUEST_HELP, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+1);
+        pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, DENY_HELP, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+2);
+    }
+
+    pPlayer->SEND_GOSSIP_MENU(pPlayer->GetGossipTextId(pCreature), pCreature->GetGUID());
+    return true;
+}
+
+bool GossipSelect_hodir_image(Player* pPlayer, Creature* pCreature, uint32 uiSender, uint32 uiAction)
+{
+    ScriptedInstance *m_pInstance = (ScriptedInstance *) pCreature->GetInstanceData();
+    pPlayer->CLOSE_GOSSIP_MENU();
+
+    if (uiAction == GOSSIP_ACTION_INFO_DEF+1)
+    {
+        if(m_pInstance)
+            m_pInstance->SetData(TYPE_KEEPER_HODIR, DONE);
+    }
+    if (uiAction == GOSSIP_ACTION_INFO_DEF+2)
+    {
+        if(m_pInstance)
+            m_pInstance->SetData(TYPE_KEEPER_HODIR, FAIL);
+    }
+    return true;
+}
+
+// FREYA
+bool GossipHello_freya_image(Player* pPlayer, Creature* pCreature)
+{
+    ScriptedInstance *m_pInstance = (ScriptedInstance *) pCreature->GetInstanceData();
+
+    if(m_pInstance && m_pInstance->GetData(TYPE_KEEPER_FREYA) != DONE && m_pInstance->GetData(TYPE_KEEPER_FREYA) != FAIL)
+    {
+        pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, REQUEST_HELP, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+1);
+        pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, DENY_HELP, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+2);
+    }
+
+    pPlayer->SEND_GOSSIP_MENU(pPlayer->GetGossipTextId(pCreature), pCreature->GetGUID());
+    return true;
+}
+
+bool GossipSelect_freya_image(Player* pPlayer, Creature* pCreature, uint32 uiSender, uint32 uiAction)
+{
+    ScriptedInstance *m_pInstance = (ScriptedInstance *) pCreature->GetInstanceData();
+    pPlayer->CLOSE_GOSSIP_MENU();
+
+    if (uiAction == GOSSIP_ACTION_INFO_DEF+1)
+    {
+        if(m_pInstance)
+            m_pInstance->SetData(TYPE_KEEPER_FREYA, DONE);
+    }
+    if (uiAction == GOSSIP_ACTION_INFO_DEF+2)
+    {
+        if(m_pInstance)
+            m_pInstance->SetData(TYPE_KEEPER_FREYA, FAIL);
+    }
+    return true;
+}
+// MIMIRON
+bool GossipHello_mimiron_image(Player* pPlayer, Creature* pCreature)
+{
+    ScriptedInstance *m_pInstance = (ScriptedInstance *) pCreature->GetInstanceData();
+
+    if(m_pInstance && m_pInstance->GetData(TYPE_KEEPER_MIMIRON) != DONE && m_pInstance->GetData(TYPE_KEEPER_MIMIRON) != FAIL)
+    {
+        pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, REQUEST_HELP, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+1);
+        pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, DENY_HELP, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+2);
+    }
+
+    pPlayer->SEND_GOSSIP_MENU(pPlayer->GetGossipTextId(pCreature), pCreature->GetGUID());
+    return true;
+}
+
+bool GossipSelect_mimiron_image(Player* pPlayer, Creature* pCreature, uint32 uiSender, uint32 uiAction)
+{
+    ScriptedInstance *m_pInstance = (ScriptedInstance *) pCreature->GetInstanceData();
+    pPlayer->CLOSE_GOSSIP_MENU();
+
+    if (uiAction == GOSSIP_ACTION_INFO_DEF+1)
+    {
+        if(m_pInstance)
+            m_pInstance->SetData(TYPE_KEEPER_MIMIRON, DONE);
+    }
+    if (uiAction == GOSSIP_ACTION_INFO_DEF+2)
+    {
+        if(m_pInstance)
+            m_pInstance->SetData(TYPE_KEEPER_MIMIRON, FAIL);
+    }
+    return true;
+}
+
+// THORIM
+bool GossipHello_thorim_image(Player* pPlayer, Creature* pCreature)
+{
+    ScriptedInstance *m_pInstance = (ScriptedInstance *) pCreature->GetInstanceData();
+
+    if(m_pInstance && m_pInstance->GetData(TYPE_KEEPER_THORIM) != DONE && m_pInstance->GetData(TYPE_KEEPER_THORIM) != FAIL)
+    {
+        pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, REQUEST_HELP, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+1);
+        pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, DENY_HELP, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+2);
+    }
+
+    pPlayer->SEND_GOSSIP_MENU(pPlayer->GetGossipTextId(pCreature), pCreature->GetGUID());
+    return true;
+}
+
+bool GossipSelect_thorim_image(Player* pPlayer, Creature* pCreature, uint32 uiSender, uint32 uiAction)
+{
+    ScriptedInstance *m_pInstance = (ScriptedInstance *) pCreature->GetInstanceData();
+    pPlayer->CLOSE_GOSSIP_MENU();
+
+    if (uiAction == GOSSIP_ACTION_INFO_DEF+1)
+    {
+        if(m_pInstance)
+            m_pInstance->SetData(TYPE_KEEPER_THORIM, DONE);
+    }
+    if (uiAction == GOSSIP_ACTION_INFO_DEF+2)
+    {
+        if(m_pInstance)
+            m_pInstance->SetData(TYPE_KEEPER_THORIM, FAIL);
+    }
+    return true;
+}
+
 void AddSC_ulduar()
 {
     Script* pNewScript;
@@ -195,5 +341,29 @@ void AddSC_ulduar()
     pNewScript->Name = "go_ulduar_teleporter";
     pNewScript->pGossipHelloGO = &GossipHello_go_ulduar_teleporter;
     pNewScript->pGossipSelectGO = &GossipSelect_go_ulduar_teleporter;
+    pNewScript->RegisterSelf();
+
+    pNewScript = new Script;
+    pNewScript->Name = "hodir_image";
+    pNewScript->pGossipHello = &GossipHello_hodir_image;
+    pNewScript->pGossipSelect = &GossipSelect_hodir_image;
+    pNewScript->RegisterSelf();
+
+    pNewScript = new Script;
+    pNewScript->Name = "freya_image";
+    pNewScript->pGossipHello = &GossipHello_freya_image;
+    pNewScript->pGossipSelect = &GossipSelect_freya_image;
+    pNewScript->RegisterSelf();
+
+    pNewScript = new Script;
+    pNewScript->Name = "thorim_image";
+    pNewScript->pGossipHello = &GossipHello_thorim_image;
+    pNewScript->pGossipSelect = &GossipSelect_thorim_image;
+    pNewScript->RegisterSelf();
+
+    pNewScript = new Script;
+    pNewScript->Name = "mimiron_image";
+    pNewScript->pGossipHello = &GossipHello_mimiron_image;
+    pNewScript->pGossipSelect = &GossipSelect_mimiron_image;
     pNewScript->RegisterSelf();
 }
