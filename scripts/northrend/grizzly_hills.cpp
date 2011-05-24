@@ -27,6 +27,264 @@ EndContentData */
 
 #include "precompiled.h"
 #include "pet_ai.h"
+#include "escort_ai.h"
+
+/*######
+## npc_harrison_jones_gh
+######*/
+
+enum
+{
+    QUEST_DUN_DA_DUN_TAH    = 12082,
+
+    GO_HARRISON_CAGE        = 188465,
+    GO_ADARRA_CAGE          = 188487,
+    GO_FIRE_DOOR            = 188480,
+
+    NPC_ADDARIA             = 24405,
+    NPC_TECAHUNA            = 26865,
+
+    SAY_ESCORT_START        = -1999850,
+    SAY_BEFOR_CHAMBER       = -1999849,
+    SAY_OPENING_CAGE        = -1999848,
+    SAY_FREEING_ADARRA      = -1999847,
+    SAY_ADARRA_THANX        = -1999846,
+    SAY_AFTER_GONG_BANG     = -1999845,
+    SAY_TOWARD_DOOR         = -1999844,
+    SAY_DOOR_IN_FLAMES      = -1999843,
+    SAY_HATE_SNAKES         = -1999842,
+    SAY_ATTACK_TECAHUNA     = -1999841,
+    SAY_QUEST_COMPLETED     = -1999840,
+
+    SPELL_BANG_RITUAL_GONG  = 75313,
+
+    // subevent
+    SE_NONE                 = 0,
+    SE_ADARRIA_CAGE_OPENED  = 1,
+    SE_ADARRIA_ESCAPE       = 2,
+    SE_FIRST_GONG_BANG      = 3,
+    SE_SECOND_GONG_BANG     = 4,
+    SE_LEAVE_GONG           = 5,
+    SE_HATE_SNAKES          = 6,
+    SE_ATTACK_TECAHUNA      = 7,
+    SE_IS_TECAHUNA_DEAD     = 8,
+    SE_RETURN_TO_ESCORT     = 9
+};
+
+float fTecahunaPos[4] = {4909.56f, -4820.97f, 32.58f, 2.39f};
+
+struct MANGOS_DLL_DECL npc_harrison_jones_ghAI : public npc_escortAI
+{
+    npc_harrison_jones_ghAI(Creature* pCreature) : npc_escortAI(pCreature)
+    {
+        Reset();
+        subevent = SE_NONE;
+    }
+
+    ObjectGuid m_HarrisonCageGuid;
+    ObjectGuid m_AddariaGuid;
+    ObjectGuid m_FireDoorGuid;
+    ObjectGuid m_AddariaCageGuid;
+    ObjectGuid m_TecahunaGuid;
+
+    uint32 m_uiSubeventTimer;
+    uint8 subevent;
+    
+    void Reset(){}
+
+    void JustRespawned()
+    {
+        if (Creature* pAdarria = m_creature->GetMap()->GetCreature(m_AddariaGuid))
+            if (!pAdarria->isAlive())
+                pAdarria->Respawn();
+
+        if (GameObject* pAddariaCage = m_creature->GetMap()->GetGameObject(m_AddariaCageGuid))
+            if (pAddariaCage->GetGoState() == GO_STATE_ACTIVE)
+                pAddariaCage->SetGoState(GO_STATE_READY);
+
+        if (GameObject* pHarrisonCage = m_creature->GetMap()->GetGameObject(m_HarrisonCageGuid))
+            if (pHarrisonCage->GetGoState() == GO_STATE_ACTIVE)
+                pHarrisonCage->SetGoState(GO_STATE_READY);
+
+        npc_escortAI::JustRespawned();
+    }
+    
+    void JustStartedEscort()
+    {
+        m_creature->HandleEmoteCommand(EMOTE_ONESHOT_KICK);
+        if (GameObject* pHarrisonCage = GetClosestGameObjectWithEntry(m_creature, GO_HARRISON_CAGE, INTERACTION_DISTANCE))
+            if (pHarrisonCage->GetGoState() == GO_STATE_READY)
+            {
+                m_HarrisonCageGuid = pHarrisonCage->GetObjectGuid();
+                pHarrisonCage->SetGoState(GO_STATE_ACTIVE);
+            }
+
+        if (GameObject* pFireDoor = GetClosestGameObjectWithEntry(m_creature, GO_FIRE_DOOR, DEFAULT_VISIBILITY_DISTANCE))
+        {
+            pFireDoor->SetGoState(GO_STATE_ACTIVE);
+            m_FireDoorGuid = pFireDoor->GetObjectGuid();
+        }
+    }
+
+    void WaypointReached(uint32 m_uiPointId)
+    {
+        switch(m_uiPointId)
+        {
+            case 0:
+                if (Player* pPlayer = GetPlayerForEscort())
+                    m_creature->SetFacingToObject(pPlayer);
+                DoScriptText(SAY_ESCORT_START, m_creature);
+                m_creature->RemoveSplineFlag(SPLINEFLAG_WALKMODE);
+                break;
+            case 6:
+                DoScriptText(SAY_BEFOR_CHAMBER, m_creature);
+                m_creature->AddSplineFlag(SPLINEFLAG_WALKMODE);
+                break;
+            case 8:
+                SetEscortPaused(true);
+                DoScriptText(SAY_OPENING_CAGE, m_creature);
+                m_creature->HandleEmoteCommand(EMOTE_STATE_USESTANDING);
+                subevent = SE_ADARRIA_CAGE_OPENED;
+                break;
+            case 11:
+                SetEscortPaused(true);
+                subevent = SE_FIRST_GONG_BANG;
+                break;
+            case 12: DoScriptText(SAY_TOWARD_DOOR, m_creature); break;
+            case 13:
+                if (GameObject* pFireDoor = m_creature->GetMap()->GetGameObject(m_FireDoorGuid))
+                    pFireDoor->SetGoState(GO_STATE_READY);
+                break;
+            case 15:
+                DoScriptText(SAY_DOOR_IN_FLAMES, m_creature);
+                if (Creature* pTecahuna = m_creature->SummonCreature(NPC_TECAHUNA, fTecahunaPos[0], fTecahunaPos[1], fTecahunaPos[2], fTecahunaPos[3], TEMPSUMMON_TIMED_OR_DEAD_DESPAWN, 180000))
+                    m_TecahunaGuid = pTecahuna->GetObjectGuid();
+                break;
+            case 18:
+                SetEscortPaused(true);
+                subevent = SE_HATE_SNAKES;
+                break;
+            case 56:
+                if (Player* pPlayer = GetPlayerForEscort())
+                {
+                    m_creature->SetFacingToObject(pPlayer);
+                    pPlayer->GroupEventHappens(QUEST_DUN_DA_DUN_TAH, m_creature);
+                }
+                DoScriptText(SAY_QUEST_COMPLETED, m_creature);
+                break;
+
+            default: break;
+        }
+        m_uiSubeventTimer = 3000;
+    }
+
+    void UpdateEscortAI(const uint32 uiDiff)
+    {
+        if (subevent)
+            if (m_uiSubeventTimer < uiDiff)
+            {
+                m_uiSubeventTimer = 3000;
+                switch(subevent)
+                {
+                    case SE_ADARRIA_CAGE_OPENED:
+                        m_creature->HandleEmoteCommand(EMOTE_STATE_NONE);
+                        DoScriptText(SAY_FREEING_ADARRA, m_creature);
+                        if (Creature* pAdarria = GetClosestCreatureWithEntry(m_creature, NPC_ADDARIA, INTERACTION_DISTANCE))
+                        {
+                            m_AddariaGuid = pAdarria->GetObjectGuid();
+                            if (GameObject* pAddariaCage = GetClosestGameObjectWithEntry(m_creature, GO_ADARRA_CAGE, INTERACTION_DISTANCE))
+                            {
+                                m_AddariaCageGuid = pAddariaCage->GetObjectGuid();
+                                if (pAddariaCage->GetGoState() == GO_STATE_READY)
+                                    pAddariaCage->SetGoState(GO_STATE_ACTIVE);
+                            }
+                            pAdarria->HandleEmoteCommand(EMOTE_ONESHOT_CHEER);
+                        }
+                        subevent = SE_ADARRIA_ESCAPE;
+                        break;
+                    case SE_ADARRIA_ESCAPE:
+                        
+                        if (Creature* pAdarria = m_creature->GetMap()->GetCreature(m_AddariaGuid))
+                        {
+                            DoScriptText(SAY_ADARRA_THANX, pAdarria);
+                            pAdarria->ForcedDespawn(3000);
+                            if (GameObject* pFireDoor = m_creature->GetMap()->GetGameObject(m_FireDoorGuid))
+                            {
+                                m_FireDoorGuid = pFireDoor->GetObjectGuid();
+                                float fDestX, fDestY, fDestZ;
+                                pFireDoor->GetPosition(fDestX, fDestY, fDestZ);
+                                pAdarria->SendMonsterMove(fDestX, fDestY, fDestZ, SPLINETYPE_NORMAL, SPLINEFLAG_NONE, 3000);
+                            }
+                        }
+                        subevent = SE_RETURN_TO_ESCORT;
+                        break;
+                    case SE_FIRST_GONG_BANG:
+                        DoCastSpellIfCan(m_creature, SPELL_BANG_RITUAL_GONG);
+                        subevent = SE_SECOND_GONG_BANG;
+                        break;
+                    case SE_SECOND_GONG_BANG:
+                        DoCastSpellIfCan(m_creature, SPELL_BANG_RITUAL_GONG);
+                        subevent = SE_LEAVE_GONG;
+                        break;
+                    case SE_LEAVE_GONG:
+                        DoScriptText(SAY_AFTER_GONG_BANG, m_creature);
+                        subevent = SE_RETURN_TO_ESCORT;
+                        break;
+                    case SE_HATE_SNAKES:
+                        if (Creature* pTecahuna = m_creature->GetMap()->GetCreature(m_TecahunaGuid))
+                            m_creature->SetFacingToObject(pTecahuna);
+                        DoScriptText(SAY_HATE_SNAKES, m_creature);
+                        subevent = SE_ATTACK_TECAHUNA;
+                        break;
+                    case SE_ATTACK_TECAHUNA:
+                        DoScriptText(SAY_ATTACK_TECAHUNA, m_creature);
+                        if (Creature* pTecahuna = m_creature->GetMap()->GetCreature(m_TecahunaGuid))
+                            m_creature->AI()->AttackStart(pTecahuna);
+                        subevent = SE_IS_TECAHUNA_DEAD;
+                        break;
+                    case SE_IS_TECAHUNA_DEAD:
+                        if (Creature* pTecahuna = m_creature->GetMap()->GetCreature(m_TecahunaGuid))
+                            if (!pTecahuna->isAlive())
+                            {
+                                if (GameObject* pFireDoor = m_creature->GetMap()->GetGameObject(m_FireDoorGuid))
+                                    pFireDoor->SetGoState(GO_STATE_ACTIVE);
+                                subevent = SE_RETURN_TO_ESCORT;
+                            }
+                        break;
+                    case SE_RETURN_TO_ESCORT:
+                        subevent = SE_NONE;
+                        SetEscortPaused(false);
+                        break;
+
+                    default: break;
+                }
+            }
+            else
+                m_uiSubeventTimer -= uiDiff;
+
+
+        if (!m_creature->SelectHostileTarget() || !m_creature->getVictim())
+            return;
+
+        DoMeleeAttackIfReady();
+    }
+
+};
+
+CreatureAI* GetAI_npc_harrison_jones_gh(Creature* pCreature)
+{
+    return new npc_harrison_jones_ghAI(pCreature);
+}
+
+bool QuestAccept_npc_harrison_jones_gh(Player* pPlayer, Creature* pCreature, const Quest* pQuest)
+{
+    if (pQuest->GetQuestId() == QUEST_DUN_DA_DUN_TAH)
+    {
+        if (npc_harrison_jones_ghAI* pEscortAI = dynamic_cast<npc_harrison_jones_ghAI*>(pCreature->AI()))
+            pEscortAI->Start(false, pPlayer, pQuest);
+    }
+    return true;
+}
 
 /*######
 ## npc_depleted_war_golem
@@ -418,6 +676,12 @@ CreatureAI* GetAI_npc_venture_co_straggler(Creature* pCreature)
 void AddSC_grizzly_hills()
 {
     Script* pNewScript;
+
+    pNewScript = new Script;
+    pNewScript->Name = "npc_harrison_jones_gh";
+    pNewScript->GetAI = &GetAI_npc_harrison_jones_gh;
+    pNewScript->pQuestAcceptNPC = &QuestAccept_npc_harrison_jones_gh;
+    pNewScript->RegisterSelf();
 
     pNewScript = new Script;
     pNewScript->Name = "npc_depleted_war_golem";
