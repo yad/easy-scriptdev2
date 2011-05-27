@@ -1,9 +1,9 @@
-/* Copyright (C) 2006 - 2011 ScriptDev2 <https://scriptdev2.svn.sourceforge.net/>
+/* Copyright (C) 2006 - 2011 ScriptDev2 <http://www.scriptdev2.com/>
  * This program is free software licensed under GPL version 2
  * Please see the included DOCS/LICENSE.TXT for more information */
 
-#ifndef DEF_UTGARDE_PINNACLE_H
-#define DEF_UTGARDE_PINNACLE_H
+#ifndef DEF_UTG_PINNACLE_H
+#define DEF_UTG_PINNACLE_H
 
 enum
 {
