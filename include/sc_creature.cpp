@@ -20,10 +20,10 @@ ScriptedAI::ScriptedAI(Creature* pCreature) : CreatureAI(pCreature),
     m_uiEvadeCheckCooldown(2500)
 {}
 
-void ScriptedAI::GetAIInformation(ChatHandler& reader)
+/*void ScriptedAI::GetAIInformation(ChatHandler& reader)
 {
     reader.PSendSysMessage("ScriptedAI, combat movement is %s", reader.GetOnOffStr(m_bCombatMovement));
-}
+}*/
 
 bool ScriptedAI::IsVisible(Unit* pWho) const
 {
@@ -527,10 +527,10 @@ bool ScriptedAI::EnterEvadeIfOutOfCombatArea(const uint32 uiDiff)
     return true;
 }
 
-void Scripted_NoMovementAI::GetAIInformation(ChatHandler& reader)
+/*void Scripted_NoMovementAI::GetAIInformation(ChatHandler& reader)
 {
     reader.PSendSysMessage("Subclass of Scripted_NoMovementAI");
-}
+}*/
 
 void Scripted_NoMovementAI::AttackStart(Unit* pWho)
 {
