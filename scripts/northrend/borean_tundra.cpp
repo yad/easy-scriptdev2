@@ -40,6 +40,181 @@ EndContentData */
 #include "escort_ai.h"
 #include "ObjectMgr.h"
 #include "follower_ai.h"
+#include "pet_ai.h"
+
+/*######
+## npc_taunkale_evacuee
+######*/
+
+enum
+{
+    SAY_EMOTE_CRY           = -1999839,
+    SAY_STOP                = -1999838,
+    SAY_EMOTE_HAND          = -1999837,
+    SAY_FINAL_POINT_1       = -1999836,
+    SAY_EMOTE_POINT         = -1999835,
+    SAY_FINAL_POINT_2       = -1999834,
+    SAY_FINAL_POINT_3       = -1999833,
+    SAY_FINAL_POINT_4       = -1999832,
+    SAY_FINAL_POINT_5       = -1999831,
+
+    QUEST_ACROSS_TRANSBOREA = 11930,
+    SPELL_REFUGEE_AURA      = 46657,
+    MAX_ACTION              = 9,
+    MAX_NODE                = 29
+};
+
+float fBetweenBridges[2][3] =
+{
+    {3562.54f, 3052.27f, 24.41f},
+    {3646.83f, 2903.63f, 89.84f}
+};
+
+struct EvacueeBehaviour
+{
+    uint32 uiText;
+    uint32 uiEmote;
+};
+
+EvacueeBehaviour EmoteInfo[MAX_ACTION] =
+{
+    {SAY_EMOTE_CRY, EMOTE_ONESHOT_CRY},
+    {SAY_STOP, EMOTE_ONESHOT_NONE},
+    {SAY_EMOTE_HAND, EMOTE_STATE_KNEEL},
+    {SAY_FINAL_POINT_1, EMOTE_STATE_NONE},
+    {SAY_EMOTE_POINT, EMOTE_ONESHOT_POINT},
+    {SAY_FINAL_POINT_2, EMOTE_ONESHOT_NONE},
+    {SAY_FINAL_POINT_3, EMOTE_ONESHOT_NONE},
+    {SAY_FINAL_POINT_4, EMOTE_ONESHOT_SHOUT},
+    {SAY_FINAL_POINT_5, EMOTE_ONESHOT_NONE}
+};
+
+float fNodePosition[MAX_NODE][3] =
+{
+    {3565.72f, 3033.53f, 24.9965f},
+    {3561.08f, 3018.83f, 25.5423f},
+    {3553.36f, 3008.6f, 24.0242f},
+    {3542.04f, 2991.62f, 20.9338f},
+    {3531.22f, 2976.43f, 20.932f},
+    {3515.59f, 2953.94f, 24.7565f},
+    {3507.22f, 2940.59f, 25.0046f},
+    {3506.25f, 2919.64f, 25.8977f},
+    {3520.38f, 2907.51f, 30.3007f},
+    {3532.14f, 2903.95f, 32.5451f},
+    {3551.17f, 2898.59f, 33.8845f},
+    {3566.89f, 2898.84f, 37.1695f},
+    {3583.11f, 2900.46f, 40.7102f},
+    {3597.23f, 2896.9f, 46.0036f},
+    {3607.1f, 2888.81f, 52.842f},
+    {3615.79f, 2879.3f, 59.2817f},
+    {3623.99f, 2870.92f, 64.8177f},
+    {3616.09f, 2864.06f, 68.4165f},
+    {3613.75f, 2855.05f, 70.3628f},
+    {3619.8f, 2841.17f, 72.0173f},
+    {3625.71f, 2831.19f, 73.3184f},
+    {3637.65f, 2828.49f, 76.5685f},
+    {3650.15f, 2825.67f, 81.2263f},
+    {3661.73f, 2827.0f, 83.4205f},
+    {3667.76f, 2836.97f, 84.9583f},
+    {3672.93f, 2849.29f, 87.4974f},
+    {3674.77f, 2860.17f, 90.4819f},
+    {3670.58f, 2869.79f, 91.3695f},
+    {3664.37f, 2878.25f, 91.2818f},
+};
+
+struct MANGOS_DLL_DECL npc_taunkale_evacueeAI : public ScriptedPetAI
+{
+    npc_taunkale_evacueeAI(Creature* pCreature) : ScriptedPetAI(pCreature) 
+    {
+        Reset();
+        uiAction = 0;
+        m_bIsLeader = false;
+    }
+
+    bool m_bIsLeader;
+    uint8 uiAction;
+    uint8 uiNode;
+    uint32 m_uiActionTimer;
+
+    void Reset()
+    {
+        m_uiActionTimer = 3000;
+    }
+
+    void JustDied(Unit* pKiller)
+    {
+        if (Player* pOwner = m_creature->GetMap()->GetPlayer(m_creature->GetCreatorGuid()))
+        {
+            pOwner->RemoveAurasDueToSpell(SPELL_REFUGEE_AURA);
+            pOwner->FailQuest(QUEST_ACROSS_TRANSBOREA);
+        }
+    }
+
+    void UpdatePetOOCAI(const uint32 uiDiff)
+    {
+        if (m_uiActionTimer < uiDiff)
+        {
+            m_uiActionTimer = 2000;
+            if (m_creature->IsInRange2d(fBetweenBridges[0][0], fBetweenBridges[0][1], 0.0f, 10.0f) && !m_bIsLeader)
+            {
+                if (!uiAction)
+                {
+                    m_creature->GetMotionMaster()->MoveIdle();
+                    m_creature->SetFacingTo(5.32f);
+                }
+
+                DoScriptText(EmoteInfo[uiAction].uiText, m_creature);
+                m_creature->HandleEmoteCommand(EmoteInfo[uiAction].uiEmote);
+                ++uiAction;
+
+                if (uiAction > 8)
+                {
+                    if (Player* pOwner = m_creature->GetMap()->GetPlayer(m_creature->GetCreatorGuid()))
+                    {
+                        pOwner->RemoveAurasDueToSpell(SPELL_REFUGEE_AURA);
+                        pOwner->GroupEventHappens(QUEST_ACROSS_TRANSBOREA, m_creature);
+                    }
+
+                    m_bIsLeader = true;
+                    uiNode = 0;
+                    GoToTheNextNode();
+                }
+                m_uiActionTimer = 5000;
+            }
+            else if (!uiAction && !urand(0, 20) && !m_bIsLeader)
+            {
+                DoScriptText(EmoteInfo[uiAction].uiText, m_creature);
+                m_creature->HandleEmoteCommand(EmoteInfo[uiAction].uiEmote);
+            }
+        }
+        else 
+            m_uiActionTimer -= uiDiff;
+    }
+
+    void MovementInform(uint32 uiType, uint32 uiPointId)
+    {
+        if (uiType != POINT_MOTION_TYPE)
+            return;
+
+        if (uiPointId >= MAX_NODE)
+            m_creature->ForcedDespawn();
+        else if (uiPointId == uiNode)
+        {
+            ++uiNode;
+            GoToTheNextNode();
+        }
+    }
+
+    void GoToTheNextNode()
+    {
+        m_creature->GetMotionMaster()->MovePoint(uiNode, fNodePosition[uiNode][0], fNodePosition[uiNode][1], fNodePosition[uiNode][2]);
+    }
+};
+
+CreatureAI* GetAI_npc_taunkale_evacuee(Creature* pCreature)
+{
+    return new npc_taunkale_evacueeAI(pCreature);
+}
 
 /*######
 ## npc_fizzcrank_fullthrottle
@@ -1613,6 +1788,11 @@ CreatureAI* GetAI_npc_seaforium_depth_charge(Creature* pCreature)
 void AddSC_borean_tundra()
 {
     Script* pNewScript;
+
+    pNewScript = new Script;
+    pNewScript->Name = "npc_taunkale_evacuee";
+    pNewScript->GetAI = &GetAI_npc_taunkale_evacuee;
+    pNewScript->RegisterSelf();
 
     pNewScript = new Script;
     pNewScript->Name = "npc_fizzcrank_fullthrottle";
