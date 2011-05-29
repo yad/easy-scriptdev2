@@ -756,6 +756,44 @@ bool GOUse_go_large_gjalerbon_cage(Player* pPlayer, GameObject* pGo)
     return false;
 };
 
+/*#####
+## go_black_cage
+#####*/
+
+enum
+{
+    QUEST_YOUVE_REALLY_DONE_IT_THIS_TIME_KUL_A          = 14096,
+    QUEST_YOUVE_REALLY_DONE_IT_THIS_TIME_KUL_H          = 14142,
+    NPC_CAPTIVE_ASPIRANT                                = 34716,
+    NPC_KUL_THE_RECKLESS                                = 34956,    
+    SPELL_DESPAWN_SELF                                  = 43014,
+    SAY_THANKS_1                                        = -3471601,
+    SAY_THANKS_2                                        = -3495601
+};
+ 
+bool GOUse_go_black_cage(Player* pPlayer, GameObject* pGo)
+{
+    if(pPlayer->GetQuestStatus(QUEST_YOUVE_REALLY_DONE_IT_THIS_TIME_KUL_A) == QUEST_STATUS_INCOMPLETE 
+        || pPlayer->GetQuestStatus(QUEST_YOUVE_REALLY_DONE_IT_THIS_TIME_KUL_H) == QUEST_STATUS_INCOMPLETE)
+    {
+        if(Creature *pAspirant = GetClosestCreatureWithEntry(pPlayer, NPC_CAPTIVE_ASPIRANT, 10.0f))
+        {
+            pPlayer->KilledMonsterCredit(NPC_CAPTIVE_ASPIRANT, pAspirant->GetGUID());
+            DoScriptText(SAY_THANKS_1, pAspirant);
+            pAspirant->CastSpell(pAspirant, SPELL_DESPAWN_SELF, false);
+			return true;
+        }
+    
+		if(Creature *pKul = GetClosestCreatureWithEntry(pPlayer, NPC_KUL_THE_RECKLESS, 10.0f))
+        {
+            pPlayer->KilledMonsterCredit(NPC_KUL_THE_RECKLESS, pKul->GetGUID());
+            DoScriptText(SAY_THANKS_2, pKul);
+            pKul->CastSpell(pKul, SPELL_DESPAWN_SELF, false);
+			return true;
+        }
+    }
+    return false;
+};
 void AddSC_go_scripts()
 {
     Script* pNewScript;
@@ -898,5 +936,10 @@ void AddSC_go_scripts()
     pNewScript = new Script;
     pNewScript->Name = "go_large_gjalerbon_cage";
     pNewScript->pGOUse = &GOUse_go_large_gjalerbon_cage;
+    pNewScript->RegisterSelf();
+
+    pNewScript = new Script;
+    pNewScript->Name = "go_black_cage";
+    pNewScript->pGOUse = &GOUse_go_black_cage;
     pNewScript->RegisterSelf();
 }
