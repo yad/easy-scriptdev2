@@ -236,7 +236,7 @@ struct MANGOS_DLL_DECL boss_gortokAI : public ScriptedAI
             if (GameObject* pGo = m_pInstance->instance->GetGameObject(m_pInstance->GetData64(GO_STASIS_GENERATOR)))
             {
                 pGo->SetGoState(GO_STATE_READY);
-                pGo->RemoveFlag(GAMEOBJECT_FLAGS, GO_FLAG_UNK1);
+                pGo->RemoveFlag(GAMEOBJECT_FLAGS, GO_FLAG_NO_INTERACT);
             }
 
             if (Creature* pController = m_pInstance->instance->GetCreature(m_pInstance->GetData64(NPC_STASIS_CONTROLLER)))
@@ -666,7 +666,7 @@ bool GOUse_gortok_generator(Player* pPlayer, GameObject* pGo)
 
     if (m_pInstance && m_pInstance->GetData(TYPE_GORTOK) == NOT_STARTED)
     {
-        pGo->SetFlag(GAMEOBJECT_FLAGS, GO_FLAG_UNK1);
+        pGo->SetFlag(GAMEOBJECT_FLAGS, GO_FLAG_NO_INTERACT);
         pGo->SetGoState(GO_STATE_ACTIVE);
         if (Creature* pController = pGo->SummonCreature(NPC_STASIS_CONTROLLER, ORB_SPAWN_X, ORB_SPAWN_Y, ORB_Z, 0, TEMPSUMMON_DEAD_DESPAWN, 0))
             m_pInstance->SetData64(NPC_STASIS_CONTROLLER, pController->GetGUID());
