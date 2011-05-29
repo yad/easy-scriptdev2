@@ -765,8 +765,7 @@ enum
     QUEST_YOUVE_REALLY_DONE_IT_THIS_TIME_KUL_A          = 14096,
     QUEST_YOUVE_REALLY_DONE_IT_THIS_TIME_KUL_H          = 14142,
     NPC_CAPTIVE_ASPIRANT                                = 34716,
-    NPC_KUL_THE_RECKLESS                                = 34956,    
-    SPELL_DESPAWN_SELF                                  = 43014,
+    NPC_KUL_THE_RECKLESS                                = 34956,  
     SAY_THANKS_1                                        = -3471601,
     SAY_THANKS_2                                        = -3495601
 };
