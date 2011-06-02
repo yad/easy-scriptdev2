@@ -1,11 +1,3 @@
-UPDATE creature_template SET ScriptName = 'npc_harrison_jones_gh' WHERE entry = 26814;
-
--- Tehacuna
-UPDATE creature_template SET
-faction_a = 14,
-faction_h = 14
-WHERE entry = 26865;
-
 DELETE FROM script_waypoint WHERE entry = 26814;
 INSERT INTO script_waypoint VALUES
 ('26814','0','4902.87','-4756.28','27.2335','4000',''),
