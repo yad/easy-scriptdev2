@@ -644,7 +644,7 @@ struct MANGOS_DLL_DECL boss_razorscaleAI : public ScriptedAI
                         if (Creature *pTmp = m_creature->SummonCreature(NPC_DEVOURING_TARGET, (*iter)->GetPositionX(), (*iter)->GetPositionY(), (*iter)->GetPositionZ(), 0.0f, TEMPSUMMON_TIMED_OR_CORPSE_DESPAWN, 7*DAY*IN_MILLISECONDS))
                             ((mob_devouring_flame_targetAI*)(pTmp->AI()))->m_uiDeath_Timer = 7000;
 
-                    (*iter)->SetFlag(GAMEOBJECT_FLAGS, GO_FLAG_UNK1);
+                    (*iter)->SetFlag(GAMEOBJECT_FLAGS, GO_FLAG_NO_INTERACT);
                     //(*iter)->SetUInt32Value(GAMEOBJECT_DISPLAYID, 8631);
                 }
             }
@@ -750,7 +750,7 @@ struct MANGOS_DLL_DECL boss_razorscaleAI : public ScriptedAI
         {
             if(GameObject* pHarpoon = m_pInstance->instance->GetGameObject(m_uiHarpoonsGUID[m_uiHarpoonsRepaired]))
             {
-                pHarpoon->RemoveFlag(GAMEOBJECT_FLAGS, GO_FLAG_UNK1);
+                pHarpoon->RemoveFlag(GAMEOBJECT_FLAGS, GO_FLAG_NO_INTERACT);
                 //pHarpoon->SetUInt32Value(GAMEOBJECT_DISPLAYID, 8245);
                 m_uiHarpoonsRepaired += 1;
             }
@@ -949,7 +949,7 @@ bool GOUse_go_broken_harpoon(Player* pPlayer, GameObject* pGo)
     if (!pInstance)
         return false;
 
-    pGo->SetFlag(GAMEOBJECT_FLAGS, GO_FLAG_UNK1);
+    pGo->SetFlag(GAMEOBJECT_FLAGS, GO_FLAG_NO_INTERACT);
     if (Creature* pRazor = pGo->GetMap()->GetCreature(pInstance->GetData64(NPC_RAZORSCALE)))
     {
         if (Creature *pTemp = pRazor->SummonCreature(NPC_HARPOONS_DUMMY, pGo->GetPositionX(), pGo->GetPositionY(), pGo->GetPositionZ(), 0.0f, TEMPSUMMON_TIMED_OR_CORPSE_DESPAWN, 7*DAY*IN_MILLISECONDS))

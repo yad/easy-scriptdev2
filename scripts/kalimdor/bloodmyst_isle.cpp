@@ -143,7 +143,7 @@ bool GOUse_go_sunhawk_portal_controller(Player* pPlayer, GameObject* pGo)
     }
 
     if (GameObject* pTheSunGate = GetClosestGameObjectWithEntry(pGo, GO_THE_SUN_GATE, DEFAULT_VISIBILITY_DISTANCE))
-        pTheSunGate->RemoveFlag(GAMEOBJECT_FLAGS, GO_FLAG_UNK1);
+        pTheSunGate->RemoveFlag(GAMEOBJECT_FLAGS, GO_FLAG_NO_INTERACT);
 
     return false;
 }

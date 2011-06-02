@@ -233,19 +233,7 @@ struct MANGOS_DLL_DECL boss_telestraAI : public ScriptedAI
                 if (m_uiGravityWellTimer < uiDiff)
                 {
                     if (DoCastSpellIfCan(m_creature, SPELL_GRAVITY_WELL) == CAST_OK)
-                    {
-                        ThreatList const& tList = m_creature->getThreatManager().getThreatList();
-                        if (!tList.empty())
-                        {
-                            for (ThreatList::const_iterator itr = tList.begin(); itr != tList.end(); ++itr)
-                            {
-                                Unit* pUnit = m_creature->GetMap()->GetUnit((*itr)->getUnitGuid());
-                                if (pUnit && pUnit->IsInRange(m_creature, 0.0f, 60.0f))
-                                    pUnit->KnockBackFrom(m_creature, -20.0f, 20.0f);
-                            }
-                        }
-                    }
-                    m_uiGravityWellTimer = urand(15000, 30000);
+                        m_uiGravityWellTimer = urand(15000, 30000);
                 }
                 else
                     m_uiGravityWellTimer -= uiDiff;
