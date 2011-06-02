@@ -1,4 +1,4 @@
-/* Copyright (C) 2006 - 2010 ScriptDev2 <https://scriptdev2.svn.sourceforge.net/>
+/* Copyright (C) 2006 - 2011 ScriptDev2 <http://www.scriptdev2.com/>
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -16,8 +16,8 @@
 
 /* ScriptData
 SDName: Boss_Gothik
-SD%Complete: 90
-SDComment: 
+SD%Complete: 60
+SDComment: Only base implemented. Todo: control adds at summon. Handle case of raid not splitted in two sides
 SDCategory: Naxxramas
 EndScriptData */
 
@@ -91,7 +91,6 @@ struct MANGOS_DLL_DECL boss_gothikAI : public ScriptedAI
 
     uint32 m_uiTeleportTimer;
     uint32 m_uiShadowboltTimer;
-    uint32 m_uiHarvestsoulTimer;
 
     void Reset()
     {
@@ -105,30 +104,18 @@ struct MANGOS_DLL_DECL boss_gothikAI : public ScriptedAI
 
         m_uiTeleportTimer = 15000;
         m_uiShadowboltTimer = 2500;
-        m_uiHarvestsoulTimer = 15000;
-
-        DespawnAdds();
     }
 
     void Aggro(Unit* pWho)
     {
-        m_creature->SetInCombatWithZone();
-
         DoScriptText(SAY_SPEECH_1, m_creature);
 
         if (!m_pInstance)
             return;
 
         m_pInstance->SetData(TYPE_GOTHIK, IN_PROGRESS);
-        m_pInstance->SetGothTriggers();
-    }
 
-    void DamageTaken(Unit* pDoneBy, uint32& uiDamage)
-    {
-        if (m_uiPhase == PHASE_SPEECH || m_uiPhase == PHASE_BALCONY)
-            m_creature->SetHealth(m_creature->GetMaxHealth() );
-        else
-            return;
+        m_pInstance->SetGothTriggers();
     }
 
     bool HasPlayersInLeftSide()
@@ -139,9 +126,13 @@ struct MANGOS_DLL_DECL boss_gothikAI : public ScriptedAI
             return false;
 
         for(Map::PlayerList::const_iterator itr = lPlayers.begin(); itr != lPlayers.end(); ++itr)
+        {
             if (Player* pPlayer = itr->getSource())
+            {
                 if (!m_pInstance->IsInRightSideGothArea(pPlayer))
                     return true;
+            }
+        }
 
         return false;
     }
@@ -193,36 +184,9 @@ struct MANGOS_DLL_DECL boss_gothikAI : public ScriptedAI
             if (uiCount == 0)
                 break;
 
-            if(Creature* pAdds = m_creature->SummonCreature(uiSummonEntry, (*itr)->GetPositionX(), (*itr)->GetPositionY(), (*itr)->GetPositionZ(), (*itr)->GetOrientation(), TEMPSUMMON_TIMED_OR_CORPSE_DESPAWN, 7*DAY*IN_MILLISECONDS))
-            {
-                m_pInstance->lGothikLiveAdds.push_back(pAdds->GetGUID() );
-                if (Unit* pVictim = m_pInstance->SelectRandomTargetOnSide(true, *pAdds) )
-                    pAdds->AI()->AttackStart(pVictim);
-                --uiCount;
-            }
+            m_creature->SummonCreature(uiSummonEntry, (*itr)->GetPositionX(), (*itr)->GetPositionY(), (*itr)->GetPositionZ(), (*itr)->GetOrientation(), TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 15000);
+            --uiCount;
         }
-    }
-
-    void DespawnAdds()
-    {
-        if (m_pInstance->lGothikDeathAdds.empty())
-            return;
-
-        for(GUIDList::iterator itr = m_pInstance->lGothikDeathAdds.begin(); itr != m_pInstance->lGothikDeathAdds.end(); ++itr) 
-        {
-            Creature* pDeathAdds = m_pInstance->instance->GetCreature((*itr));
-            if (pDeathAdds && pDeathAdds->isAlive())
-                pDeathAdds->ForcedDespawn(20000);
-        }
-        m_pInstance->lGothikDeathAdds.clear();
-        
-        for(GUIDList::iterator itr = m_pInstance->lGothikLiveAdds.begin(); itr != m_pInstance->lGothikLiveAdds.end(); ++itr) 
-        {
-            Creature* pLiveAdds = m_pInstance->instance->GetCreature((*itr));
-            if (pLiveAdds && pLiveAdds->isAlive())
-                pLiveAdds->ForcedDespawn(20000);
-        }
-        m_pInstance->lGothikLiveAdds.clear();
     }
 
     void SummonedCreatureJustDied(Creature* pSummoned)
@@ -280,7 +244,6 @@ struct MANGOS_DLL_DECL boss_gothikAI : public ScriptedAI
                         DoScriptText(SAY_TELEPORT, m_creature);
                         DoScriptText(EMOTE_TO_FRAY, m_creature);
                         DoCastSpellIfCan(m_creature, SPELL_TELEPORT_RIGHT);
-                        m_creature->GetMotionMaster()->Clear();
                         m_uiPhase = PHASE_GROUND;
                         return;
                     }
@@ -328,26 +291,19 @@ struct MANGOS_DLL_DECL boss_gothikAI : public ScriptedAI
             }
             case PHASE_GROUND:
             case PHASE_END:
-            {	
+            {
                 if (m_uiPhase == PHASE_GROUND)
                 {
                     if (m_creature->GetHealthPercent() < 30.0f)
                     {
-                        DoScriptText(EMOTE_GATE, m_creature);
-                        m_pInstance->SetData(TYPE_GOTHIK, SPECIAL);
-                        m_uiPhase = PHASE_END;
-                        m_uiShadowboltTimer = 2000;
-                        // all out of combat summons from Death Side storm the raid at once
-                        for (GUIDList::iterator itr = m_pInstance->lGothikDeathAdds.begin(); itr != m_pInstance->lGothikDeathAdds.end(); itr++)
-                            if (Creature* pCreature = m_pInstance->instance->GetCreature(*itr) )
-                                if (pCreature->isAlive() && !pCreature->getVictim() )
-                                    pCreature->AI()->AttackStart(m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM, 0) );
-                        // all out of combat summons from Live Side storm the raid at once
-                        for (GUIDList::iterator itr = m_pInstance->lGothikLiveAdds.begin(); itr != m_pInstance->lGothikLiveAdds.end(); itr++)
-                            if (Creature* pCreature = m_pInstance->instance->GetCreature(*itr) )
-                                if (pCreature->isAlive() && !pCreature->getVictim() )
-                                    pCreature->AI()->AttackStart(m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM, 0) );
-                        return;
+                        if (m_pInstance->IsInRightSideGothArea(m_creature))
+                        {
+                            DoScriptText(EMOTE_GATE, m_creature);
+                            m_pInstance->SetData(TYPE_GOTHIK, SPECIAL);
+                            m_uiPhase = PHASE_END;
+                            m_uiShadowboltTimer = 2000;
+                            return;
+                        }
                     }
 
                     if (m_uiTeleportTimer < uiDiff)
@@ -373,14 +329,6 @@ struct MANGOS_DLL_DECL boss_gothikAI : public ScriptedAI
                 }
                 else
                     m_uiShadowboltTimer -= uiDiff;
-					
-                if (m_uiHarvestsoulTimer < uiDiff)
-                {
-                    DoCastSpellIfCan(m_creature, SPELL_HARVESTSOUL);
-                    m_uiHarvestsoulTimer = 15000;
-                }
-                else
-                    m_uiHarvestsoulTimer -= uiDiff;
 
                 DoMeleeAttackIfReady();                     // possibly no melee at all
                 break;
@@ -464,22 +412,10 @@ bool EffectDummyCreature_spell_anchor(Unit* pCaster, uint32 uiSpellId, SpellEffe
                 else if (uiSpellId == SPELL_C_TO_SKULL)
                     uiNpcEntry = NPC_SPECT_RIDER;
 
-                if(Creature* pDeathAdds = pGoth->SummonCreature(uiNpcEntry, pCreatureTarget->GetPositionX(), pCreatureTarget->GetPositionY(), pCreatureTarget->GetPositionZ(), pCreatureTarget->GetOrientation(), TEMPSUMMON_TIMED_OR_CORPSE_DESPAWN, 7*DAY*IN_MILLISECONDS))
-                {
-                    pInstance->lGothikDeathAdds.push_back(pDeathAdds->GetGUID() );
-                    if(Unit* pVictim = pInstance->SelectRandomTargetOnSide(false, *pDeathAdds) )
-                        pDeathAdds->AI()->AttackStart(pVictim);
-                }
+                pGoth->SummonCreature(uiNpcEntry, pCreatureTarget->GetPositionX(), pCreatureTarget->GetPositionY(), pCreatureTarget->GetPositionZ(), pCreatureTarget->GetOrientation(), TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 20000);
 
                 if (uiNpcEntry == NPC_SPECT_RIDER)
-                {
-                    if(Creature* pDeathSpecial = pGoth->SummonCreature(NPC_SPECT_HORSE, pCreatureTarget->GetPositionX(), pCreatureTarget->GetPositionY(), pCreatureTarget->GetPositionZ(), pCreatureTarget->GetOrientation(), TEMPSUMMON_TIMED_OR_CORPSE_DESPAWN, 7*DAY*IN_MILLISECONDS))
-                    {
-                        pInstance->lGothikDeathAdds.push_back(pDeathSpecial->GetGUID() );
-                        if(Unit* pVictim = pInstance->SelectRandomTargetOnSide(false, *pDeathSpecial) )
-                            pDeathSpecial->AI()->AttackStart(pVictim);
-                    }
-                }
+                    pGoth->SummonCreature(NPC_SPECT_HORSE, pCreatureTarget->GetPositionX(), pCreatureTarget->GetPositionY(), pCreatureTarget->GetPositionZ(), pCreatureTarget->GetOrientation(), TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 20000);
             }
             return true;
         }

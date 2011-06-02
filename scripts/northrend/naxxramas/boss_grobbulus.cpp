@@ -1,4 +1,4 @@
-/* Copyright (C) 2006 - 2011 ScriptDev2 <https://scriptdev2.svn.sourceforge.net/>
+/* Copyright (C) 2006 - 2011 ScriptDev2 <http://www.scriptdev2.com/>
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -41,7 +41,6 @@ enum
     SPELL_SLIME_SPRAY               = 28157,
     SPELL_SLIME_SPRAY_H             = 54364,
     SPELL_BERSERK                   = 26662,
-    SPELL_POISONCLOUDAOE            = 59116,
 
     NPC_FALLOUT_SLIME               = 16290
 };
@@ -207,40 +206,9 @@ struct MANGOS_DLL_DECL boss_grobbulusAI : public ScriptedAI
     }
 };
 
-// Poison Cloud Structure
-struct MANGOS_DLL_DECL npc_grobbulus_poison_cloudAI : public Scripted_NoMovementAI
-{
-    npc_grobbulus_poison_cloudAI(Creature* pCreature) : Scripted_NoMovementAI(pCreature)
-    {
-        Reset();
-    }
-
-    uint32 Cloud_Timer;
-
-    void Reset()
-    {
-        Cloud_Timer = 1000;
-        m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
-    }
-
-    void UpdateAI(const uint32 uiDiff)
-    {
-        if (Cloud_Timer < uiDiff)
-        {
-            DoCastSpellIfCan(m_creature, SPELL_POISONCLOUDAOE);
-            Cloud_Timer = 10000;
-        }else Cloud_Timer -= uiDiff;
-    }
-};
-
 CreatureAI* GetAI_boss_grobbulus(Creature* pCreature)
 {
     return new boss_grobbulusAI(pCreature);
-}
-
-CreatureAI* GetAI_npc_grobbulus_poison_cloud(Creature* pCreature)
-{
-    return new npc_grobbulus_poison_cloudAI(pCreature);
 }
 
 void AddSC_boss_grobbulus()
@@ -250,10 +218,5 @@ void AddSC_boss_grobbulus()
     pNewScript = new Script;
     pNewScript->Name = "boss_grobbulus";
     pNewScript->GetAI = &GetAI_boss_grobbulus;
-    pNewScript->RegisterSelf();
-
-    pNewScript = new Script;
-    pNewScript->Name = "npc_grobbulus_poison_cloud";
-    pNewScript->GetAI = &GetAI_npc_grobbulus_poison_cloud;
     pNewScript->RegisterSelf();
 }
