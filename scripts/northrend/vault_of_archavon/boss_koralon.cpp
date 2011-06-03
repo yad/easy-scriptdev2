@@ -16,7 +16,7 @@
 
 /* ScriptData
 SDName: boss_koralon
-SD%Complete: 50%
+SD%Complete: 100%
 SDComment: 
 SDCategory: Vault of Archavon
 EndScriptData */
@@ -24,63 +24,68 @@ EndScriptData */
 #include "precompiled.h"
 #include "vault_of_archavon.h"
 
-#define SP_BURNING_FURY_AURA    66895
-#define SP_BURNING_FURY_AURA2   68168
-#define SP_BURNING_FURY_EFFECT  66721
+#define SPELL_BURNING_FURY         66721 // main spell
+#define SPELL_BURNING_FURY_AURA    66895
+#define SPELL_BURNING_FURY_AURA2   68168
 
-#define SP_BURNING_BREATH       66665
-#define H_SP_BURNING_BREATH     67328 //DBM
-#define SP_BB_EFFECT            66670
-#define H_SP_BB_EFFECT          67329
+#define SPELL_BURNING_BREATH       66665
+#define SPELL_BURNING_BREATH_H     67328 //DBM
+#define SPELL_BB_EFFECT            66670
+#define SPELL_BB_EFFECT_H          67329
 
-#define SP_METEOR_FISTS         66725 //DBM
-#define H_SP_METEOR_FISTS       68161       
-#define SP_METEOR_FISTS_EFF     66765
-#define H_SP_METEOR_FISTS_EFF   67333
+#define SPELL_METEOR_FISTS         66725 //DBM
+#define SPELL_METEOR_FISTS_H       68161       
+#define SPELL_METEOR_FISTS_EFF     66765
+#define SPELL_METEOR_FISTS_EFF_H   67333
 
-#define SP_CINDER       66684
-#define H_SP_CINDER     67332
+#define SPELL_CINDER               66684
+#define SPELL_CINDER_H             67332
 
 struct MANGOS_DLL_DECL boss_koralonAI : public ScriptedAI
 {
     boss_koralonAI(Creature* pCreature) : ScriptedAI(pCreature)
     {
-        pInstance = (ScriptedInstance*)pCreature->GetInstanceData();
-        Regular = pCreature->GetMap()->IsRegularDifficulty();
+        m_pInstance = (ScriptedInstance*)pCreature->GetInstanceData();
+        m_bIsRegular = pCreature->GetMap()->IsRegularDifficulty();
         Reset();
     }
 
-    ScriptedInstance* pInstance;
-    bool Regular;
-    uint32 BurningBreathTimer;
-    uint32 MeteorFistsTimer;
-    uint32 FlamesTimer;
+    ScriptedInstance* m_pInstance;
+    bool m_bIsRegular;
+    bool m_bIsBB;
+    uint32 m_uiBurningBreathTimer;
+    uint32 m_uiMeteorFistsTimer;
+    uint32 m_uiFlamesTimer;
+    uint32 m_uiBurningFuryTimer;
 
-    uint32 BBTickTimer;
-    uint32 BBTicks;
-    bool BB;
+    uint32 m_uiBBTickTimer;
+    uint32 m_uiBBTicks;
 
     void Reset()
     {
-        BurningBreathTimer = 25000;
-        MeteorFistsTimer = 47000;
-        FlamesTimer = 15000;
+        m_uiBurningBreathTimer = 25000;
+        m_uiBurningFuryTimer = 20000;
+        m_uiMeteorFistsTimer = 47000;
+        m_uiFlamesTimer = 15000;
 
-        BB = false;
+        m_bIsBB = false;
 
-        if(pInstance) pInstance->SetData(TYPE_KORALON, NOT_STARTED);
+        if (m_pInstance)
+            m_pInstance->SetData(TYPE_KORALON, NOT_STARTED);
     }
 
     void Aggro(Unit *who)
     {
-        DoCastSpellIfCan(m_creature, SP_BURNING_FURY_AURA);
+        DoCastSpellIfCan(m_creature, SPELL_BURNING_FURY);
 
-        if(pInstance) pInstance->SetData(TYPE_KORALON, IN_PROGRESS);
+        if (m_pInstance)
+            m_pInstance->SetData(TYPE_KORALON, IN_PROGRESS);
     };
 
     void JustDied(Unit *killer)
     {
-        if(pInstance) pInstance->SetData(TYPE_KORALON, DONE);
+        if (m_pInstance)
+            m_pInstance->SetData(TYPE_KORALON, DONE);
     };
 
     void UpdateAI(const uint32 diff)
@@ -88,37 +93,43 @@ struct MANGOS_DLL_DECL boss_koralonAI : public ScriptedAI
         if (!m_creature->SelectHostileTarget() || !m_creature->getVictim())
             return;
 
-        if(BurningBreathTimer < diff)
+        if(m_uiBurningFuryTimer < diff)
         {
-            DoCastSpellIfCan(m_creature, Regular ? SP_BURNING_BREATH : H_SP_BURNING_BREATH);
-            BurningBreathTimer = 45000;
-
-            BB = true;
-            BBTickTimer = 1000;
-            BBTicks = 0;
+            DoCastSpellIfCan(m_creature, SPELL_BURNING_FURY);
+            m_uiBurningFuryTimer = 20000;
         }
-        else BurningBreathTimer -= diff;
+        else m_uiBurningFuryTimer -= diff;
 
-
-        if(FlamesTimer < diff)
+        if(m_uiBurningBreathTimer < diff)
         {
-            int flames = Regular ? 3 : 5;
-            int i;
-            for(i=0; i< flames; ++i)
+            DoCastSpellIfCan(m_creature, m_bIsRegular ? SPELL_BURNING_BREATH : SPELL_BURNING_BREATH_H);
+            m_uiBurningBreathTimer = 45000;
+
+            m_bIsBB = true;
+            m_uiBBTickTimer = 1000;
+            m_uiBBTicks = 0;
+        }
+        else m_uiBurningBreathTimer -= diff;
+
+        if(m_uiFlamesTimer < diff)
+        {
+            int8 iFlames = m_bIsRegular ? 3 : 5;
+
+            for(int8 i=0; i< iFlames; ++i)
             {
-                Unit *target = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM, 0);
-                if(target) DoCastSpellIfCan(target, Regular ? SP_CINDER : H_SP_CINDER);
+                if (Unit *target = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM, 0))
+                    DoCastSpellIfCan(target, m_bIsRegular ? SPELL_CINDER : SPELL_CINDER_H);
             }
-            FlamesTimer = 20000;
+            m_uiFlamesTimer = 20000;
         }
-        else FlamesTimer -= diff;
+        else m_uiFlamesTimer -= diff;
 
-        if(MeteorFistsTimer < diff)
+        if(m_uiMeteorFistsTimer < diff)
         {
-            DoCastSpellIfCan(m_creature->getVictim(), SP_METEOR_FISTS_EFF);
-            MeteorFistsTimer = 45000;
+            DoCastSpellIfCan(m_creature->getVictim(), SPELL_METEOR_FISTS_EFF);
+            m_uiMeteorFistsTimer = 45000;
         }
-        else MeteorFistsTimer -= diff;
+        else m_uiMeteorFistsTimer -= diff;
 
         DoMeleeAttackIfReady();
     }
