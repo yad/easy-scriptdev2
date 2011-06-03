@@ -37,6 +37,7 @@ extern void AddSC_item_scripts();
 extern void AddSC_npc_professions();
 extern void AddSC_npcs_special();
 extern void AddSC_spell_scripts();
+extern void AddSC_pet_scripts();
 extern void AddSC_npc_companion_handler();
 
 //eastern kingdoms
@@ -83,9 +84,9 @@ extern void AddSC_boss_curator();
 extern void AddSC_boss_maiden_of_virtue();
 extern void AddSC_boss_shade_of_aran();
 extern void AddSC_boss_netherspite();
-extern void AddSC_boss_malchezaar();
+extern void AddSC_boss_nightbane();
+extern void AddSC_boss_prince_malchezaar();
 extern void AddSC_boss_terestian_illhoof();
-extern void AddSC_netherspite_infernal();
 extern void AddSC_boss_moroes();
 extern void AddSC_bosses_opera();
 extern void AddSC_instance_karazhan();
@@ -573,6 +574,7 @@ void AddScripts()
     AddSC_npc_professions();
     AddSC_npcs_special();
     AddSC_spell_scripts();
+    AddSC_pet_scripts();
     AddSC_npc_companion_handler();
 
     //eastern kingdoms
@@ -619,9 +621,9 @@ void AddScripts()
     AddSC_boss_maiden_of_virtue();
     AddSC_boss_shade_of_aran();
     AddSC_boss_netherspite();
-    AddSC_boss_malchezaar();
+    AddSC_boss_nightbane();
+    AddSC_boss_prince_malchezaar();
     AddSC_boss_terestian_illhoof();
-    AddSC_netherspite_infernal();
     AddSC_boss_moroes();
     AddSC_bosses_opera();
     AddSC_instance_karazhan();
