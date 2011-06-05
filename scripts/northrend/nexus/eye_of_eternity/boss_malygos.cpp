@@ -425,17 +425,16 @@ struct MANGOS_DLL_DECL boss_malygosAI : public ScriptedAI
 
         if (uiEntry == NPC_SCION_OF_ETERNITY)
         {
-            if (Creature* pDisk = pSummoned->SummonCreature(NPC_HOVER_DISK, pSummoned->GetPositionX(), pSummoned->GetPositionY(), pSummoned->GetPositionZ(), 0, TEMPSUMMON_CORPSE_DESPAWN, 0))
+            /*if (Creature* pDisk = pSummoned->SummonCreature(NPC_HOVER_DISK, pSummoned->GetPositionX(), pSummoned->GetPositionY(), pSummoned->GetPositionZ(), 0, TEMPSUMMON_CORPSE_DESPAWN, 0))
             {
                 pDisk->SetSplineFlags(SPLINEFLAG_FLYING);
                 pDisk->CastSpell(pDisk, SPELL_FLIGHT, true);
                 pDisk->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
-                if (uiEntry == NPC_NEXUS_LORD)
-                    pDisk->SetSpeedRate(MOVE_WALK, 1.5f);
                 if (VehicleKit* pDiskVehicle = pDisk->GetVehicleKit())
                     pSummoned->EnterVehicle(pDiskVehicle, 0);
                 pSummoned->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
-            }
+            }*/
+            pSummoned->AddSplineFlag(SPLINEFLAG_FLYING);
             pSummoned->SetInCombatWithZone();
         }
         else if (uiEntry == NPC_NEXUS_LORD)
