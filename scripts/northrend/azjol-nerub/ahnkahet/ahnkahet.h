@@ -52,6 +52,12 @@ class MANGOS_DLL_DECL instance_ahnkahet : public ScriptedInstance
         std::string m_strInstData;
 
         uint8 m_uiDevicesActivated;
+
+        uint64 m_uiElderNadoxGUID;
+        uint64 m_uiJedogaShadowseekerGUID;
+        uint64 m_uiTaldaramGUID;
+        uint64 m_uiTaldaramDoorGUID;
+        uint64 m_uiTaldaramVortexGUID;
 };
 
 #endif
