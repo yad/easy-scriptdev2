@@ -1,4 +1,4 @@
-/* Copyright (C) 2006 - 2010 ScriptDev2 <https://scriptdev2.svn.sourceforge.net/>
+/* Copyright (C) 2006 - 2011 ScriptDev2 <http://www.scriptdev2.com/>
  * This program is free software licensed under GPL version 2
  * Please see the included DOCS/LICENSE.TXT for more information */
 
@@ -20,7 +20,6 @@ enum
     TYPE_COLOSSUS          = 2,
     TYPE_GALDARAH          = 3,
     TYPE_ECK               = 4,
-    TYPE_ELEMENTAL         = 15,
 
     NPC_SLADRAN            = 29304,
     NPC_MOORABI            = 29305,
@@ -48,7 +47,7 @@ enum
 
     GO_BRIDGE              = 193188,
     GO_COLLISION           = 192633,
-   
+
     SPELL_BEAM_MAMMOTH     = 57068,
     SPELL_BEAM_SNAKE       = 57071,
     SPELL_BEAM_ELEMENTAL   = 57072,
@@ -58,7 +57,7 @@ enum
     TIMER_VISUAL_KEY       = 2000,
 };
 
-typedef std::map<uint8, uint32> TypeTimerMap;
+typedef std::map<uint8, uint32>  TypeTimerMap;
 typedef std::pair<uint8, uint32> TypeTimerPair;
 
 class MANGOS_DLL_DECL instance_gundrak : public ScriptedInstance
@@ -69,53 +68,29 @@ class MANGOS_DLL_DECL instance_gundrak : public ScriptedInstance
 
         void Initialize();
 
-        bool IsEncounterInProgress() const;
-
         void OnCreatureCreate(Creature* pCreature);
         void OnObjectCreate(GameObject* pGo);
 
         void SetData(uint32 uiType, uint32 uiData);
         uint32 GetData(uint32 uiType);
-        uint64 GetData64(uint32 uiData);
 
-        const char* Save() { return strInstData.c_str(); }
+        const char* Save() { return m_strInstData.c_str(); }
         void Load(const char* chrIn);
+
         void Update(uint32 uiDiff);
+
     protected:
         void DoAltarVisualEffect(uint8 uiType);
         uint32 m_auiEncounter[MAX_ENCOUNTER];
-        std::string strInstData;
-
-        uint64 m_uiEckDoorGUID;
-        uint64 m_uiEckUnderwaterDoorGUID;
-        uint64 m_uiGaldarahDoorGUID;
-        uint64 m_uiExitDoorLeftGUID;
-        uint64 m_uiExitDoorRightGUID;
-        uint64 m_uiSnakeKeyGUID;
-        uint64 m_uiMammothKeyGUID;
-        uint64 m_uiTrollKeyGUID;
-        uint64 m_uiRhinoKeyGUID;
-        uint64 m_uiAltarOfSladranGUID;
-        uint64 m_uiAltarOfMoorabiGUID;
-        uint64 m_uiAltarOfColossusGUID;
-        uint64 m_uiBridgeGUID;
-        uint64 m_uiColisionGUID;
-        uint32 m_uiElemental;
-        uint32 m_uiEckAddsCounter;
-
-        uint64 m_uiSladranGUID;
-        uint64 m_uiElementalGUID;
-        uint64 m_uiColossusGUID;
-        uint64 m_uiMoorabiGUID;
-        uint64 m_uiEckGUID;
+        std::string m_strInstData;
 
         TypeTimerMap m_mAltarInProgress;
         TypeTimerMap m_mBeamInProgress;
         TypeTimerMap m_mKeyInProgress;
 
         GUIDList m_luiStalkerGUIDs;
-        GUIDList m_luiStalkerCasterGUIDs;
-        GUIDList m_luiStalkerTargetGUIDs;
+        GUIDVector m_vStalkerCasterGuids;
+        GUIDVector m_vStalkerTargetGuids;
 };
 
 #endif

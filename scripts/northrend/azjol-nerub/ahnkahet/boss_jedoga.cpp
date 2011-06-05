@@ -1,4 +1,4 @@
-/* Copyright (C) 2006 - 2010 ScriptDev2 <https://scriptdev2.svn.sourceforge.net/>
+/* Copyright (C) 2006 - 2011 ScriptDev2 <http://www.scriptdev2.com/>
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -16,85 +16,215 @@
 
 /* ScriptData
 SDName: Boss_Jedoga
-SD%Complete: 95%
-SDComment:
+SD%Complete: 90%
+SDAuthor: Tassadar
+SDComment: Correct Timers
 SDCategory: Ahn'kahet
-*/
+EndScriptData */
 
 #include "precompiled.h"
 #include "ahnkahet.h"
 
-enum Sounds
+struct Locations
 {
-    SAY_AGGRO                = -1619017,
-    SAY_CALL_SACRIFICE1      = -1619018,
-    SAY_CALL_SACRIFICE2      = -1619019,
-    SAY_SACRIFICE1           = -1619020,
-    SAY_SACRIFICE2           = -1619021,
-    SAY_SLAY_1               = -1619022,
-    SAY_SLAY_2               = -1619023,
-    SAY_SLAY_3               = -1619024,
-    SAY_DEATH                = -1619025,
+    float x, y, z, o;
+    uint32 id;
+};
+enum
+{
+    SPELL_SPHERE_VISUAL                 = 56075,
+    SPELL_GIFT_OF_THE_HERALD            = 56219,
+    SPELL_CYCLONE_STRIKE                = 60030,
+    SPELL_CYCLONE_STRIKE_H              = 56855,
+    SPELL_LIGHTNING_BOLT                = 56891,
+    SPELL_LIGHTNING_BOLT_H              = 60032,
+    SPELL_THUNDERSHOCK                  = 56926,
+    SPELL_THUNDERSHOCK_H                = 60029,
 
-    // preaching 1-5 when it is used?
-    SAY_PREACHING1           = -1619026,
-    SAY_PREACHING2           = -1619027,
-    SAY_PREACHING3           = -1619028,
-    SAY_PREACHING4           = -1619029,
-    SAY_PREACHING5           = -1619030,
+    SAY_AGGRO                           = -1619017,
+    SAY_CALL_SACRIFICE_1                = -1619018,
+    SAY_CALL_SACRIFICE_2                = -1619019,
+    SAY_SACRIFICE_1                     = -1619020,
+    SAY_SACRIFICE_2                     = -1619021,
+    SAY_SLAY_1                          = -1619022,
+    SAY_SLAY_2                          = -1619023,
+    SAY_SLAY_3                          = -1619024,
+    SAY_DEATH                           = -1619025,
+    SAY_PREACHING_1                     = -1619026,
+    SAY_PREACHING_2                     = -1619027,
+    SAY_PREACHING_3                     = -1619028,
+    SAY_PREACHING_4                     = -1619029,
+    SAY_PREACHING_5                     = -1619030,
 
-    SAY_VOLUNTEER_CHOOSEN    = -1619031,                    // I have been choosen!
-    SAY_VOLUNTEER_SACRIFICED = -1619032,                    // I give myself to the master!
+    SAY_VOLUNTEER_1                     = -1619031,         //said by the volunteer image
+    SAY_VOLUNTEER_2                     = -1619032,
 
-    SPELL_CYCLONE_STRIKE     = 56855,
-    SPELL_CYCLONE_STRIKE_H   = 60030,
-    SPELL_LIGHTNING_BOLT     = 56891,
-    SPELL_LIGHTNING_BOLT_H   = 60032,
-    SPELL_THUNDERSHOCK       = 56926,
-    SPELL_THUNDERSHOCK_H     = 60029,
-    SPELL_GIFT_OF_THE_HERALD = 56219,
+    NPC_TWILIGHT_INITIATE               = 30114,
+    NPC_TWILIGHT_VOLUNTEER              = 30385,
+    NPC_JEDOGA                          = 29310,
 
-    SPELL_SACRIFICE_VISUAL   = 56133,
-    SPELL_SACRIFICE_BEAM     = 56150,
+    GO_CIRCLE                           = 194394,           // Propably wrong id
 
-    NPC_JEDOGA_CONTROLLER    = 30181,
-    NPC_TWILIGHT_INITIATE    = 30114,
-    NPC_TWILIGHT_VOLUNTEER   = 30385,
+    //Jedoga Shadowseeker's phases
+    PHASE_NOSTART                       = 0,
+    PHASE_PREACHING                     = 1,
+    PHASE_DESCEND                       = 2,
+        SUBPHASE_FLY_DESCEND            = 21,
+    PHASE_FIGHT                         = 3,
+    PHASE_SACRIFACE                     = 4,
+        SUBPHASE_FLY_UP                 = 41,
+        SUBPHASE_CALL_VOLUNTEER         = 42,
+        SUBPHASE_WAIT_FOR_VOLUNTEER     = 43,
+        SUBPHASE_SACRIFACE              = 44,
 
-    SPELL_ARCANE_LIGHTNING   = 60038,
-    SPELL_BEAM_VISUAL        = 56312,
-    SPELL_JEDOGA_SPHERE      = 56075,
-    SPELL_VOLUNTEER_SPHERE   = 56102,
+    //Twilight Volunteer's sacriface phases
+    SACRIFACE_CHOOSEN                   = 1,
+    SACRIFACE_DIE                       = 2,
 
-    PHASE_BEFORE_INTRO       = 0,
-    PHASE_INTRO              = 1,
-    PHASE_AFTER_INTRO        = 2,
-    PHASE_READY_TO_ATTACK    = 3,
-    PHASE_SACRIFICE_SEQUENCE = 4,
+    VOLUNTEER_COUNT                     = 29,
+};
+#define CENTER_X                        367.800f
+#define CENTER_Y                        -704.403f
+#define GROUND_Z                        -16.17f
 
-    POINT_IN_THE_AIR         = 0,
-    POINT_AT_THE_GROUND      = 1,
+#define JEDOGA_X                        357.353f
+#define JEDOGA_Y                        -692.807f
+#define JEDOGA_Z                        -11.720f
+#define JEDOGA_O                        5.565f
 
-    SUMMONS_NUMBER           = 20
+static Locations VolunteerLoc[]=
+{
+    //29 Volunteers
+    {365.68f, -735.95f, -16.17f, 1.607f}, // Right, first line
+    {367.12f, -736.13f, -16.17f, 1.607f},
+    {369.03f, -736.06f, -16.17f, 1.607f},
+    {371.66f, -735.97f, -16.17f, 1.607f},
+    {373.47f, -735.63f, -16.17f, 1.607f},
+
+    {365.45f, -739.03f, -16.00f, 1.607f}, // Right, second line
+    {367.56f, -738.62f, -16.00f, 1.607f},
+    {369.62f, -738.22f, -16.17f, 1.607f},
+    {371.66f, -737.82f, -16.06f, 1.607f},
+    {373.75f, -737.41f, -16.00f, 1.607f},
+
+    {400.99f, -705.41f, -16.00f, 2.491f}, // Center, from right
+    {398.07f, -710.02f, -16.00f, 2.491f},
+    {395.34f, -713.76f, -16.00f, 2.491f},
+    {393.42f, -716.39f, -16.00f, 2.491f},
+    {391.48f, -718.94f, -16.00f, 2.491f},
+    {388.80f, -722.46f, -16.00f, 2.491f},
+    {386.19f, -725.89f, -16.00f, 2.491f},
+    {383.61f, -729.29f, -16.00f, 2.491f},
+    {380.37f, -733.55f, -16.00f, 2.491f},
+    
+    {402.72f, -700.79f, -16.00f, 3.046f}, // Left, first line
+    {402.63f, -698.86f, -16.18f, 3.149f},
+    {402.62f, -697.10f, -16.17f, 3.149f},
+    {402.61f, -695.50f, -16.17f, 3.059f},
+    {402.20f, -693.39f, -16.17f, 3.159f},
+
+    {405.31f, -701.29f, -16.00f, 2.924f}, // Left, second line
+    {405.46f, -699.25f, -16.00f, 3.198f},
+    {405.40f, -697.19f, -16.00f, 3.150f},
+    {405.35f, -695.30f, -16.00f, 3.150f},
+    {405.29f, -693.26f, -16.00f, 3.150f}
 };
 
-float SpawnNode[9][3] = 
+/*######
+## npc_twilight_volunteer
+######*/
+struct MANGOS_DLL_DECL npc_twilight_volunteerAI : public ScriptedAI
 {
-    // destination points
-    {391.62f, -688.47f, -16.18f},
-    {398.02f, -696.81f, -16.17f},
-    {388.37f, -711.46f, -16.18f},
-    {378.33f, -723.73f, -16.18f},
-    {369.98f, -731.30f, -16.18f},
-    {359.85f, -728.33f, -16.19f},
-    // minions spawn point
-    {370.51f, -742.15f, -15.98f},
-    {406.07f, -697.21f, -15.98f},
-    // POINT_AT_THE_GROUND
-    {373.54f, -704.44f, -16.17f}
-};
+    npc_twilight_volunteerAI(Creature* pCreature) : ScriptedAI(pCreature)
+    {
+        m_pInstance = (ScriptedInstance*)pCreature->GetInstanceData();
+        Reset();
+    }
 
-int32 SayPreaching[6] = {0, SAY_PREACHING1, SAY_PREACHING2, SAY_PREACHING3, SAY_PREACHING4, SAY_PREACHING5};
+    ScriptedInstance* m_pInstance;
+
+    uint8 m_uiPhase;
+    bool m_bIsVulunteerNear;
+    uint32 m_uiCheckTimer;
+    bool m_bIsDead;
+    void Reset()
+    {
+        m_uiPhase = 0;
+        m_bIsVulunteerNear = false;
+        m_uiCheckTimer = 1000;
+        m_bIsDead = false;
+        m_creature->SetRespawnDelay(DAY);
+    }
+
+    void AttackStart(Unit* pWho)
+    {
+        return;
+    }
+
+    void DamageTaken(Unit* pDoneBy, uint32 &uiDamage)
+    {
+        if (m_bIsDead)
+        {
+            uiDamage = 0;
+            return;
+        }
+
+        if (uiDamage > m_creature->GetHealth())
+        {
+            m_creature->ForcedDespawn(10000);
+            m_bIsDead = true;
+            uiDamage = 0;
+
+            m_creature->SetHealth(1);
+            m_creature->SetVisibility(VISIBILITY_OFF);
+        }
+    }
+    void MovementInform(uint32 uiType, uint32 uiPointId)
+    {
+        if(uiType != POINT_MOTION_TYPE)
+                return;
+
+        switch(uiPointId)
+        {
+            case 0:
+                m_bIsVulunteerNear = true;
+                m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+                m_creature->ForcedDespawn(10000);
+                m_creature->SetVisibility(VISIBILITY_OFF);
+                break;
+        }
+    }
+    void Sacriface(uint8 phase)
+    {
+        if(m_bIsDead)
+            return;
+
+        m_uiPhase = phase;
+        switch(m_uiPhase)
+        {
+            case SACRIFACE_CHOOSEN:
+                switch(urand(0, 1))
+                {
+                    case 0: DoScriptText(SAY_VOLUNTEER_1, m_creature); break;
+                    case 1: DoScriptText(SAY_VOLUNTEER_2, m_creature); break;
+                }
+                m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+                m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+                m_creature->GetMotionMaster()->MovePoint(0, CENTER_X, CENTER_Y, GROUND_Z);
+                break;
+            case SACRIFACE_DIE:
+                m_creature->DealDamage(m_creature, m_creature->GetHealth(), NULL, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
+                break;
+        }
+    }
+    void UpdateAI(const uint32 uiDiff)
+    {
+        if (!m_pInstance || m_bIsDead) return;
+
+        if (m_pInstance->GetData(TYPE_JEDOGA) != IN_PROGRESS) m_creature->ForcedDespawn();
+
+    }
+};
 
 /*######
 ## boss_jedoga
@@ -111,109 +241,53 @@ struct MANGOS_DLL_DECL boss_jedogaAI : public ScriptedAI
 
     ScriptedInstance* m_pInstance;
     bool m_bIsRegularMode;
-    bool m_bSacrifice;
+    bool m_bIsVulunteerNear;
+    bool m_bVolunteerDied;
+    bool m_isRealEvade;
+    uint8 m_uiPhase;
+    uint8 m_uiSubPhase;
+    uint8 m_uiPreachingText;
+    Creature *pVolunteer;
+    uint8 m_uiLastSacrifaceHP;
 
-    std::list<uint64>lInitiates;
-    std::list<uint64>lVolunteers;
-
-    uint32 m_uiThundershockTimer;
+    uint32 m_uiPreachingTimer;
+    uint32 m_uiCheckTimer;
+    uint32 m_uiSacrifaceTimer;
     uint32 m_uiCycloneStrikeTimer;
     uint32 m_uiLightningBoltTimer;
-    uint32 m_uiEventTimer;
-    uint8 subevent;
-    uint8 Phase;
+    uint32 m_uiThundershockTimer;
+
 
     void Reset()
     {
-        m_uiThundershockTimer  = 40000;
-        m_uiCycloneStrikeTimer = 15000;
-        m_uiLightningBoltTimer = 7000;
-        m_bSacrifice           = false;
+        m_uiPhase = PHASE_PREACHING;
+        m_uiSubPhase = 0;
+        m_uiPreachingText = 0;
+        m_bIsVulunteerNear = false;
+        m_bVolunteerDied = false;
+        m_uiLastSacrifaceHP = 0;
+        m_isRealEvade = true;
 
-        m_uiEventTimer          = 1000;
-        subevent                = 0;
-        Phase                   = PHASE_BEFORE_INTRO;
+        m_uiCheckTimer = 1000;
+        m_uiSacrifaceTimer = 2000;
+        m_uiPreachingTimer = 0;
+        m_uiCycloneStrikeTimer = 17000;
+        m_uiLightningBoltTimer = 3000;
+        m_uiThundershockTimer = 30000;
 
-        DespawnAdds(lInitiates);
-        DespawnAdds(lVolunteers);
-
+        DoCast(m_creature, SPELL_SPHERE_VISUAL);
+        m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+        m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
         if (m_pInstance)
-        {
-            if (Creature* pController = m_creature->GetMap()->GetCreature(m_pInstance->GetData64(NPC_JEDOGA_CONTROLLER)))
-                pController->RemoveAurasDueToSpell(SPELL_SACRIFICE_VISUAL);
-        }
+            m_pInstance->SetData(TYPE_JEDOGA, NOT_STARTED);
     }
-
     void Aggro(Unit* pWho)
     {
         DoScriptText(SAY_AGGRO, m_creature);
+        AttackStart(pWho);
+         if (m_pInstance)
+            m_pInstance->SetData(TYPE_JEDOGA, IN_PROGRESS);
     }
-
-    void MovementInform(uint32 uiMotionType, uint32 uiPointId)
-    {
-        if (uiMotionType != POINT_MOTION_TYPE || !m_pInstance)
-            return;
-
-        if (uiPointId == POINT_IN_THE_AIR)
-        {
-            m_creature->GetMotionMaster()->Clear(true, true);
-            m_creature->GetMotionMaster()->MoveIdle();
-            m_creature->StopMoving();            
-        }
-
-        if (uiPointId == POINT_AT_THE_GROUND)
-        {
-            m_creature->GetMotionMaster()->Clear(true, true);
-            m_creature->m_movementInfo.RemoveMovementFlag(MOVEFLAG_FLYING);
-            if (Unit* pVictim = m_creature->getVictim())
-                m_creature->GetMotionMaster()->MoveChase(pVictim);
-        }
-    }
-
-
-    void MoveToPosition(bool up)
-    {      
-        // aways the same diff in "z" so can be just modified by magic value instead of using getheight()
-        if (up)
-        {
-            DoCastSpellIfCan(m_creature, SPELL_JEDOGA_SPHERE);
-            m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
-            m_creature->GetMotionMaster()->Clear(true, true);
-            m_creature->m_movementInfo.AddMovementFlag(MOVEFLAG_FLYING);
-            m_creature->GetMotionMaster()->MovePoint(POINT_IN_THE_AIR, SpawnNode[8][0], SpawnNode[8][1], SpawnNode[8][2] + 9);   
-        }
-        else // down
-        {
-            m_creature->RemoveAurasDueToSpell(SPELL_JEDOGA_SPHERE);
-            m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
-            m_creature->GetMotionMaster()->Clear(true, true);
-            // send visual update to player
-            m_creature->MonsterMove(SpawnNode[8][0], SpawnNode[8][1], SpawnNode[8][2], 3000);
-            // actual move
-            m_creature->GetMotionMaster()->MovePoint(POINT_AT_THE_GROUND, SpawnNode[8][0], SpawnNode[8][1], SpawnNode[8][2]);
-        }
-    }
-
-    void SummonedCreatureJustDied(Creature* pSummoned)
-    {
-
-        if (pSummoned->GetEntry() == NPC_TWILIGHT_INITIATE)
-        {
-            lInitiates.remove(pSummoned->GetGUID());
-
-            if (lInitiates.empty())
-            {
-                Phase = PHASE_READY_TO_ATTACK;
-                MoveToPosition(false);
-            }
-        }
-        else if (pSummoned->GetEntry() == NPC_TWILIGHT_VOLUNTEER)
-        {
-            lVolunteers.remove(pSummoned->GetGUID());
-            m_bSacrifice = true;
-        }
-    }
-
     void KilledUnit(Unit* pVictim)
     {
         switch(urand(0, 2))
@@ -223,325 +297,295 @@ struct MANGOS_DLL_DECL boss_jedogaAI : public ScriptedAI
             case 2: DoScriptText(SAY_SLAY_3, m_creature); break;
         }
     }
+    void EnterEvadeMode()
+    {
+        if (m_uiPhase == PHASE_PREACHING && !m_isRealEvade) return;
+
+        m_uiPhase = PHASE_PREACHING;
+        SetCombatMovement(false);
+        m_creature->GetMotionMaster()->MovementExpired();
+        m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+        m_creature->InterruptNonMeleeSpells(true);
+        DoCast(m_creature, SPELL_SPHERE_VISUAL);
+        m_creature->GetMap()->CreatureRelocation(m_creature, JEDOGA_X, JEDOGA_Y, JEDOGA_Z, JEDOGA_O);
+        m_creature->SendMonsterMove(JEDOGA_X, JEDOGA_Y, JEDOGA_Z, SPLINETYPE_NORMAL, SPLINEFLAG_NONE, 0);
+        if (m_pInstance)
+            m_pInstance->SetData(TYPE_JEDOGA, NOT_STARTED);
+
+        if (m_isRealEvade)
+        {
+            RespawnInitiates();
+            m_isRealEvade = false;
+        }
+    }
+
+    void RespawnInitiates()
+    {
+        std::list<Creature*> lInitiates;                      //respawn Twilight initiates
+        GetCreatureListWithEntryInGrid(lInitiates, m_creature, NPC_TWILIGHT_INITIATE, DEFAULT_VISIBILITY_INSTANCE);
+
+        if (!lInitiates.empty())
+        {
+            for(std::list<Creature*>::iterator iter = lInitiates.begin(); iter != lInitiates.end(); ++iter)
+            {
+                if ((*iter) && !(*iter)->isAlive())
+                    (*iter)->Respawn();
+            }
+        }
+    }
 
     void JustDied(Unit* pKiller)
     {
         DoScriptText(SAY_DEATH, m_creature);
-        DespawnAdds(lInitiates);
-        DespawnAdds(lVolunteers);
+         if (m_pInstance)
+            m_pInstance->SetData(TYPE_JEDOGA, DONE);
     }
 
-    void DespawnAdds(std::list<uint64>& List)
+    Creature* SelectRandomVolunteer(float fRange)
     {
-        if (!List.empty())
-        {
-            for (std::list<uint64>::iterator itr = List.begin(); itr != List.end(); ++itr)
-            {
-                if (Creature* pSummon = m_creature->GetMap()->GetCreature(*itr))
-                    pSummon->ForcedDespawn();
-            }
-            List.clear();
-        }
-    }
+        std::list<Creature* > lVolunteerList;
+        GetCreatureListWithEntryInGrid(lVolunteerList, m_creature, NPC_TWILIGHT_VOLUNTEER, fRange);
 
-    void SpawnAdds(std::list<uint64>& List, uint32 uiEntry)
-    {
-        if (Creature* pSummon = m_creature->SummonCreature(uiEntry, SpawnNode[7][0], SpawnNode[7][1], SpawnNode[7][2], 0.0f, TEMPSUMMON_DEAD_DESPAWN, 0))
-        {
-            uint8 uiPoint = urand(0, 2);
-            float x,y,z;
-            x = SpawnNode[uiPoint][0] -5 + urand(0, 10);
-            y = SpawnNode[uiPoint][1] -5 + urand(0, 10);
-            z = SpawnNode[uiPoint][2];
-
-            pSummon->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_NOT_SELECTABLE);
-            pSummon->GetMotionMaster()->MovePoint(uiPoint, x, y, z);
-            List.push_back(pSummon->GetGUID());
+        //This should not appear!
+        if (lVolunteerList.empty()){
+            EnterEvadeMode();
+            debug_log("SD2: AhnKahet: No volunteer to sacriface!");
+            return NULL;
         }
 
-        if (Creature* pSummon = m_creature->SummonCreature(uiEntry, SpawnNode[6][0], SpawnNode[6][1], SpawnNode[6][2], 0.0f, TEMPSUMMON_DEAD_DESPAWN, 0))
-        {
-            uint8 uiPoint = urand(3, 5);
-            float x,y,z;
-            x = SpawnNode[uiPoint][0] -5 + urand(0, 10);
-            y = SpawnNode[uiPoint][1] -5 + urand(0, 10);
-            z = SpawnNode[uiPoint][2];
 
-            pSummon->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_NOT_SELECTABLE);
-            pSummon->GetMotionMaster()->MovePoint(uiPoint, x, y, z);
-            List.push_back(pSummon->GetGUID());
-        }
-    }
+        std::list<Creature* >::iterator iter = lVolunteerList.begin();
+        advance(iter, urand(0, lVolunteerList.size()-1));
 
-    void MoveInLineOfSight(Unit* pWho)
-    {
-        // start intro (summon initiates, speach, etc handled in UpdateAI)
-        if (Phase == PHASE_BEFORE_INTRO && pWho->GetTypeId() == TYPEID_PLAYER && m_creature->GetDistance(pWho) <= 35.0f)
-        {
-            MoveToPosition(true);
-            Phase = PHASE_INTRO;
-            return;
-        }
-
-        // if passed intro return regular ScriptedAI behaviur
-        if (Phase == PHASE_READY_TO_ATTACK)
-            ScriptedAI::MoveInLineOfSight(pWho);
-    }
-
-    void JustReachedHome()
-    {
-        if (m_pInstance)
-            m_pInstance->SetData(TYPE_JEDOGA, FAIL);
+        return *iter;
     }
 
     void UpdateAI(const uint32 uiDiff)
     {
-        if (!m_creature->SelectHostileTarget() || !m_creature->getVictim())
+        if(m_uiPhase == PHASE_NOSTART)
+            return;
+        else if(m_uiPhase == PHASE_PREACHING)
         {
-            if (Phase == PHASE_INTRO)
+            if(m_uiCheckTimer <= uiDiff)
             {
-                if (m_uiEventTimer <= uiDiff)
+                if(Creature *pTemp = GetClosestCreatureWithEntry(m_creature, NPC_TWILIGHT_INITIATE, 150.0f))
+                    m_uiCheckTimer = 2000;
+                else
                 {
-                    switch(subevent)
+                    m_uiPhase = PHASE_DESCEND;
+                    m_uiSubPhase = SUBPHASE_FLY_DESCEND;
+                    return;
+                }
+            }else m_uiCheckTimer -= uiDiff;
+
+            if(m_uiPreachingTimer > uiDiff)
+            {
+                m_uiPreachingTimer -= uiDiff;
+                return;
+            }
+
+            if (m_pInstance)
+                if(m_pInstance->GetData(TYPE_TALDARAM) != DONE)
+                    return;
+
+            switch(m_uiPreachingText)
+            {
+               case 0:
+                   DoScriptText(SAY_PREACHING_1, m_creature);
+                   m_uiPreachingText++;
+                   m_uiPreachingTimer = 9500;
+                   break;
+               case 1:
+                   DoScriptText(SAY_PREACHING_2, m_creature);
+                   m_uiPreachingText++;
+                   m_uiPreachingTimer = 6500;
+                   break;
+               case 2:
+                   DoScriptText(SAY_PREACHING_3, m_creature);
+                   m_uiPreachingText++;
+                   m_uiPreachingTimer = 8500;
+                   break;
+               case 3:
+                   DoScriptText(SAY_PREACHING_4, m_creature);
+                   m_uiPreachingText++;
+                   m_uiPreachingTimer = 7500;
+                   break;
+               case 4:
+                   DoScriptText(SAY_PREACHING_5, m_creature);
+                   m_uiPreachingText = 0;
+                   m_uiPreachingTimer = 12000;
+                   break;
+            }
+            return;
+        }
+        else if(m_uiPhase == PHASE_DESCEND)
+        {
+            if(m_uiSubPhase == SUBPHASE_FLY_DESCEND)
+            {
+                if(GetClosestCreatureWithEntry(m_creature, NPC_TWILIGHT_VOLUNTEER, 150.0f))
+                    return;
+
+                SetCombatMovement(true);
+                m_creature->GetMap()->CreatureRelocation(m_creature, CENTER_X, CENTER_Y, GROUND_Z, JEDOGA_O);
+                m_creature->SendMonsterMove(CENTER_X, CENTER_Y, GROUND_Z, SPLINETYPE_NORMAL, SPLINEFLAG_NONE, 0);
+                m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+                m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+                m_creature->RemoveAurasDueToSpell(SPELL_SPHERE_VISUAL);
+                  m_creature->SetInCombatWithZone();
+                //Spawn Volunteers
+                for(int i = 0; i <= 28; ++i)
+                {
+                    if(Creature *pTemp = m_creature->SummonCreature(NPC_TWILIGHT_VOLUNTEER, VolunteerLoc[i].x, VolunteerLoc[i].y, VolunteerLoc[i].z, VolunteerLoc[i].o, TEMPSUMMON_CORPSE_DESPAWN, 0))
+                        pTemp->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+
+                }
+                m_uiSubPhase = 0;
+                m_uiPhase = PHASE_FIGHT;
+                return;
+            }
+        }
+        else if(m_uiPhase == PHASE_FIGHT)
+        {
+            //Evade if no target in this phase
+            if (!m_creature->SelectHostileTarget() || !m_creature->getVictim())
+                return;
+
+            //Spells
+            //Cyclone Strike
+            if(m_uiCycloneStrikeTimer <= uiDiff)
+            {
+                DoCast(m_creature, m_bIsRegularMode ? SPELL_CYCLONE_STRIKE : SPELL_CYCLONE_STRIKE_H);
+                m_uiCycloneStrikeTimer = 10000 + rand()%10000;
+            }else m_uiCycloneStrikeTimer -= uiDiff;
+
+            //Lightning Bolt
+            if(m_uiLightningBoltTimer <= uiDiff)
+            {
+                if(Unit* pTarget = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM, 0))
+                    DoCast(pTarget, m_bIsRegularMode ? SPELL_LIGHTNING_BOLT : SPELL_LIGHTNING_BOLT_H);
+                m_uiLightningBoltTimer = 3000 + rand()%2000;
+            }else m_uiLightningBoltTimer -= uiDiff;
+
+            //Thundershock
+            if(m_uiThundershockTimer <= uiDiff)
+            {
+                if(Unit* pTarget = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM, 0))
+                    DoCast(pTarget, m_bIsRegularMode ? SPELL_THUNDERSHOCK : SPELL_THUNDERSHOCK_H);
+                m_uiThundershockTimer = 20000 + rand()%10000;
+            }else m_uiThundershockTimer -= uiDiff;
+
+            //Health check
+            if(m_uiCheckTimer <= uiDiff)
+            {
+                uint8 health = m_creature->GetHealth()*100 / m_creature->GetMaxHealth();                    
+                if(m_uiLastSacrifaceHP == 0 && health <= 75)
+                {
+                    m_uiLastSacrifaceHP = 75;
+                    m_uiPhase = PHASE_SACRIFACE;
+                    m_uiSubPhase = SUBPHASE_FLY_UP;
+                    return;
+                }
+                else if(m_uiLastSacrifaceHP == 75 && health <= 50)
+                {
+                    m_uiLastSacrifaceHP = 50;
+                    m_uiPhase = PHASE_SACRIFACE;
+                    m_uiSubPhase = SUBPHASE_FLY_UP;
+                    return;
+                }
+                else if(m_uiLastSacrifaceHP == 50 && health <= 25)
+                {
+                    m_uiLastSacrifaceHP = 25;
+                    m_uiPhase = PHASE_SACRIFACE;
+                    m_uiSubPhase = SUBPHASE_FLY_UP;
+                    return;
+                }
+                m_uiCheckTimer = 1000;
+            }else m_uiCheckTimer -= uiDiff; 
+
+            DoMeleeAttackIfReady();
+        }
+        else if(m_uiPhase == PHASE_SACRIFACE)
+        {
+            if(m_uiSubPhase == SUBPHASE_FLY_UP)
+            {
+                SetCombatMovement(false);
+                m_creature->GetMotionMaster()->MovementExpired();
+                m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+                m_creature->InterruptNonMeleeSpells(true);
+                DoCast(m_creature, SPELL_SPHERE_VISUAL);
+                m_creature->GetMap()->CreatureRelocation(m_creature, JEDOGA_X, JEDOGA_Y, JEDOGA_Z, JEDOGA_O);
+                m_creature->SendMonsterMove(JEDOGA_X, JEDOGA_Y, JEDOGA_Z, SPLINETYPE_NORMAL, SPLINEFLAG_NONE, 0);
+                m_uiSubPhase = SUBPHASE_CALL_VOLUNTEER;
+                GameObject* pCircle = GetClosestGameObjectWithEntry(m_creature,GO_CIRCLE,50.0f);
+                if (pCircle && !pCircle->isSpawned())
+                    pCircle->SetRespawnTime(10000);
+            }
+            else if(m_uiSubPhase == SUBPHASE_CALL_VOLUNTEER)
+            {
+                pVolunteer = SelectRandomVolunteer(150.0f);
+                if(pVolunteer)
+                {
+                    switch(urand(0, 1))
                     {
-                        case 0:
-                            if (lInitiates.size() < SUMMONS_NUMBER)
-                                SpawnAdds(lInitiates, NPC_TWILIGHT_INITIATE);
-                            else 
-                                ++subevent;
-                            m_uiEventTimer = 1500;
-                            break;
-                        case 1:
-                        case 2:
-                        case 3:
-                        case 4:
-                        case 5:
-                            DoScriptText(SayPreaching[subevent], m_creature);
-                            m_uiEventTimer = 10000;
-                            ++subevent;
-                            break;
-                        case 6:
-                            if (!lInitiates.empty())
-                                for (std::list<uint64>::iterator itr = lInitiates.begin(); itr != lInitiates.end(); ++itr)
-                                {
-                                    if (Unit* pUnit = m_creature->GetMap()->GetUnit(*itr))
-                                        pUnit->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_NOT_SELECTABLE);
-                                }
-                            subevent = 0;
-                            Phase = PHASE_AFTER_INTRO;
-                            m_uiEventTimer = 1500;
-                            break;
-                        default: break;
+                        case 0: DoScriptText(SAY_CALL_SACRIFICE_1, m_creature); break;
+                        case 1: DoScriptText(SAY_CALL_SACRIFICE_2, m_creature); break;
                     }
-                } else m_uiEventTimer -= uiDiff;
+                    ((npc_twilight_volunteerAI*)pVolunteer->AI())->Sacriface(SACRIFACE_CHOOSEN);
+                    m_uiSubPhase = SUBPHASE_WAIT_FOR_VOLUNTEER;
+                }
             }
-            return;
-        }            
-
-        if (Phase == PHASE_SACRIFICE_SEQUENCE)
-        {
-            if (m_uiEventTimer <= uiDiff)
+            else if(m_uiSubPhase == SUBPHASE_WAIT_FOR_VOLUNTEER)
             {
-                if (!m_pInstance)
+                if(m_uiCheckTimer <= uiDiff)
                 {
-                    // this should not happen!
-                    Phase = PHASE_READY_TO_ATTACK;
-                    return;
-                }
-
-                Creature* pController = m_creature->GetMap()->GetCreature(m_pInstance->GetData64(NPC_JEDOGA_CONTROLLER));
-                if (!pController)
-                {
-                    // this should not happen!
-                    Phase = PHASE_READY_TO_ATTACK;
-                    return;
-                }
-
-                switch(subevent)
-                {
-                    case 0:
-                        MoveToPosition(true);
-                        ++subevent;
-                        break;
-                    case 1:
-                        if (lVolunteers.size() < SUMMONS_NUMBER)
-                            SpawnAdds(lVolunteers, NPC_TWILIGHT_VOLUNTEER);
-                        else
+                    if(pVolunteer && pVolunteer->isAlive()){
+                        if(pVolunteer->GetVisibility() == VISIBILITY_OFF)
                         {
-                            DoScriptText(urand(0, 1) ? SAY_VOLUNTEER_CHOOSEN : SAY_VOLUNTEER_SACRIFICED, m_creature);
-                            ++subevent;
+                            if(((npc_twilight_volunteerAI*)pVolunteer->AI())->m_bIsVulunteerNear)
+                                m_bVolunteerDied = false;
+                            else
+                                m_bVolunteerDied = true;
+                            m_uiSubPhase = SUBPHASE_SACRIFACE;
                         }
-                        break;
-                    case 2:
-                        pController->CastSpell(pController, SPELL_SACRIFICE_VISUAL, false);
-                        DoCastSpellIfCan(m_creature, SPELL_SACRIFICE_BEAM);
-                        ++subevent;
-                        break;
-                    case 3:
-                        {
-                            std::list<uint64>::iterator itr = lVolunteers.begin();
-                            advance(itr, (rand()% (lVolunteers.size())));
-                            if (Creature* pVolunteer = m_creature->GetMap()->GetCreature(*itr))
-                            {
-                                pVolunteer->RemoveAurasDueToSpell(SPELL_VOLUNTEER_SPHERE);
-                                float x, y, z;
-                                pController->GetPosition(x, y, z);
-                                pVolunteer->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_NOT_SELECTABLE);
-                                pVolunteer->GetMotionMaster()->MovePoint(7, x, y, z);
-                                DoScriptText(SAY_VOLUNTEER_CHOOSEN, pVolunteer);
-                            }
-                            ++subevent;
-                        }
-                        break;
-                    case 4:
-                        if (m_creature->HasAura(SPELL_GIFT_OF_THE_HERALD))
-                            m_bSacrifice = true;
-
-                        if (m_bSacrifice)
-                        {
-                            pController->RemoveAurasDueToSpell(SPELL_SACRIFICE_VISUAL);
-                            MoveToPosition(false);
-                            Phase = PHASE_READY_TO_ATTACK;
-                            subevent = 0;
-                            return;
-                        }
-                        break;
-                        default: break;
-                }
-                m_uiEventTimer = 1500;
+                    }else{
+                        m_bIsVulunteerNear = true;
+                        m_bVolunteerDied = true;
+                        m_uiSubPhase = SUBPHASE_SACRIFACE;
+                    }
+                    m_uiCheckTimer = 1000;
+                }else m_uiCheckTimer -= uiDiff;
             }
-            else
-                m_uiEventTimer -= uiDiff;
+            else if(m_uiSubPhase == SUBPHASE_SACRIFACE)
+            {
+                switch(urand(0, 1))
+                {
+                    case 0: DoScriptText(SAY_SACRIFICE_1, m_creature); break;
+                    case 1: DoScriptText(SAY_SACRIFICE_2, m_creature); break;
+                }
+                if(!m_bVolunteerDied)
+                    DoCast(m_creature, SPELL_GIFT_OF_THE_HERALD);
 
-            return;
+                m_creature->GetMap()->CreatureRelocation(m_creature, CENTER_X, CENTER_Y, GROUND_Z, JEDOGA_O);
+                m_creature->SendMonsterMove(CENTER_X, CENTER_Y, GROUND_Z, SPLINETYPE_NORMAL, SPLINEFLAG_NONE, 0);
+                m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+                m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+                m_creature->RemoveAurasDueToSpell(SPELL_SPHERE_VISUAL);
+                SetCombatMovement(true);
+                m_uiPhase = PHASE_FIGHT;
+                if(m_creature->getVictim())
+                    m_creature->GetMotionMaster()->MoveChase(m_creature->getVictim());
+            }
         }
-
-        if(!m_bSacrifice && m_creature->GetHealthPercent() < 50.0f)
-        {
-            Phase = PHASE_SACRIFICE_SEQUENCE;
-            return;
-        }
-
-        if(m_uiCycloneStrikeTimer < uiDiff)
-        {
-            DoCastSpellIfCan(m_creature->getVictim(), m_bIsRegularMode ? SPELL_CYCLONE_STRIKE : SPELL_CYCLONE_STRIKE_H);
-            m_uiCycloneStrikeTimer = urand(10000, 20000);
-        }
-        else
-            m_uiCycloneStrikeTimer -= uiDiff;
-
-        if(m_uiLightningBoltTimer < uiDiff)
-        {
-            if(Unit* pTarget = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM,0))
-                DoCastSpellIfCan(pTarget, m_bIsRegularMode ? SPELL_LIGHTNING_BOLT : SPELL_LIGHTNING_BOLT_H);
-            m_uiLightningBoltTimer = urand(3000, 8000);
-        }
-        else
-            m_uiLightningBoltTimer -= uiDiff;
-
-        if(m_uiThundershockTimer < uiDiff)
-        {
-            if(Unit* pTarget = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM,0))
-                DoCastSpellIfCan(pTarget, m_bIsRegularMode ? SPELL_THUNDERSHOCK : SPELL_THUNDERSHOCK_H);
-            m_uiThundershockTimer = urand(8000, 16000);
-        }
-        else
-            m_uiThundershockTimer -= uiDiff;
-
-        DoMeleeAttackIfReady();
     }
 };
-
 CreatureAI* GetAI_boss_jedoga(Creature* pCreature)
 {
     return new boss_jedogaAI(pCreature);
 }
 
-struct MANGOS_DLL_DECL mob_jedoga_addAI : public ScriptedAI
+CreatureAI* GetAI_npc_twilight_volunteer(Creature* pCreature)
 {
-    mob_jedoga_addAI(Creature *pCreature) : ScriptedAI(pCreature) 
-    {
-        m_pInstance = (ScriptedInstance*)pCreature->GetInstanceData();
-        Reset();
-    }
- 
-    ScriptedInstance* m_pInstance;
-
-    void Reset() {}
-
-    void JustReachedHome()
-    {
-            uint8 uiPoint = urand(0, 5);
-            float x,y,z;
-            x = SpawnNode[uiPoint][0] -5 + urand(0, 10);
-            y = SpawnNode[uiPoint][1] -5 + urand(0, 10);
-            z = SpawnNode[uiPoint][2];
-            m_creature->GetMotionMaster()->MovePoint(uiPoint, x, y, z);
-    }
-
-    void AttackedBy(Unit* pAttacker)
-    {
-        if (m_creature->GetEntry() == NPC_TWILIGHT_VOLUNTEER)
-            return;
-       
-        ScriptedAI::AttackedBy(pAttacker);
-    }
-
-    void MovementInform(uint32 uiMotionType, uint32 uiPointId)
-    {
-        if (uiMotionType != POINT_MOTION_TYPE || !m_pInstance)
-            return;
-
-        if (uiPointId == 7)
-        {
-            if (Creature* pController = m_creature->GetMap()->GetCreature(m_pInstance->GetData64(NPC_JEDOGA_CONTROLLER)))
-                {
-                    m_creature->SetFacingToObject(pController);
-                    m_creature->SetStandState(UNIT_STAND_STATE_KNEEL);
-                    DoScriptText(SAY_VOLUNTEER_SACRIFICED, m_creature);
-                    if (Creature* pJedoga = m_creature->GetMap()->GetCreature(m_pInstance->GetData64(NPC_JEDOGA_SHADOWSEEKER)))
-                    {
-                        pJedoga->SetFacingToObject(m_creature);
-                        pJedoga->CastSpell(m_creature, SPELL_SACRIFICE_BEAM, true);
-                    }
-                }
-        }
-        else
-        {
-            if (Creature* pJedoga = m_creature->GetMap()->GetCreature(m_pInstance->GetData64(NPC_JEDOGA_SHADOWSEEKER)))
-            {
-                m_creature->SetFacingToObject(pJedoga);
-                m_creature->SetStandState(UNIT_STAND_STATE_KNEEL);
-                if (m_creature->GetEntry() == NPC_TWILIGHT_VOLUNTEER)
-                {
-                    SetCombatMovement(false);
-                    DoCastSpellIfCan(m_creature, SPELL_VOLUNTEER_SPHERE);
-                }
-            }
-        }
-    }
-
-    void MoveInLineOfSight(Unit* pWho)
-    {
-        if (m_creature->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_NOT_SELECTABLE) ||
-            m_creature->GetEntry() == NPC_TWILIGHT_VOLUNTEER)
-            return;
-
-        ScriptedAI::MoveInLineOfSight(pWho);
-    }
-
-    void UpdateAI(const uint32 uiDiff)
-    {
-        if (!m_creature->SelectHostileTarget() || !m_creature->getVictim())
-            return;
-
-        DoMeleeAttackIfReady();
-    }
-};
-
-CreatureAI* GetAI_mob_jedoga_add(Creature* pCreature)
-{
-    return new mob_jedoga_addAI(pCreature);
+    return new npc_twilight_volunteerAI(pCreature);
 }
 
 void AddSC_boss_jedoga()
@@ -554,7 +598,7 @@ void AddSC_boss_jedoga()
     newscript->RegisterSelf();
 
     newscript = new Script;
-    newscript->Name = "mob_jedoga_add";
-    newscript->GetAI = &GetAI_mob_jedoga_add;
+    newscript->Name = "npc_twilight_volunteer";
+    newscript->GetAI = &GetAI_npc_twilight_volunteer;
     newscript->RegisterSelf();
 }

@@ -305,11 +305,6 @@ enum
     SAY_DROSTAN_GOT_LUCKY_2             = -1000649,
     SAY_DROSTAN_HIT_BIRD_1              = -1000650,
     SAY_DROSTAN_HIT_BIRD_2              = -1000651,
-
-    NPC_WARMONGER                       = 26811,
-    NPC_SOOTHSAYER                      = 26812,
-    SPELL_BLOW_SNOW                     = 47778,
-    SPELL_FROZEN                        = 47795
 };
 
 bool EffectAuraDummy_spell_aura_dummy_npc(const Aura* pAura, bool bApply)
@@ -907,18 +902,6 @@ bool EffectDummyCreature_spell_dummy_npc(Unit* pCaster, uint32 uiSpellId, SpellE
                 pCreatureTarget->DealDamage(pCreatureTarget, pCreatureTarget->GetHealth(), NULL, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
             }
             return true;
-        }
-
-        case SPELL_BLOW_SNOW:
-        {
-            if((pCreatureTarget->GetEntry() == NPC_WARMONGER) || (pCreatureTarget->GetEntry() == NPC_SOOTHSAYER))
-            {
-                if(pCaster->HasInArc(M_PI_F/2, pCreatureTarget))
-                {
-                    pCreatureTarget->CastSpell(pCreatureTarget, SPELL_FROZEN, true);
-                    return true;
-                }
-            }
         }
     }
 

@@ -539,3 +539,4 @@ void npc_escortAI::SetEscortPaused(bool bPaused)
     else
         RemoveEscortState(STATE_ESCORT_PAUSED);
 }
+

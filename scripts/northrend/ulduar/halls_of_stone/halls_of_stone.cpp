@@ -151,7 +151,7 @@ struct MANGOS_DLL_DECL mob_tribuna_controllerAI : public ScriptedAI
     ScriptedInstance* m_pInstance;
     bool m_bIsRegularMode;
 
-    GUIDList m_lKaddrakGUIDList;
+    std::list<uint64> m_lKaddrakGUIDList;
     //std::list<Creature*> m_lMarnakGUIDList;
     //std::list<Creature*> m_lAbedneumGUIDList;
 
@@ -222,7 +222,7 @@ struct MANGOS_DLL_DECL mob_tribuna_controllerAI : public ScriptedAI
             {
                 if (Unit* pTarget = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM, 0))
                     if (!m_lKaddrakGUIDList.empty())
-                        for(GUIDList::iterator itr = m_lKaddrakGUIDList.begin(); itr != m_lKaddrakGUIDList.end(); ++itr)
+                        for(std::list<uint64>::iterator itr = m_lKaddrakGUIDList.begin(); itr != m_lKaddrakGUIDList.end(); ++itr)
                             if (Creature* pCreature = m_creature->GetMap()->GetCreature(*itr))
                                 if (pCreature->isAlive())
                                     pCreature->CastSpell(pTarget, m_bIsRegularMode ? SPELL_GLARE_OF_THE_TRIBUNAL_H : SPELL_GLARE_OF_THE_TRIBUNAL, true);
@@ -291,7 +291,7 @@ struct MANGOS_DLL_DECL npc_brann_hosAI : public npc_escortAI
     uint32 m_uiPhase_timer;
 
     uint64 m_uiControllerGUID;
-    GUIDList m_lDwarfGUIDList;
+    std::list<uint64> m_lDwarfGUIDList;
 
     void Reset()
     {
@@ -382,7 +382,7 @@ struct MANGOS_DLL_DECL npc_brann_hosAI : public npc_escortAI
         if (m_lDwarfGUIDList.empty())
             return;
 
-        for(GUIDList::iterator itr = m_lDwarfGUIDList.begin(); itr != m_lDwarfGUIDList.end(); ++itr)
+        for(std::list<uint64>::iterator itr = m_lDwarfGUIDList.begin(); itr != m_lDwarfGUIDList.end(); ++itr)
         {
             if (Creature* pTemp = m_creature->GetMap()->GetCreature(*itr))
             {
@@ -419,7 +419,6 @@ struct MANGOS_DLL_DECL npc_brann_hosAI : public npc_escortAI
     void JustSummoned(Creature* pSummoned)
     {
         m_lDwarfGUIDList.push_back(pSummoned->GetGUID());
-        pSummoned->SetRespawnDelay(7*DAY);
         pSummoned->AddThreat(m_creature, 0.0f);
         pSummoned->AI()->AttackStart(m_creature);
     }
@@ -458,17 +457,17 @@ struct MANGOS_DLL_DECL npc_brann_hosAI : public npc_escortAI
                     if (m_pInstance)
                         if (Creature* pTemp = m_creature->GetMap()->GetCreature( m_pInstance->GetData64(DATA_ABEDNEUM)))
                             DoScriptText(SAY_EVENT_INTRO_3_ABED, pTemp);
-                    JumpToNextStep(5500);
+                    JumpToNextStep(8500);
                     break;
                 case 6:
                     DoScriptText(SAY_EVENT_A_1, m_creature);
-                    JumpToNextStep(5500);
+                    JumpToNextStep(6500);
                     break;
                 case 7:
                     if (m_pInstance)
                         if (Creature* pTemp = m_creature->GetMap()->GetCreature( m_pInstance->GetData64(DATA_KADDRAK)))
                             DoScriptText(SAY_EVENT_A_2_KADD, pTemp);
-                    JumpToNextStep(8500);
+                    JumpToNextStep(12500);
                     break;
                 case 8:
                     DoScriptText(SAY_EVENT_A_3, m_creature);
@@ -484,14 +483,14 @@ struct MANGOS_DLL_DECL npc_brann_hosAI : public npc_escortAI
                     break;
                 case 10:
                     DoScriptText(SAY_EVENT_B_1, m_creature);
-                    JumpToNextStep(7000);
+                    JumpToNextStep(6000);
                     break;
                 case 11:
                     if (m_pInstance)
                         if (Creature* pTemp = m_creature->GetMap()->GetCreature( m_pInstance->GetData64(DATA_MARNAK)))
                             DoScriptText(SAY_EVENT_B_2_MARN, pTemp);
                     SpawnDwarf(1);
-                    JumpToNextStep(10000);
+                    JumpToNextStep(20000);
                     break;
                 case 12:
                     DoScriptText(SAY_EVENT_B_3, m_creature);
@@ -523,7 +522,7 @@ struct MANGOS_DLL_DECL npc_brann_hosAI : public npc_escortAI
                         if (Creature* pTemp = m_creature->GetMap()->GetCreature( m_pInstance->GetData64(DATA_ABEDNEUM)))
                             DoScriptText(SAY_EVENT_C_2_ABED, pTemp);
                     SpawnDwarf(1);
-                    JumpToNextStep(10000);
+                    JumpToNextStep(20000);
                     break;
                 case 18:
                     DoScriptText(SAY_EVENT_C_3, m_creature);
@@ -531,7 +530,7 @@ struct MANGOS_DLL_DECL npc_brann_hosAI : public npc_escortAI
                         m_pInstance->DoUseDoorOrButton(m_pInstance->GetData64(DATA_GO_ABEDNEUM));
                     if (Creature* pTemp = m_creature->GetMap()->GetCreature( m_uiControllerGUID))
                         ((mob_tribuna_controllerAI*)pTemp->AI())->m_bIsActivateAbedneum = true;
-                    JumpToNextStep(6000);
+                    JumpToNextStep(5000);
                     break;
                 case 19:
                     SpawnDwarf(2);
@@ -551,7 +550,7 @@ struct MANGOS_DLL_DECL npc_brann_hosAI : public npc_escortAI
                         if (Creature* pTemp = m_creature->GetMap()->GetCreature( m_pInstance->GetData64(DATA_ABEDNEUM)))
                             DoScriptText(SAY_EVENT_D_2_ABED, pTemp);
                     SpawnDwarf(1);
-                    JumpToNextStep(6000);
+                    JumpToNextStep(5000);
                     break;
                 case 23:
                     SpawnDwarf(2);
@@ -560,11 +559,11 @@ struct MANGOS_DLL_DECL npc_brann_hosAI : public npc_escortAI
                 case 24:
                     DoScriptText(SAY_EVENT_D_3, m_creature);
                     SpawnDwarf(3);
-                    JumpToNextStep(6000);
+                    JumpToNextStep(5000);
                     break;
                 case 25:
                     SpawnDwarf(1);
-                    JumpToNextStep(6000);
+                    JumpToNextStep(5000);
                     break;
                 case 26:
                     SpawnDwarf(2);
@@ -586,107 +585,107 @@ struct MANGOS_DLL_DECL npc_brann_hosAI : public npc_escortAI
                         pTemp->DealDamage(pTemp, pTemp->GetHealth(), NULL, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
                     m_bIsBattle = true;
                     SetEscortPaused(false);
-                    JumpToNextStep(5500);
+                    JumpToNextStep(3500);
                     break;
                 case 29:
                     DoScriptText(SAY_EVENT_END_02, m_creature);
-                    JumpToNextStep(5500);
+                    JumpToNextStep(3500);
                     break;
                 case 30:
                     if (m_pInstance)
                         if (Creature* pTemp = m_creature->GetMap()->GetCreature( m_pInstance->GetData64(DATA_ABEDNEUM)))
                             DoScriptText(SAY_EVENT_END_03_ABED, pTemp);
-                    JumpToNextStep(8000);
+                    JumpToNextStep(4500);
                     break;
                 case 31:
                     DoScriptText(SAY_EVENT_END_04, m_creature);
-                    JumpToNextStep(10000);
+                    JumpToNextStep(6500);
                     break;
                 case 32:
                     if (m_pInstance)
                         if (Creature* pTemp = m_creature->GetMap()->GetCreature( m_pInstance->GetData64(DATA_ABEDNEUM)))
                             DoScriptText(SAY_EVENT_END_05_ABED, pTemp);
-                    JumpToNextStep(11500);
+                    JumpToNextStep(6500);
                     break;
                 case 33:
                     DoScriptText(SAY_EVENT_END_06, m_creature);
-                    JumpToNextStep(5000);
+                    JumpToNextStep(2500);
                     break;
                 case 34:
                     if (m_pInstance)
                         if (Creature* pTemp = m_creature->GetMap()->GetCreature( m_pInstance->GetData64(DATA_ABEDNEUM)))
                             DoScriptText(SAY_EVENT_END_07_ABED, pTemp);
-                    JumpToNextStep(16500);
+                    JumpToNextStep(10500);
                     break;
                 case 35:
                     DoScriptText(SAY_EVENT_END_08, m_creature);
-                    JumpToNextStep(7000);
+                    JumpToNextStep(4500);
                     break;
                 case 36:
                     if (m_pInstance)
                         if (Creature* pTemp = m_creature->GetMap()->GetCreature( m_pInstance->GetData64(DATA_KADDRAK)))
                             DoScriptText(SAY_EVENT_END_09_KADD, pTemp);
-                    JumpToNextStep(15500);
+                    JumpToNextStep(7500);
                     break;
                 case 37:
                     DoScriptText(SAY_EVENT_END_10, m_creature);
-                    JumpToNextStep(5000);
+                    JumpToNextStep(2500);
                     break;
                 case 38:
                     if (m_pInstance)
                         if (Creature* pTemp = m_creature->GetMap()->GetCreature( m_pInstance->GetData64(DATA_KADDRAK)))
                             DoScriptText(SAY_EVENT_END_11_KADD, pTemp);
-                    JumpToNextStep(18000);
+                    JumpToNextStep(10500);
                     break;
                 case 39:
                     DoScriptText(SAY_EVENT_END_12, m_creature);
-                    JumpToNextStep(3000);
+                    JumpToNextStep(2500);
                     break;
                 case 40:
                     if (m_pInstance)
                         if (Creature* pTemp = m_creature->GetMap()->GetCreature( m_pInstance->GetData64(DATA_KADDRAK)))
                             DoScriptText(SAY_EVENT_END_13_KADD, pTemp);
-                    JumpToNextStep(18000);
+                    JumpToNextStep(9500);
                     break;
                 case 41:
                     DoScriptText(SAY_EVENT_END_14, m_creature);
-                    JumpToNextStep(9000);
+                    JumpToNextStep(5500);
                     break;
                 case 42:
                     if (m_pInstance)
                         if (Creature* pTemp = m_creature->GetMap()->GetCreature( m_pInstance->GetData64(DATA_MARNAK)))
                             DoScriptText(SAY_EVENT_END_15_MARN, pTemp);
-                    JumpToNextStep(8500);
+                    JumpToNextStep(3500);
                     break;
                 case 43:
                     DoScriptText(SAY_EVENT_END_16, m_creature);
-                    JumpToNextStep(6000);
+                    JumpToNextStep(3500);
                     break;
                 case 44:
                     if (m_pInstance)
                         if (Creature* pTemp = m_creature->GetMap()->GetCreature( m_pInstance->GetData64(DATA_MARNAK)))
                             DoScriptText(SAY_EVENT_END_17_MARN, pTemp);
-                    JumpToNextStep(19500);
+                    JumpToNextStep(11500);
                     break;
                 case 45:
                     DoScriptText(SAY_EVENT_END_18, m_creature);
-                    JumpToNextStep(19500);
+                    JumpToNextStep(10500);
                     break;
                 case 46:
                     if (m_pInstance)
                         if (Creature* pTemp = m_creature->GetMap()->GetCreature( m_pInstance->GetData64(DATA_MARNAK)))
                             DoScriptText(SAY_EVENT_END_19_MARN, pTemp);
-                    JumpToNextStep(5000);
+                    JumpToNextStep(2500);
                     break;
                 case 47:
                     DoScriptText(SAY_EVENT_END_20, m_creature);
-                    JumpToNextStep(7000);
+                    JumpToNextStep(4500);
                     break;
                 case 48:
                     if (m_pInstance)
                         if (Creature* pTemp = m_creature->GetMap()->GetCreature( m_pInstance->GetData64(DATA_ABEDNEUM)))
                             DoScriptText(SAY_EVENT_END_21_ABED, pTemp);
-                    JumpToNextStep(5000);
+                    JumpToNextStep(3500);
                     break;
                 case 49:
                 {
@@ -706,7 +705,7 @@ struct MANGOS_DLL_DECL npc_brann_hosAI : public npc_escortAI
                     m_creature->SetUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
                     m_creature->SetUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_QUESTGIVER);
 
-                    JumpToNextStep(30000);
+                    JumpToNextStep(180000);
                     break;
                 }
                 case 50:
@@ -728,19 +727,19 @@ struct MANGOS_DLL_DECL npc_brann_hosAI : public npc_escortAI
 
 bool GossipHello_npc_brann_hos(Player* pPlayer, Creature* pCreature)
 {
-    ScriptedInstance* m_pInstance = (ScriptedInstance*)pCreature->GetInstanceData();
+        ScriptedInstance* m_pInstance;
+        m_pInstance = (ScriptedInstance*)pCreature->GetInstanceData();
 
     if (pCreature->isQuestGiver())
         pPlayer->PrepareQuestMenu(pCreature->GetObjectGuid());
 
-    if (m_pInstance->GetData(TYPE_BRANN) != DONE)
-        pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ITEM_START, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+1);
+if (m_pInstance->GetData(TYPE_BRANN) != DONE)
+    pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ITEM_START, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+1);
 
     pPlayer->SEND_GOSSIP_MENU(TEXT_ID_START, pCreature->GetGUID());
 
     //pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ITEM_PROGRESS, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+2);
     //pPlayer->SEND_GOSSIP_MENU(TEXT_ID_PROGRESS, pCreature->GetObjectGuid());
-
     return true;
 }
 

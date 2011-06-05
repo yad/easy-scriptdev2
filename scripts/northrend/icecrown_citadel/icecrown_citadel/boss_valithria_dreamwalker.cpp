@@ -74,7 +74,7 @@ struct MANGOS_DLL_DECL boss_valithria_dreamwalkerAI : public BSWScriptedAI
     uint8 currentDoor;
     uint8 currentDoor2;
     int8 portalscount;
-    GUIDList mobsGUIDList;
+    std::list<uint64> mobsGUIDList;
     uint32 speedK;
     Creature* dummyTarget;
 
@@ -257,7 +257,7 @@ struct MANGOS_DLL_DECL boss_valithria_dreamwalkerAI : public BSWScriptedAI
         if (mobsGUIDList.empty())
             return;
 
-        for(GUIDList::iterator itr = mobsGUIDList.begin(); itr != mobsGUIDList.end(); ++itr)
+        for(std::list<uint64>::iterator itr = mobsGUIDList.begin(); itr != mobsGUIDList.end(); ++itr)
         {
             if (Creature* pTemp = m_creature->GetMap()->GetCreature(*itr))
                 if (pTemp->isAlive()) 

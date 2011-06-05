@@ -13,24 +13,25 @@ enum
     TYPE_NOVOS                      = 1,
     TYPE_KING_DRED                  = 2,
     TYPE_THARONJA                   = 3,
-    TYPE_CRYSTAL_EVENT              = 4,
 
     NPC_KING_DRED                   = 27483,
-    NPC_NOVOS                       = 26631,
 
-    // crystal action
-    DEACTIVATE_ONE                  = 0,
-    RESET                           = 1,
-    ACTIVATE_BEAMS                  = 2,
+    TYPE_CRYSTAL_1                = 5,
+    TYPE_CRYSTAL_2                = 6,
+    TYPE_CRYSTAL_3                = 7,
+    TYPE_CRYSTAL_4                = 8,
+    TYPE_NOVOS_PHASE2_CHECK       = 9,
+    TYPE_NOVOS_EVENT              = 10,
 
-    CRYSTAL_NUMBER                  = 4,
+    NPC_CRYSTAL_CHANNEL_TARGET    = 26710,
+    NPC_CRYSTAL_CHANNEL           = 26712,
+    NPC_TRIGGER_TARGET            = 26714,
+    NPC_NOVOS                     = 26631,
 
-    GO_RITUAL_CRYSTAL_SW            = 189299,
-    GO_RITUAL_CRYSTAL_NE            = 189300,
-    GO_RITUAL_CRYSTAL_NW            = 189301,
-    GO_RITUAL_CRYSTAL_SE            = 189302,
-    NPC_CRYSTAL_CHANNEL_TARGET      = 26712,
-    SPELL_CHANNEL_BEAM              = 52106,
+    NPC_CRYSTAL_HANDLER           = 26627,
+    NPC_HULKING_CORPSE            = 27597,
+    NPC_FETID_TROLL_CORPSE        = 27598,
+    NPC_RISEN_SHADOWCASTER        = 27600,
 
     // Adds of King Dred Encounter - deaths counted for achievement
     NPC_DRAKKARI_GUTRIPPER          = 26641,
@@ -52,10 +53,6 @@ class MANGOS_DLL_DECL instance_draktharon_keep : public ScriptedInstance
 
         void SetData(uint32 uiType, uint32 uiData);
         uint32 GetData(uint32 uiType);
-        uint64 GetData64(uint32 uiType);
-
-        void OnCreatureCreate(Creature* pCreature);
-        void OnObjectCreate(GameObject* pGo);
 
         void OnCreatureEnterCombat(Creature* pCreature);
         void OnCreatureEvade(Creature* pCreature);
@@ -65,19 +62,14 @@ class MANGOS_DLL_DECL instance_draktharon_keep : public ScriptedInstance
 
         const char* Save() { return strInstData.c_str(); }
         void Load(const char* chrIn);
-        void ManageCrystals(uint32 action);
 
     protected:
         uint32 m_auiEncounter[MAX_ENCOUNTER];
-        uint64 m_auiRitualCrystalGUID[CRYSTAL_NUMBER];
         std::string strInstData;
 
         uint32 m_uiDreadAddsKilled;
-        bool m_bTrollgoreConsume;
-        // Novos the Summoner
-        uint64 m_uiNovosGUID;
-        uint64 m_uiNovosChannelTargetGUID;
         bool m_bNovosAddGrounded;
+        bool m_bTrollgoreConsume;
 };
 
 #endif

@@ -1,4 +1,4 @@
-/* Copyright (C) 2006 - 2011 ScriptDev2 <https://scriptdev2.svn.sourceforge.net/>
+/* Copyright (C) 2006 - 2011 ScriptDev2 <http://www.scriptdev2.com/>
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -17,10 +17,7 @@
 /* ScriptData
 SDName: Boss_Telestra
 SD%Complete: 80%
-SDComment: 
-* script depend on database spell support and eventAi for clones. transition to phase 2 also not fully implemented
-* hacked unitfalgs and equipment slots
-* hacked spell gravity well - MaNGOS does not support effect #145
+SDComment: script depend on database spell support and eventAi for clones. transition to phase 2 also not fully implemented
 SDCategory: Nexus
 EndScriptData */
 
@@ -54,7 +51,7 @@ enum
     SPELL_SUMMON_ARCANE     = 47708,
     SPELL_SUMMON_FROST      = 47709,
 
-    SPELL_FIRE_DIES         = 47711,
+    SPELL_FIRE_DIES         = 47711,                        // cast by clones at their death
     SPELL_ARCANE_DIES       = 47713,
     SPELL_FROST_DIES        = 47712,
 
@@ -64,8 +61,10 @@ enum
     NPC_TELEST_ARCANE       = 26929,
     NPC_TELEST_FROST        = 26930,
 
-    PHASE_ATTACKING         = 1,
-    PHASE_HIDDEN            = 2
+    PHASE_1                 = 1,
+    PHASE_2                 = 2,
+    PHASE_3                 = 3,
+    PHASE_4                 = 4
 };
 
 /*######
@@ -93,20 +92,17 @@ struct MANGOS_DLL_DECL boss_telestraAI : public ScriptedAI
 
     void Reset()
     {
-        m_uiPhase = PHASE_ATTACKING;
+        m_uiPhase = PHASE_1;
         m_uiCloneDeadCount = 0;
 
         m_uiFirebombTimer = urand(2000, 4000);
         m_uiIceNovaTimer = urand(8000, 12000);
         m_uiGravityWellTimer = urand(15000, 25000);
-        SetEquipmentSlots(true);
-        m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
     }
 
     void JustReachedHome()
     {
-        if (m_pInstance)
-            m_pInstance->SetData(TYPE_TELESTRA, FAIL);
+        m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
     }
 
     void AttackStart(Unit* pWho)
@@ -124,8 +120,6 @@ struct MANGOS_DLL_DECL boss_telestraAI : public ScriptedAI
     void Aggro(Unit* pWho)
     {
         DoScriptText(SAY_AGGRO, m_creature);
-        if (m_pInstance)
-            m_pInstance->SetData(TYPE_TELESTRA, IN_PROGRESS);
     }
 
     void JustDied(Unit* pKiller)
@@ -144,11 +138,9 @@ struct MANGOS_DLL_DECL boss_telestraAI : public ScriptedAI
 
     void SpellHit(Unit* pCaster, const SpellEntry *pSpell)
     {
-        if (m_pInstance && m_pInstance->GetData(TYPE_TELESTRA) != IN_PROGRESS)
-            return;
-
         switch(pSpell->Id)
         {
+            // eventAi must make sure clones cast spells when each of them die
             case SPELL_FIRE_DIES:
             case SPELL_ARCANE_DIES:
             case SPELL_FROST_DIES:
@@ -157,16 +149,20 @@ struct MANGOS_DLL_DECL boss_telestraAI : public ScriptedAI
 
                 if (m_uiCloneDeadCount == 3 || m_uiCloneDeadCount == 6)
                 {
-                    m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
                     m_creature->RemoveAurasDueToSpell(SPELL_SUMMON_CLONES);
-                    DoCastSpellIfCan(m_creature, SPELL_SPAWN_BACK_IN);
+                    m_creature->CastSpell(m_creature, SPELL_SPAWN_BACK_IN, false);
+
+                    m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
 
                     DoScriptText(SAY_MERGE, m_creature);
 
-                    m_uiPhase = PHASE_ATTACKING;
+                    m_uiPhase = m_uiCloneDeadCount == 3 ? PHASE_3 : PHASE_4;
                 }
                 break;
             }
+            case SPELL_SUMMON_CLONES:
+                m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+                break;
         }
     }
 
@@ -178,10 +174,6 @@ struct MANGOS_DLL_DECL boss_telestraAI : public ScriptedAI
             case NPC_TELEST_ARCANE: pSummoned->CastSpell(pSummoned, SPELL_ARCANE_VISUAL, true); break;
             case NPC_TELEST_FROST: pSummoned->CastSpell(pSummoned, SPELL_FROST_VISUAL, true); break;
         }
-
-        if (Unit* pTarget = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM,0))
-            if (pSummoned->AI() && pTarget->isInAccessablePlaceFor(pSummoned) && pSummoned->IsHostileTo(pTarget))
-                pSummoned->AI()->AttackStart(pTarget);
     }
 
     void UpdateAI(const uint32 uiDiff)
@@ -191,19 +183,16 @@ struct MANGOS_DLL_DECL boss_telestraAI : public ScriptedAI
 
         switch(m_uiPhase)
         {
-            case PHASE_ATTACKING:
+            case PHASE_1:
+            case PHASE_3:
+            case PHASE_4:
             {
                 if (!m_creature->GetCurrentSpell(CURRENT_CHANNELED_SPELL))
                 {
                     if (m_uiFirebombTimer < uiDiff)
                     {
-                        if (Unit* pTarget = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM,0))
-                        {
-                            float x, y, z;
-                            pTarget->GetPosition(x, y, z);
-                            m_creature->CastSpell(x, y, z, m_bIsRegularMode ? SPELL_FIREBOMB : SPELL_FIREBOMB_H, false);
-                        }
-                        m_uiFirebombTimer = urand(4000, 6000);
+                        if (DoCastSpellIfCan(m_creature->getVictim(), m_bIsRegularMode ? SPELL_FIREBOMB : SPELL_FIREBOMB_H) == CAST_OK)
+                            m_uiFirebombTimer = urand(4000, 6000);
                     }
                     else
                         m_uiFirebombTimer -= uiDiff;
@@ -216,17 +205,24 @@ struct MANGOS_DLL_DECL boss_telestraAI : public ScriptedAI
                     else
                         m_uiIceNovaTimer -= uiDiff;
 
-                    if ( (m_uiCloneDeadCount == 0 && m_creature->GetHealthPercent() < 50.0f) || 
-                        (!m_bIsRegularMode && m_uiCloneDeadCount == 3 && m_creature->GetHealthPercent() < 15.0f) )
+                    if (m_uiPhase == PHASE_1 && m_creature->GetHealthPercent() < 50.0f)
                     {
                         if (DoCastSpellIfCan(m_creature, SPELL_SUMMON_CLONES, CAST_INTERRUPT_PREVIOUS) == CAST_OK)
                         {
-                            m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
-                            SetEquipmentSlots(false, EQUIP_UNEQUIP, EQUIP_UNEQUIP, EQUIP_UNEQUIP);
                             DoScriptText(urand(0, 1) ? SAY_SPLIT_1 : SAY_SPLIT_2, m_creature);
-                            m_uiPhase = PHASE_HIDDEN;
+                            m_uiPhase = PHASE_2;
                         }
                     }
+
+                    if (m_uiPhase == PHASE_3 && !m_bIsRegularMode && m_creature->GetHealthPercent() < 15.0f)
+                    {
+                        if (DoCastSpellIfCan(m_creature, SPELL_SUMMON_CLONES, CAST_INTERRUPT_PREVIOUS) == CAST_OK)
+                        {
+                            DoScriptText(urand(0, 1) ? SAY_SPLIT_1 : SAY_SPLIT_2, m_creature);
+                            m_uiPhase = PHASE_2;
+                        }
+                    }
+
                     DoMeleeAttackIfReady();
                 }
 
@@ -240,7 +236,7 @@ struct MANGOS_DLL_DECL boss_telestraAI : public ScriptedAI
 
                 break;
             }
-            case PHASE_HIDDEN:
+            case PHASE_2:
             {
                 break;
             }

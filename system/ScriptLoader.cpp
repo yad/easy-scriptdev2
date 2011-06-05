@@ -12,14 +12,14 @@ extern void AddSC_npc_arena_honor();
 extern void AddSC_mob_teleguy();
 
 // OutdoorPvP
-//extern void AddSC_outdoor_pvp_eastern_kingdoms();
-//extern void AddSC_outdoor_pvp_kalimdor();
-//extern void AddSC_outdoor_pvp_northrend();
-//extern void AddSC_outdoor_pvp_outland();
+extern void AddSC_outdoor_pvp_eastern_kingdoms();
+extern void AddSC_outdoor_pvp_kalimdor();
+extern void AddSC_outdoor_pvp_northrend();
+extern void AddSC_outdoor_pvp_outland();
 
 // OutdoorPvP zone scripts
-//extern void AddSC_outdoor_pvp_eastern_plaguelands();
-//extern void AddSC_outdoor_pvp_silithus();
+extern void AddSC_outdoor_pvp_eastern_plaguelands();
+extern void AddSC_outdoor_pvp_silithus();
 
 //examples
 extern void AddSC_example_creature();
@@ -38,10 +38,6 @@ extern void AddSC_npc_professions();
 extern void AddSC_npcs_special();
 extern void AddSC_spell_scripts();
 extern void AddSC_pet_scripts();
-extern void AddSC_worldmap_eastern_kingdoms();
-extern void AddSC_worldmap_kalimdor();
-extern void AddSC_worldmap_outland();
-extern void AddSC_npc_companion_handler();
 
 //eastern kingdoms
 extern void AddSC_blackrock_depths();                       //blackrock_depths
@@ -87,9 +83,9 @@ extern void AddSC_boss_curator();
 extern void AddSC_boss_maiden_of_virtue();
 extern void AddSC_boss_shade_of_aran();
 extern void AddSC_boss_netherspite();
-extern void AddSC_boss_malchezaar();
+extern void AddSC_boss_nightbane();
+extern void AddSC_boss_prince_malchezaar();
 extern void AddSC_boss_terestian_illhoof();
-extern void AddSC_netherspite_infernal();
 extern void AddSC_boss_moroes();
 extern void AddSC_bosses_opera();
 extern void AddSC_instance_karazhan();
@@ -345,7 +341,6 @@ extern void AddSC_boss_heigan();
 extern void AddSC_boss_patchwerk();
 extern void AddSC_boss_razuvious();
 extern void AddSC_boss_sapphiron();
-extern void AddSC_boss_thaddius();
 extern void AddSC_instance_naxxramas();
 
 extern void AddSC_boss_anomalus();                          //nexus
@@ -386,9 +381,9 @@ extern void AddSC_boss_auriaya();
 extern void AddSC_boss_freya();
 extern void AddSC_boss_hodir();
 extern void AddSC_boss_ignis();
-extern void AddSC_boss_assembly_of_iron();
+extern void AddSC_boss_iron_council();
 extern void AddSC_boss_kologarn();
-// extern void AddSC_boss_leviathan();
+extern void AddSC_boss_leviathan();
 extern void AddSC_boss_mimiron();
 extern void AddSC_boss_razorscale();
 extern void AddSC_boss_thorim();
@@ -397,6 +392,7 @@ extern void AddSC_boss_xt002();
 extern void AddSC_boss_yogg_saron();
 extern void AddSC_instance_ulduar();
 extern void AddSC_ulduar();
+extern void AddSC_ulduar_teleport();
 extern void AddSC_boss_ingvar();                            //utgarde_keep
 extern void AddSC_boss_keleseth();
 extern void AddSC_boss_skarvald_and_dalronn();
@@ -458,7 +454,7 @@ extern void AddSC_instance_ruby_sanctum();                  // Ruby Sanctum
 extern void AddSC_ruby_sanctum();
 extern void AddSC_boss_halion();
 extern void AddSC_boss_ragefire();
-// extern void AddSC_boss_zarithian();
+extern void AddSC_boss_zarithian();
 extern void AddSC_boss_baltharus();
 
 //outland
@@ -552,14 +548,14 @@ void AddScripts()
 
     // OutdoorPvP zone scripts
     // Must be _before_ map scripts call!
-    //AddSC_outdoor_pvp_eastern_plaguelands();
-    //AddSC_outdoor_pvp_silithus();
+    AddSC_outdoor_pvp_eastern_plaguelands();
+    AddSC_outdoor_pvp_silithus();
 
     // OutdoorPvP
-    //AddSC_outdoor_pvp_eastern_kingdoms();
-    //AddSC_outdoor_pvp_kalimdor();
-    //AddSC_outdoor_pvp_northrend();
-    //AddSC_outdoor_pvp_outland();
+    AddSC_outdoor_pvp_eastern_kingdoms();
+    AddSC_outdoor_pvp_kalimdor();
+    AddSC_outdoor_pvp_northrend();
+    AddSC_outdoor_pvp_outland();
 
     //examples
     AddSC_example_creature();
@@ -578,10 +574,6 @@ void AddScripts()
     AddSC_npcs_special();
     AddSC_spell_scripts();
     AddSC_pet_scripts();
-    AddSC_worldmap_eastern_kingdoms();
-    AddSC_worldmap_kalimdor();
-    AddSC_worldmap_outland();
-    AddSC_npc_companion_handler();
 
     //eastern kingdoms
     AddSC_blackrock_depths();                               //blackrock_depths
@@ -627,9 +619,9 @@ void AddScripts()
     AddSC_boss_maiden_of_virtue();
     AddSC_boss_shade_of_aran();
     AddSC_boss_netherspite();
-    AddSC_boss_malchezaar();
+    AddSC_boss_nightbane();
+    AddSC_boss_prince_malchezaar();
     AddSC_boss_terestian_illhoof();
-    AddSC_netherspite_infernal();
     AddSC_boss_moroes();
     AddSC_bosses_opera();
     AddSC_instance_karazhan();
@@ -873,7 +865,6 @@ void AddScripts()
     AddSC_boss_patchwerk();
     AddSC_boss_razuvious();
     AddSC_boss_sapphiron();
-    AddSC_boss_thaddius();
     AddSC_instance_naxxramas();
 
     AddSC_boss_anomalus();                                  //nexus
@@ -914,9 +905,9 @@ void AddScripts()
     AddSC_boss_freya();
     AddSC_boss_hodir();
     AddSC_boss_ignis();
-    AddSC_boss_assembly_of_iron();
+    AddSC_boss_iron_council();
     AddSC_boss_kologarn();
-    // AddSC_boss_leviathan();
+    AddSC_boss_leviathan();
     AddSC_boss_mimiron();
     AddSC_boss_razorscale();
     AddSC_boss_thorim();
@@ -925,6 +916,7 @@ void AddScripts()
     AddSC_boss_yogg_saron();
     AddSC_instance_ulduar();
     AddSC_ulduar();
+    AddSC_ulduar_teleport();
     AddSC_boss_ingvar();                                    //utgarde_keep
     AddSC_boss_keleseth();
     AddSC_boss_skarvald_and_dalronn();
@@ -956,7 +948,7 @@ void AddScripts()
     AddSC_boss_lavanthor();
     AddSC_violet_hold();
 
-    // AddSC_instance_icecrown_spire();
+    AddSC_instance_icecrown_spire();
     AddSC_icecrown_spire();
     AddSC_icecrown_teleporter();
     AddSC_boss_lord_marrowgar();
@@ -986,7 +978,7 @@ void AddScripts()
     AddSC_ruby_sanctum();
     AddSC_boss_halion();
     AddSC_boss_ragefire();
-    //AddSC_boss_zarithian();
+    AddSC_boss_zarithian();
     AddSC_boss_baltharus();
 
     //outland

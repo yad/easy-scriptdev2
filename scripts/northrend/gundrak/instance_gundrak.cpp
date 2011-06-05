@@ -1,4 +1,4 @@
-/* Copyright (C) 2006 - 2011 ScriptDev2 <https://scriptdev2.svn.sourceforge.net/>
+/* Copyright (C) 2006 - 2011 ScriptDev2 <http://www.scriptdev2.com/>
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -42,29 +42,7 @@ bool GOUse_go_gundrak_altar(Player* pPlayer, GameObject* pGo)
     return true;
 }
 
-instance_gundrak::instance_gundrak(Map* pMap) : ScriptedInstance(pMap),
-    m_uiEckDoorGUID(0),
-    m_uiEckUnderwaterDoorGUID(0),
-    m_uiGaldarahDoorGUID(0),
-    m_uiExitDoorLeftGUID(0),
-    m_uiExitDoorRightGUID(0),
-    m_uiSnakeKeyGUID(0),
-    m_uiMammothKeyGUID(0),
-    m_uiTrollKeyGUID(0),
-    m_uiRhinoKeyGUID(0),
-    m_uiAltarOfSladranGUID(0),
-    m_uiAltarOfMoorabiGUID(0),
-    m_uiAltarOfColossusGUID(0),
-    m_uiBridgeGUID(0),
-    m_uiElemental(0),
-    m_uiEckAddsCounter(0),
-    m_uiColisionGUID(0),
-
-    m_uiSladranGUID(0),
-    m_uiElementalGUID(0),
-    m_uiColossusGUID(0),
-    m_uiMoorabiGUID(0),
-    m_uiEckGUID(0)
+instance_gundrak::instance_gundrak(Map* pMap) : ScriptedInstance(pMap)
 {
     Initialize();
 }
@@ -72,92 +50,89 @@ instance_gundrak::instance_gundrak(Map* pMap) : ScriptedInstance(pMap),
 void instance_gundrak::Initialize()
 {
     memset(&m_auiEncounter, 0, sizeof(m_auiEncounter));
+
+    m_vStalkerCasterGuids.reserve(3);
+    m_vStalkerTargetGuids.reserve(3);
 }
 
 void instance_gundrak::OnCreatureCreate(Creature* pCreature)
 {
     switch(pCreature->GetEntry())
     {
-        case NPC_SLADRAN:   m_uiSladranGUID   = pCreature->GetGUID(); break;
-        case NPC_ELEMENTAL: m_uiElementalGUID = pCreature->GetGUID(); break;
-        case NPC_COLOSSUS:  m_uiColossusGUID  = pCreature->GetGUID(); break;
-        case NPC_MOORABI:   m_uiMoorabiGUID   = pCreature->GetGUID(); break;
-        case NPC_ECK:       m_uiEckGUID       = pCreature->GetGUID(); break;
-        case NPC_INVISIBLE_STALKER: m_luiStalkerGUIDs.push_back(pCreature->GetGUID()); break;
+        case NPC_SLADRAN:
+        case NPC_ELEMENTAL:
+        case NPC_COLOSSUS:
+            m_mNpcEntryGuidStore[pCreature->GetEntry()] = pCreature->GetObjectGuid();
+            break;
+
+        case NPC_INVISIBLE_STALKER:
+            m_luiStalkerGUIDs.push_back(pCreature->GetGUID());
+            break;
     }
 }
+
+/* TODO: Reload case need some love!
+*  Problem is to get the bridge/ collision work correct in relaod case.
+*  To provide correct functionality(expecting testers to activate all altars in reload case), the Keys aren't loaded, too
+*  TODO: When fixed, also remove the SPECIAL->DONE data translation in Load().
+*
+*  For the Keys should be used something like this, and for bridge and collision similar
+*
+*   if (m_auiEncounter[0] == SPECIAL && m_auiEncounter[1] == SPECIAL && m_auiEncounter[2] == SPECIAL)
+*       pGo->SetGoState(GO_STATE_ACTIVE_ALTERNATIVE);
+*   else
+*       pGo->SetGoState(GO_STATE_READY);
+*/
 
 void instance_gundrak::OnObjectCreate(GameObject* pGo)
 {
     switch(pGo->GetEntry())
     {
         case GO_ECK_DOOR:
-            m_uiEckDoorGUID = pGo->GetGUID();
             if (m_auiEncounter[TYPE_MOORABI] == DONE && !instance->IsRegularDifficulty())
-                DoUseDoorOrButton(m_uiEckDoorGUID);
+                pGo->SetGoState(GO_STATE_ACTIVE);
             break;
         case GO_ECK_UNDERWATER_DOOR:
-            m_uiEckUnderwaterDoorGUID = pGo->GetGUID();
             if (m_auiEncounter[TYPE_ECK] == DONE)
-                DoUseDoorOrButton(m_uiEckUnderwaterDoorGUID);
+                pGo->SetGoState(GO_STATE_ACTIVE);
             break;
         case GO_GALDARAH_DOOR:
-            m_uiGaldarahDoorGUID = pGo->GetGUID();
-            DoUseDoorOrButton(m_uiGaldarahDoorGUID);
+            pGo->SetGoState(GO_STATE_ACTIVE);
             break;
         case GO_EXIT_DOOR_L:
-            m_uiExitDoorLeftGUID = pGo->GetGUID();
             if (m_auiEncounter[TYPE_GALDARAH] == DONE)
-                DoUseDoorOrButton(m_uiExitDoorLeftGUID);
+                pGo->SetGoState(GO_STATE_ACTIVE);
             break;
         case GO_EXIT_DOOR_R:
-            m_uiExitDoorRightGUID = pGo->GetGUID();
             if (m_auiEncounter[TYPE_GALDARAH] == DONE)
-                DoUseDoorOrButton(m_uiExitDoorRightGUID);
+                pGo->SetGoState(GO_STATE_ACTIVE);
             break;
         case GO_ALTAR_OF_SLADRAN:
-            m_uiAltarOfSladranGUID = pGo->GetGUID();
             if (m_auiEncounter[TYPE_SLADRAN] == DONE)
                 pGo->RemoveFlag(GAMEOBJECT_FLAGS, GO_FLAG_NO_INTERACT);
             break;
         case GO_ALTAR_OF_MOORABI:
-            m_uiAltarOfMoorabiGUID = pGo->GetGUID();
             if (m_auiEncounter[TYPE_MOORABI] == DONE)
                 pGo->RemoveFlag(GAMEOBJECT_FLAGS, GO_FLAG_NO_INTERACT);
             break;
         case GO_ALTAR_OF_COLOSSUS:
-            m_uiAltarOfColossusGUID = pGo->GetGUID();
             if (m_auiEncounter[TYPE_COLOSSUS] == DONE)
                 pGo->RemoveFlag(GAMEOBJECT_FLAGS, GO_FLAG_NO_INTERACT);
                 break;
         case GO_SNAKE_KEY:
-            m_uiSnakeKeyGUID = pGo->GetGUID();
-            break;
         case GO_TROLL_KEY:
-            m_uiTrollKeyGUID = pGo->GetGUID();
-            break;
         case GO_MAMMOTH_KEY:
-            m_uiMammothKeyGUID = pGo->GetGUID();
-            break;
         case GO_RHINO_KEY:
-            m_uiRhinoKeyGUID = pGo->GetGUID();
-            break;
         case GO_BRIDGE:
-            m_uiBridgeGUID = pGo->GetGUID();
-            break;
         case GO_COLLISION:
-            m_uiColisionGUID = pGo->GetGUID();
             break;
-    }
-}
-bool instance_gundrak::IsEncounterInProgress() const
-{
-    for (uint8 i = 0; i < MAX_ENCOUNTER; ++i)
-        if (m_auiEncounter[i] == IN_PROGRESS)
-            return true;
 
-    return false;
+        default:
+            return;
+    }
+    m_mGoEntryGuidStore[pGo->GetEntry()] = pGo->GetObjectGuid();
 }
+
 void instance_gundrak::Load(const char* chrIn)
 {
     if (!chrIn)
@@ -193,7 +168,7 @@ void instance_gundrak::SetData(uint32 uiType, uint32 uiData)
         case TYPE_SLADRAN:
             m_auiEncounter[TYPE_SLADRAN] = uiData;
             if (uiData == DONE)
-                if (GameObject* pGo = instance->GetGameObject(m_uiAltarOfSladranGUID))
+                if (GameObject* pGo = GetSingleGameObjectFromStorage(GO_ALTAR_OF_SLADRAN))
                     pGo->RemoveFlag(GAMEOBJECT_FLAGS, GO_FLAG_NO_INTERACT);
             if (uiData == SPECIAL)
                 m_mAltarInProgress.insert(TypeTimerPair(TYPE_SLADRAN, TIMER_VISUAL_ALTAR));
@@ -203,8 +178,8 @@ void instance_gundrak::SetData(uint32 uiType, uint32 uiData)
             if (uiData == DONE)
             {
                 if (!instance->IsRegularDifficulty())
-                    DoUseDoorOrButton(m_uiEckDoorGUID);
-                if (GameObject* pGo = instance->GetGameObject(m_uiAltarOfMoorabiGUID))
+                    DoUseDoorOrButton(GO_ECK_DOOR);
+                if (GameObject* pGo = GetSingleGameObjectFromStorage(GO_ALTAR_OF_MOORABI))
                     pGo->RemoveFlag(GAMEOBJECT_FLAGS, GO_FLAG_NO_INTERACT);
             }
             if (uiData == SPECIAL)
@@ -213,52 +188,29 @@ void instance_gundrak::SetData(uint32 uiType, uint32 uiData)
         case TYPE_COLOSSUS:
             m_auiEncounter[TYPE_COLOSSUS] = uiData;
             if (uiData == DONE)
-                if (GameObject* pGo = instance->GetGameObject(m_uiAltarOfColossusGUID))
+                if (GameObject* pGo = GetSingleGameObjectFromStorage(GO_ALTAR_OF_COLOSSUS))
                     pGo->RemoveFlag(GAMEOBJECT_FLAGS, GO_FLAG_NO_INTERACT);
             if (uiData == SPECIAL)
                 m_mAltarInProgress.insert(TypeTimerPair(TYPE_COLOSSUS, TIMER_VISUAL_ALTAR));
             break;
         case TYPE_GALDARAH:
             m_auiEncounter[TYPE_GALDARAH] = uiData;
-            DoUseDoorOrButton(m_uiGaldarahDoorGUID);
+            DoUseDoorOrButton(GO_GALDARAH_DOOR);
             if (uiData == DONE)
             {
-                DoUseDoorOrButton(m_uiExitDoorLeftGUID);
-                DoUseDoorOrButton(m_uiExitDoorRightGUID);
+                DoUseDoorOrButton(GO_EXIT_DOOR_L);
+                DoUseDoorOrButton(GO_EXIT_DOOR_R);
             }
             break;
         case TYPE_ECK:
             m_auiEncounter[TYPE_ECK] = uiData;
             if (uiData == DONE)
-                DoUseDoorOrButton(m_uiEckUnderwaterDoorGUID);
-            if (uiData == SPECIAL)
-                {
-                    ++m_uiEckAddsCounter;
-
-                    if (m_uiEckAddsCounter == 3)
-                        m_auiEncounter[TYPE_ECK] = uiData;
-                        
-                }
-            break;
-        case TYPE_ELEMENTAL:
-            m_uiElemental = uiData;
+                DoUseDoorOrButton(GO_ECK_UNDERWATER_DOOR);
             break;
         default:
             error_log("SD2: Instance Gundrak: ERROR SetData = %u for type %u does not exist/not implemented.", uiType, uiData);
-            break;
+            return;
     }
-/*    if (m_auiEncounter[0] == SPECIAL && m_auiEncounter[1] == SPECIAL && m_auiEncounter[2] == SPECIAL)
-    {
-        //DoUseDoorOrButton(m_uiBridgeGUID);
-       // DoUseDoorOrButton(m_uiColisionGUID);
-        if (GameObject* pCollision = instance->GetGameObject(uiCollision))
-                     pCollision->SummonGameObject(192743, pCollision->GetPositionX(), pCollision->GetPositionY(), pCollision->GetPositionZ(), pCollision->GetOrientation(), 0, 0, 0, 0, 0);
-
-        if(GameObject* pGo = instance->GetGameObject(m_uiBridgeGUID))
-        {
-            pGo->SetGoState(GO_STATE_ACTIVE);}
-        DoUseDoorOrButton(m_uiColisionGUID);
-    } */ 
 
     if (uiData == DONE || uiData == SPECIAL)                // Save activated altars, too
     {
@@ -268,7 +220,7 @@ void instance_gundrak::SetData(uint32 uiType, uint32 uiData)
         saveStream << m_auiEncounter[TYPE_SLADRAN] << " " << m_auiEncounter[TYPE_MOORABI] << " " << m_auiEncounter[TYPE_COLOSSUS] << " " << m_auiEncounter[TYPE_GALDARAH] << " "
             << m_auiEncounter[TYPE_ECK];
 
-        strInstData = saveStream.str();
+        m_strInstData = saveStream.str();
 
         SaveToDB();
         OUT_SAVE_INST_DATA_COMPLETE;
@@ -277,37 +229,9 @@ void instance_gundrak::SetData(uint32 uiType, uint32 uiData)
 
 uint32 instance_gundrak::GetData(uint32 uiType)
 {
-    switch(uiType)
-    {
-        case TYPE_SLADRAN:
-            return m_auiEncounter[TYPE_SLADRAN];
-        case TYPE_MOORABI:
-            return m_auiEncounter[TYPE_MOORABI];
-        case TYPE_COLOSSUS:
-            return m_auiEncounter[TYPE_COLOSSUS];
-        case TYPE_GALDARAH:
-            return m_auiEncounter[TYPE_GALDARAH];
-        case TYPE_ECK:
-            return m_auiEncounter[TYPE_ECK];
-        case TYPE_ELEMENTAL:
-            return m_uiElemental;
-    }
-    return 0;
-}
+    if (uiType < MAX_ENCOUNTER)
+        return m_auiEncounter[uiType];
 
-uint64 instance_gundrak::GetData64(uint32 uiType)
-{
-    switch(uiType)
-    {
-        case NPC_SLADRAN:
-            return m_uiSladranGUID;
-        case NPC_ELEMENTAL:
-            return m_uiElementalGUID;
-        case NPC_COLOSSUS:
-            return m_uiColossusGUID;
-        case NPC_MOORABI:
-            return m_uiMoorabiGUID;
-    }
     return 0;
 }
 
@@ -321,8 +245,8 @@ void instance_gundrak::DoAltarVisualEffect(uint8 uiType)
     // Sort the lists if not yet done
     if (!m_luiStalkerGUIDs.empty())
     {
-        float fHeight = 10.0f; // A bit higher than the altar is needed
-        if (GameObject* pCollusAltar = instance->GetGameObject(m_uiAltarOfColossusGUID))
+        float fHeight = 10.0f;                              // A bit higher than the altar is needed
+        if (GameObject* pCollusAltar = GetSingleGameObjectFromStorage(GO_ALTAR_OF_COLOSSUS))
             fHeight += pCollusAltar->GetPositionZ();
 
         std::list<Creature*> lStalkerTargets, lStalkerCasters;
@@ -341,41 +265,36 @@ void instance_gundrak::DoAltarVisualEffect(uint8 uiType)
         lStalkerTargets.sort(sortFromEastToWest);
         lStalkerCasters.sort(sortFromEastToWest);
 
-        for (std::list<Creature*>::const_iterator itr = lStalkerTargets.begin(); itr != lStalkerTargets.end(); itr++)
-            m_luiStalkerTargetGUIDs.push_back((*itr)->GetGUID());
-        for (std::list<Creature*>::const_iterator itr = lStalkerCasters.begin(); itr != lStalkerCasters.end(); itr++)
-            m_luiStalkerCasterGUIDs.push_back((*itr)->GetGUID());
+        for (std::list<Creature*>::const_iterator itr = lStalkerTargets.begin(); itr != lStalkerTargets.end(); ++itr)
+            m_vStalkerTargetGuids.push_back((*itr)->GetGUID());
+        for (std::list<Creature*>::const_iterator itr = lStalkerCasters.begin(); itr != lStalkerCasters.end(); ++itr)
+            m_vStalkerCasterGuids.push_back((*itr)->GetGUID());
     }
 
     // Verify that the DB has enough trigger spawned
-    if (m_luiStalkerTargetGUIDs.size() < 3 || m_luiStalkerCasterGUIDs.size() < 3)
+    if (m_vStalkerTargetGuids.size() < 3 || m_vStalkerCasterGuids.size() < 3)
         return;
 
     // Get the Index from the bosses
     uint8 uiIndex = 0;
     switch (uiType)
     {
-        case TYPE_SLADRAN: uiIndex = 0; break;
+        case TYPE_SLADRAN:  uiIndex = 0; break;
         case TYPE_COLOSSUS: uiIndex = 1; break;
-        case TYPE_MOORABI: uiIndex = 2; break;
-        default: return;
+        case TYPE_MOORABI:  uiIndex = 2; break;
+        default:
+            return;
     }
 
-    GUIDList::iterator targetItr = m_luiStalkerTargetGUIDs.begin();
-    GUIDList::iterator casterItr = m_luiStalkerCasterGUIDs.begin();
-
-    advance(targetItr, uiIndex);
-    advance(casterItr, uiIndex);
-
-    Creature* pTarget = instance->GetCreature(*targetItr);
-    Creature* pCaster = instance->GetCreature(*casterItr);
+    Creature* pTarget = instance->GetCreature(m_vStalkerTargetGuids[uiIndex]);
+    Creature* pCaster = instance->GetCreature(m_vStalkerCasterGuids[uiIndex]);
 
     if (!pTarget || !pCaster)
         return;
 
     uint32 auiFireBeamSpells[3] = {SPELL_BEAM_SNAKE, SPELL_BEAM_ELEMENTAL, SPELL_BEAM_MAMMOTH};
 
-    // Cast from Caster to Target, triggered to avoid LoS-Check
+    // Cast from Caster to Target
     pCaster->CastSpell(pTarget, auiFireBeamSpells[uiIndex], true);
 }
 
@@ -413,9 +332,9 @@ void instance_gundrak::Update(uint32 uiDiff)
                 // Use Key
                 switch (itr->first)
                 {
-                    case TYPE_SLADRAN: DoUseDoorOrButton(m_uiSnakeKeyGUID); break;
-                    case TYPE_MOORABI: DoUseDoorOrButton(m_uiMammothKeyGUID); break;
-                    case TYPE_COLOSSUS: DoUseDoorOrButton(m_uiTrollKeyGUID); break;
+                    case TYPE_SLADRAN: DoUseDoorOrButton(GO_SNAKE_KEY); break;
+                    case TYPE_MOORABI: DoUseDoorOrButton(GO_MAMMOTH_KEY); break;
+                    case TYPE_COLOSSUS: DoUseDoorOrButton(GO_TROLL_KEY); break;
                 }
                 // Set Timer for Beam-Duration
                 m_mKeyInProgress.insert(TypeTimerPair(itr->first, TIMER_VISUAL_KEY));
@@ -440,21 +359,20 @@ void instance_gundrak::Update(uint32 uiDiff)
                 if (m_auiEncounter[0] == SPECIAL && m_auiEncounter[1] == SPECIAL && m_auiEncounter[2] == SPECIAL
                     && m_mAltarInProgress.empty() && m_mBeamInProgress.empty() && m_mKeyInProgress.size() == 1)
                 {
-                    DoUseDoorOrButton(m_uiColisionGUID);
-                    DoUseDoorOrButton(m_uiRhinoKeyGUID, 0, true);
+                    DoUseDoorOrButton(GO_COLLISION);
+                    DoUseDoorOrButton(GO_RHINO_KEY, 0, true);
 
                     // The already closed keys cannot be done with DoUseDoorOrButton
-                    if (GameObject* pTrollKey = instance->GetGameObject(m_uiTrollKeyGUID))
+                    if (GameObject* pTrollKey = GetSingleGameObjectFromStorage(GO_TROLL_KEY))
                         pTrollKey->SetGoState(GO_STATE_ACTIVE_ALTERNATIVE);
-                    if (GameObject* pMammothKey = instance->GetGameObject(m_uiMammothKeyGUID))
+                    if (GameObject* pMammothKey = GetSingleGameObjectFromStorage(GO_MAMMOTH_KEY))
                         pMammothKey->SetGoState(GO_STATE_ACTIVE_ALTERNATIVE);
-                    if (GameObject* pSnakeKey = instance->GetGameObject(m_uiSnakeKeyGUID))
+                    if (GameObject* pSnakeKey = GetSingleGameObjectFromStorage(GO_SNAKE_KEY))
                         pSnakeKey->SetGoState(GO_STATE_ACTIVE_ALTERNATIVE);
 
                     // GO_BRIDGE is type 35 (TRAP_DOOR) and needs to be handled directly
                     // Real Use of this GO is unknown, but this change of state is expected
-                    if (GameObject* pBridge = instance->GetGameObject(m_uiBridgeGUID))
-                        pBridge->SetGoState(GO_STATE_READY);
+                    DoUseDoorOrButton(GO_BRIDGE);
                 }
                 // Remove this timer, as processed
                 m_mKeyInProgress.erase(itr++);

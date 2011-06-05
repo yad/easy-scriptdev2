@@ -23,11 +23,10 @@ EndScriptData */
 
 #include "precompiled.h"
 #include "trial_of_the_champion.h"
-//#include "World.h"
+#include "World.h"
 
 struct MANGOS_DLL_DECL instance_trial_of_the_champion : public ScriptedInstance
 {
-    
     instance_trial_of_the_champion(Map* pMap) : ScriptedInstance(pMap) { Initialize(); }
 
     uint32 m_auiEncounter[MAX_ENCOUNTER+1];
@@ -102,7 +101,7 @@ struct MANGOS_DLL_DECL instance_trial_of_the_champion : public ScriptedInstance
             m_auiEncounter[i] = NOT_STARTED;
     }
 
-    /*void OnPlayerEnter(Player *pPlayer)
+    void OnPlayerEnter(Player *pPlayer)
     {
 
     enum PhaseControl
@@ -112,6 +111,8 @@ struct MANGOS_DLL_DECL instance_trial_of_the_champion : public ScriptedInstance
         ALLIANCE_CONTROL_PHASE_SHIFT_1 = 55774,
         ALLIANCE_CONTROL_PHASE_SHIFT_2 = 60027,
     };
+        if (!sWorld.getConfig(CONFIG_BOOL_ALLOW_TWO_SIDE_INTERACTION_GROUP)) return;
+
         switch (pPlayer->GetTeam())
         {
             case ALLIANCE:
@@ -125,7 +126,7 @@ struct MANGOS_DLL_DECL instance_trial_of_the_champion : public ScriptedInstance
                   pPlayer->CastSpell(pPlayer, ALLIANCE_CONTROL_PHASE_SHIFT_2, false);
                   break;
         };
-    };*/
+    };
 
     void OnCreatureCreate(Creature* pCreature)
     {

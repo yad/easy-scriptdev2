@@ -41,7 +41,6 @@ enum
     SPELL_FROST_TOMB        = 48400,                        // stun and deal damage
 
     // Skeleton Spells
-    SPELL_RESSURECTION      = 42704,
     SPELL_DECREPIFY         = 42702,
     SPELL_DECREPIFY_H       = 59397,
     SPELL_BONE_ARMOR        = 59386,                        // casted on boss, heroic only
@@ -59,7 +58,7 @@ static float fAddPosition[4] = {163.5727f, 252.1900f, 42.8684f, 5.57052f};
 
 struct MANGOS_DLL_DECL mob_vrykul_skeletonAI : public ScriptedAI
 {
-    mob_vrykul_skeletonAI(Creature* pCreature) : ScriptedAI(pCreature) 
+    mob_vrykul_skeletonAI(Creature* pCreature) : ScriptedAI(pCreature)
     {
         m_pInstance = (ScriptedInstance*)pCreature->GetInstanceData();
         m_bIsRegularMode = m_creature->GetMap()->IsRegularDifficulty();
@@ -68,29 +67,14 @@ struct MANGOS_DLL_DECL mob_vrykul_skeletonAI : public ScriptedAI
 
     ScriptedInstance* m_pInstance;
     bool m_bIsRegularMode;
-    bool m_bIsDead;
 
-    uint8  m_uiSubevent;
     uint32 m_uiCastTimer;
     uint32 m_uiReviveTimer;
 
     void Reset()
     {
-        m_bIsDead = false;
-        m_uiSubevent = 0;
-        m_uiReviveTimer = 15000;
+        m_uiReviveTimer = 0;
         m_uiCastTimer = urand(5000, 10000);                 // taken out of thin air
-    }
-
-    Creature* GetKeleseth()
-    {
-        if (!m_pInstance)
-            return NULL;
-
-        if (Creature* pKeleseth = m_pInstance->instance->GetCreature(m_pInstance->GetData64(NPC_KELESETH)))
-            return pKeleseth;
-        else 
-            return NULL;
     }
 
     void MoveInLineOfSight(Unit* pWho)
@@ -103,7 +87,7 @@ struct MANGOS_DLL_DECL mob_vrykul_skeletonAI : public ScriptedAI
 
     void AttackStart(Unit* pWho)
     {
-        if (!pWho || m_bIsDead)
+        if (!pWho || m_uiReviveTimer)
             return;
 
         ScriptedAI::AttackStart(pWho);
@@ -124,31 +108,28 @@ struct MANGOS_DLL_DECL mob_vrykul_skeletonAI : public ScriptedAI
 
     void DamageTaken(Unit* pDoneBy, uint32 &uiDamage)
     {
-        Creature* m_pKeleseth = GetKeleseth();
-        if (!m_pKeleseth || !m_pKeleseth->isAlive())
+        if (!m_pInstance || m_pInstance->GetData(TYPE_KELESETH) != IN_PROGRESS)
         {
             uiDamage = m_creature->GetHealth();
             return;
         }
 
-        if (m_bIsDead)
+        if (m_uiReviveTimer)
         {
             uiDamage = 0;
             return;
         }
 
-        if (m_creature->GetHealth() <= uiDamage)
+        if (m_creature->GetHealth() < uiDamage)
         {
             // start faking death
             uiDamage = 0;
+            m_uiReviveTimer = 6000;
             m_creature->SetHealth(0);
             m_creature->RemoveAllAuras();
-            m_creature->GetMotionMaster()->Clear(false);
-            m_creature->GetMotionMaster()->MoveIdle();
+            m_creature->GetMotionMaster()->Clear();
             m_creature->SetFlag(UNIT_DYNAMIC_FLAGS, UNIT_DYNFLAG_DEAD);
             m_creature->SetStandState(UNIT_STAND_STATE_DEAD);
-            m_bIsDead = true;
-            m_uiSubevent = 0;
             return;
        }
     }
@@ -158,31 +139,10 @@ struct MANGOS_DLL_DECL mob_vrykul_skeletonAI : public ScriptedAI
         if (!m_creature->SelectHostileTarget() || !m_creature->getVictim())
             return;
 
-        if (m_bIsDead)
+        if (m_uiReviveTimer)
         {
             if (m_uiReviveTimer <= uiDiff)
-            {
-                // cosmetic change, if we allow movechase just after ressurecting, sceletons will move partialy under floor (emote animation)
-                switch(m_uiSubevent)
-                {
-                    case 0:
-                        SetCombatMovement(false);
-                        m_creature->RemoveFlag(UNIT_DYNAMIC_FLAGS, UNIT_DYNFLAG_DEAD);
-                        m_creature->SetStandState(UNIT_STAND_STATE_STAND);
-                        DoCastSpellIfCan(m_creature, SPELL_RESSURECTION, CAST_TRIGGERED);
-                        m_uiReviveTimer = 4000;
-                        ++m_uiSubevent;
-                        return;
-                    case 1:
-                        DoResetThreat();
-                        SetCombatMovement(true);
-                        if (Unit* pUnit = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM,0))
-                            m_creature->GetMotionMaster()->MoveChase(pUnit);
-                        m_bIsDead = false;
-                        m_uiReviveTimer = 15000;
-                        break;
-                }
-            }
+                Revive();
             else
                 m_uiReviveTimer -= uiDiff;
 
@@ -195,11 +155,11 @@ struct MANGOS_DLL_DECL mob_vrykul_skeletonAI : public ScriptedAI
                 DoCastSpellIfCan(m_creature->getVictim(), SPELL_DECREPIFY);
             else
             {
-                Creature* m_pKeleseth = GetKeleseth();
                 if (urand(0, 3))
                     DoCastSpellIfCan(m_creature->getVictim(), SPELL_DECREPIFY_H);
-                else if (m_pKeleseth && m_pKeleseth->isAlive() && !m_pKeleseth->HasAura(SPELL_BONE_ARMOR))
-                    DoCastSpellIfCan(m_pKeleseth, SPELL_BONE_ARMOR);
+                else if (m_pInstance && m_pInstance->GetData(TYPE_KELESETH) == IN_PROGRESS)
+                    if (Creature* pKeleseth = m_pInstance->instance->GetCreature(m_pInstance->GetData64(NPC_KELESETH)))
+                        DoCastSpellIfCan(pKeleseth, SPELL_BONE_ARMOR);
             }
 
             m_uiCastTimer = urand(5000, 15000);
@@ -231,14 +191,12 @@ struct MANGOS_DLL_DECL boss_kelesethAI : public ScriptedAI
 
     ScriptedInstance* m_pInstance;
     bool m_bIsRegularMode;
-    bool m_bSummonedAdds;
-    std::list<uint64> lAddsList;
 
-    uint32 m_uiFrostTombTimer; 
+    uint32 m_uiFrostTombTimer;
     uint32 m_uiSummonTimer;
     uint32 m_uiShadowboltTimer;
 
-    void Reset() 
+    void Reset()
     {
         // timers need confirmation
         m_uiFrostTombTimer = 20000;
@@ -263,40 +221,48 @@ struct MANGOS_DLL_DECL boss_kelesethAI : public ScriptedAI
     void Aggro(Unit* pWho)
     {
         DoScriptText(SAY_AGGRO, m_creature);
+
+        if (m_pInstance)
+            m_pInstance->SetData(TYPE_KELESETH, IN_PROGRESS);
+    }
+
+    void SummonAdds()
+    {
+        for (uint8 i=0; i<4; ++i)
+            m_creature->SummonCreature(NPC_VRYKUL_SKELETON, fAddPosition[0]+rand()%7, fAddPosition[1]+rand()%7, fAddPosition[2], fAddPosition[3], TEMPSUMMON_DEAD_DESPAWN, 0);
     }
 
     void DespawnAdds()
     {
+        std::list<Creature*> lAddsList;
+        GetCreatureListWithEntryInGrid(lAddsList, m_creature, NPC_VRYKUL_SKELETON, 100.0f);
+
         if (!lAddsList.empty())
-        {
-            for(std::list<uint64>::iterator itr = lAddsList.begin(); itr != lAddsList.end(); ++itr)
-            {
-                if (Creature* pCrearture = m_creature->GetMap()->GetCreature(*itr))
-                    (pCrearture)->ForcedDespawn();
-            }
-            lAddsList.clear();
-        }
-        m_bSummonedAdds = false;
+            for(std::list<Creature*>::iterator itr = lAddsList.begin(); itr != lAddsList.end(); ++itr)
+                (*itr)->ForcedDespawn();
     }
 
     void JustSummoned(Creature* pSummoned)
     {
-        if (!m_creature->SelectHostileTarget() || !m_creature->getVictim())
-            return;
-
-        if (pSummoned->GetEntry() == NPC_VRYKUL_SKELETON && pSummoned->AI())
-            if (Unit* pTarget = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM,0))
-                pSummoned->AI()->AttackStart(pTarget);
+        if (pSummoned->GetEntry() == NPC_VRYKUL_SKELETON)
+            pSummoned->AI()->AttackStart(m_creature->getVictim());
 
         if (pSummoned->GetEntry() == NPC_FROST_TOMB)
             pSummoned->ApplySpellImmune(0, IMMUNITY_DAMAGE, SPELL_SCHOOL_MASK_FROST, true);
-
-        lAddsList.push_back(pSummoned->GetGUID());
     }
 
     void JustDied(Unit* pKiller)
     {
         DoScriptText(SAY_DEATH, m_creature);
+
+        if (m_pInstance)
+            m_pInstance->SetData(TYPE_KELESETH, DONE);
+    }
+
+    void JustReachedHome()
+    {
+        if (m_pInstance)
+            m_pInstance->SetData(TYPE_KELESETH, FAIL);
     }
 
     void KilledUnit(Unit* pVictim)
@@ -309,13 +275,12 @@ struct MANGOS_DLL_DECL boss_kelesethAI : public ScriptedAI
         if (!m_creature->SelectHostileTarget() || !m_creature->getVictim())
             return;
 
-        if (!m_bSummonedAdds)
+        if (m_uiSummonTimer)
         {
             if (m_uiSummonTimer <= uiDiff)
             {
-                for (uint8 i=0; i<4; ++i)
-                    m_creature->SummonCreature(NPC_VRYKUL_SKELETON, fAddPosition[0]+rand()%7, fAddPosition[1]+rand()%7, fAddPosition[2], fAddPosition[3], TEMPSUMMON_CORPSE_DESPAWN, 0);
-                m_bSummonedAdds = true;
+                SummonAdds();
+                m_uiSummonTimer = 0;
             }
             else
                 m_uiSummonTimer -= uiDiff;
@@ -336,19 +301,18 @@ struct MANGOS_DLL_DECL boss_kelesethAI : public ScriptedAI
                 //DoCastSpellIfCan(pTombTarget, SPELL_SUMMON_FROST_TOMB);
                 float fPosX, fPosY, fPosZ;
                 pTombTarget->GetPosition(fPosX, fPosY, fPosZ);
- 
+
                 if (Creature* pFrostTomb = m_creature->SummonCreature(NPC_FROST_TOMB, fPosX, fPosY, fPosZ, 0, TEMPSUMMON_TIMED_DESPAWN, 20000))
                 {
-                    pTombTarget->ClearDiminishings();
                     pFrostTomb->AddThreat(pTombTarget);
                     pFrostTomb->CastSpell(pTombTarget, SPELL_FROST_TOMB, false);
                 }
- 
+
                 DoScriptText(SAY_FROSTTOMB, m_creature);
                 DoScriptText(EMOTE_FROST_TOMB, m_creature, pTombTarget);
             }
 
-            m_uiFrostTombTimer = urand(15000, 25000); 
+            m_uiFrostTombTimer = 25000;
         }
         else
             m_uiFrostTombTimer -= uiDiff;
@@ -364,15 +328,15 @@ CreatureAI* GetAI_boss_keleseth(Creature* pCreature)
 
 void AddSC_boss_keleseth()
 {
-    Script* newscript;
+    Script* pNewScript;
 
-    newscript = new Script;
-    newscript->Name = "boss_keleseth";
-    newscript->GetAI = &GetAI_boss_keleseth;
-    newscript->RegisterSelf();
+    pNewScript = new Script;
+    pNewScript->Name = "boss_keleseth";
+    pNewScript->GetAI = &GetAI_boss_keleseth;
+    pNewScript->RegisterSelf();
 
-    newscript = new Script;
-    newscript->Name = "mob_vrykul_skeleton";
-    newscript->GetAI = &GetAI_mob_vrykul_skeleton;
-    newscript->RegisterSelf();
+    pNewScript = new Script;
+    pNewScript->Name = "mob_vrykul_skeleton";
+    pNewScript->GetAI = &GetAI_mob_vrykul_skeleton;
+    pNewScript->RegisterSelf();
 }

@@ -1,4 +1,4 @@
-/* Copyright (C) 2006 - 2011 ScriptDev2 <https://scriptdev2.svn.sourceforge.net/>
+/* Copyright (C) 2006 - 2011 ScriptDev2 <http://www.scriptdev2.com/>
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -16,7 +16,7 @@
 
 /* ScriptData
 SDName: instance_pinnacle
-SD%Complete:
+SD%Complete: 25%
 SDComment:
 SDCategory: Utgarde Pinnacle
 EndScriptData */
@@ -31,98 +31,13 @@ struct MANGOS_DLL_DECL instance_pinnacle : public ScriptedInstance
     uint32 m_auiEncounter[MAX_ENCOUNTER];
     std::string strInstData;
 
-    uint64 m_uiGortokGUID;
-    uint64 m_uiStasisGeneratorGUID;
-    uint64 m_uiOrbGUID;
-    uint64 m_uiRhinoGUID;
-    uint64 m_uiWorgenGUID;
-    uint64 m_uiFurlborgGUID;
-    uint64 m_uiJormungarGUID;
-    
-    uint64 m_uiHarpoonLauncher1GUID;
-    uint64 m_uiHarpoonLauncher2GUID;
-    uint64 m_uiHarpoonLauncher3GUID;
-
-    uint64 m_uiRanulfGUID;
-    uint64 m_uiHaldorGUID;
-    uint64 m_uiBjornGUID;
-    uint64 m_uiTorGUID;
-    uint64 m_uiYmironGUID;
-    uint64 m_uiYmironDoorGUID;
-
-    uint64 m_uiSkadiGUID;
-    uint64 m_uiGraufGUID;
     uint64 m_uiSkadiDoorGUID;
 
     void Initialize()
     {
         memset(&m_auiEncounter, 0, sizeof(m_auiEncounter));
 
-        m_uiGortokGUID = 0;
-        m_uiStasisGeneratorGUID = 0;
-        m_uiOrbGUID = 0;
-        m_uiRhinoGUID = 0;
-        m_uiWorgenGUID = 0;
-        m_uiFurlborgGUID = 0;
-        m_uiJormungarGUID = 0;
-        
-        m_uiHarpoonLauncher1GUID = 0;
-        m_uiHarpoonLauncher2GUID = 0;
-        m_uiHarpoonLauncher3GUID = 0;
-
-        m_uiRanulfGUID = 0;
-        m_uiHaldorGUID = 0;
-        m_uiBjornGUID = 0;
-        m_uiTorGUID = 0;
-        m_uiYmironGUID = 0;
-        m_uiYmironDoorGUID = 0;
-
-        m_uiSkadiGUID = 0;
-        m_uiGraufGUID = 0;
         m_uiSkadiDoorGUID = 0;
-    }
-
-    void OnCreatureCreate(Creature* pCreature)
-    {
-        switch (pCreature->GetEntry())
-        {
-            case NPC_RANULF:
-                m_uiRanulfGUID = pCreature->GetGUID();
-                break;
-            case NPC_HALDOR:
-                m_uiHaldorGUID = pCreature->GetGUID();
-                break;
-            case NPC_BJORN:
-                m_uiBjornGUID = pCreature->GetGUID();
-                break;
-            case NPC_TOR:
-                m_uiTorGUID = pCreature->GetGUID();
-                break;
-            case NPC_YMIRON:
-                m_uiYmironGUID = pCreature->GetGUID();
-                break;
-            case NPC_GORTOK:
-                m_uiGortokGUID = pCreature->GetGUID();
-                break;
-            case NPC_WORGEN:
-                m_uiWorgenGUID = pCreature->GetGUID();
-                break;
-            case NPC_JORMUNGAR:
-                m_uiJormungarGUID = pCreature->GetGUID();
-                break;
-            case NPC_FURLBORG:
-                m_uiFurlborgGUID = pCreature->GetGUID(); 
-               break;
-            case NPC_RHINO:
-                m_uiRhinoGUID = pCreature->GetGUID();
-                break;
-            case NPC_SKADI:
-                m_uiSkadiGUID = pCreature->GetGUID();
-                break;
-            case NPC_GRAUF:
-                m_uiGraufGUID = pCreature->GetGUID();
-                break;
-        }
     }
 
     void OnObjectCreate(GameObject* pGo)
@@ -131,25 +46,10 @@ struct MANGOS_DLL_DECL instance_pinnacle : public ScriptedInstance
         {
             case GO_DOOR_SKADI:
                 m_uiSkadiDoorGUID = pGo->GetGUID();
+
                 if (m_auiEncounter[2] == DONE)
                     pGo->SetGoState(GO_STATE_ACTIVE);
-                break;
-            case GO_STASIS_GENERATOR:
-                m_uiStasisGeneratorGUID = pGo->GetGUID();
-                break;
-            case GO_DOOR_YMIRON:
-                m_uiYmironDoorGUID = pGo->GetGUID();
-                if (m_auiEncounter[3] == DONE)
-                    pGo->SetGoState(GO_STATE_ACTIVE);
-                break;
-            case GO_HARPOON_LAUNCHER_1:
-                m_uiHarpoonLauncher1GUID = pGo->GetGUID();
-                break;
-            case GO_HARPOON_LAUNCHER_2:
-                m_uiHarpoonLauncher2GUID = pGo->GetGUID();
-                break;
-            case GO_HARPOON_LAUNCHER_3:
-                m_uiHarpoonLauncher3GUID = pGo->GetGUID();
+
                 break;
         }
     }
@@ -169,11 +69,10 @@ struct MANGOS_DLL_DECL instance_pinnacle : public ScriptedInstance
             case TYPE_SKADI:
                 if (uiData == DONE)
                     DoUseDoorOrButton(m_uiSkadiDoorGUID);
+
                 m_auiEncounter[2] = uiData;
                 break;
             case TYPE_YMIRON:
-                if (uiData == DONE)
-                    DoUseDoorOrButton(m_uiYmironDoorGUID);
                 m_auiEncounter[3] = uiData;
                 break;
             default:
@@ -210,58 +109,6 @@ struct MANGOS_DLL_DECL instance_pinnacle : public ScriptedInstance
                 return m_auiEncounter[3];
         }
 
-        return 0;
-    }
-
-    void SetData64(uint32 uiData, uint64 uiGuid)
-    {
-        switch(uiData)
-        {
-            case NPC_STASIS_CONTROLLER:
-                m_uiOrbGUID = uiGuid;
-                break;
-        }
-    }
-
-    uint64 GetData64(uint32 uiType)
-    {
-        switch(uiType)
-        {
-            case NPC_RANULF:
-                return m_uiRanulfGUID;
-            case NPC_HALDOR:
-                return m_uiHaldorGUID;
-            case NPC_BJORN:
-                return m_uiBjornGUID;
-            case NPC_TOR:
-                return m_uiTorGUID;
-            case NPC_YMIRON:
-                return m_uiYmironGUID;
-            case NPC_STASIS_CONTROLLER:
-                return m_uiOrbGUID;
-            case NPC_GORTOK:
-                return m_uiGortokGUID;
-            case NPC_WORGEN:
-                return m_uiWorgenGUID;
-            case NPC_FURLBORG:
-                return m_uiFurlborgGUID;
-            case NPC_RHINO:
-                return m_uiRhinoGUID;
-            case NPC_JORMUNGAR:
-                return m_uiJormungarGUID;
-            case GO_STASIS_GENERATOR:
-                return m_uiStasisGeneratorGUID;
-            case NPC_SKADI:
-                return m_uiSkadiGUID;
-            case NPC_GRAUF:
-                return m_uiGraufGUID;
-            case GO_HARPOON_LAUNCHER_1:
-                return m_uiHarpoonLauncher1GUID;
-            case GO_HARPOON_LAUNCHER_2:
-                return m_uiHarpoonLauncher2GUID;
-            case GO_HARPOON_LAUNCHER_3:
-                return m_uiHarpoonLauncher3GUID;
-        }
         return 0;
     }
 
