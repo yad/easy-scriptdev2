@@ -31,15 +31,8 @@ void ScriptedInstance::DoUseDoorOrButton(ObjectGuid guid, uint32 uiWithRestoreTi
 }
 
 /// Function that uses a door or button that is stored in m_mGoEntryGuidStore
-void ScriptedInstance::DoUseDoorOrButton(uint64 uiEntry, uint32 uiWithRestoreTime /*= 0*/, bool bUseAlternativeState /*= false*/)
+void ScriptedInstance::DoUseDoorOrButton(uint32 uiEntry, uint32 uiWithRestoreTime /*= 0*/, bool bUseAlternativeState /*= false*/)
 {
-    // FIXME REMOVE when no more GO-Guids are stored as uint64
-    if (uiEntry > (uint64(HIGHGUID_GAMEOBJECT) << 48))
-    {
-        DoUseDoorOrButton(ObjectGuid(uiEntry), uiWithRestoreTime, bUseAlternativeState);
-        return;
-    }
-
     EntryGuidMap::iterator find = m_mGoEntryGuidStore.find(uiEntry);
     if (find != m_mGoEntryGuidStore.end())
         DoUseDoorOrButton(find->second, uiWithRestoreTime, bUseAlternativeState);
@@ -75,15 +68,8 @@ void ScriptedInstance::DoRespawnGameObject(ObjectGuid guid, uint32 uiTimeToDespa
 }
 
 /// Function that respawns a despawned GO that is stored in m_mGoEntryGuidStore
-void ScriptedInstance::DoRespawnGameObject(uint64 uiEntry, uint32 uiTimeToDespawn)
+void ScriptedInstance::DoRespawnGameObject(uint32 uiEntry, uint32 uiTimeToDespawn)
 {
-    // FIXME REMOVE when no more GO-Guids are stored as uint64
-    if (uiEntry > (uint64(HIGHGUID_GAMEOBJECT) << 48))
-    {
-        DoRespawnGameObject(ObjectGuid(uiEntry), uiTimeToDespawn);
-        return;
-    }
-
     EntryGuidMap::iterator find = m_mGoEntryGuidStore.find(uiEntry);
     if (find != m_mGoEntryGuidStore.end())
         DoRespawnGameObject(find->second, uiTimeToDespawn);
@@ -145,22 +131,6 @@ Player* ScriptedInstance::GetPlayerInMap(bool bOnlyAlive /*=false*/, bool bCanBe
     return NULL;
 }
 
-void ScriptedInstance::DoStartTimedAchievement(AchievementCriteriaTypes tCriteriaType, uint32 uiTimedCriteriaMiscId)
-{
-    Map::PlayerList const& lPlayers = instance->GetPlayers();
-
-    if (!lPlayers.isEmpty())
-    {
-        for(Map::PlayerList::const_iterator itr = lPlayers.begin(); itr != lPlayers.end(); ++itr)
-        {
-            if (Player* pPlayer = itr->getSource())
-                pPlayer->StartTimedAchievementCriteria(tCriteriaType, uiTimedCriteriaMiscId);
-        }
-    }
-    else
-        debug_log("SD2: DoStartTimedAchievement attempt start achievements but no players in map.");
-}
-
 /// Returns a pointer to a loaded GameObject that was stored in m_mGoEntryGuidStore. Can return NULL
 GameObject* ScriptedInstance::GetSingleGameObjectFromStorage(uint32 uiEntry)
 {
@@ -186,4 +156,26 @@ Creature* ScriptedInstance::GetSingleCreatureFromStorage(uint32 uiEntry, bool bS
         debug_log("SD2: Script requested creature with entry %u, but no npc of this entry was created yet, or it was not stored by script for map %u.", uiEntry, instance->GetId());
 
     return NULL;
+}
+
+/**
+   Helper function to start a timed achievement criteria for players in the map
+
+   @param   criteriaType The Type that is required to complete the criteria, see enum AchievementCriteriaTypes in MaNGOS
+   @param   uiTimedCriteriaMiscId The ID that identifies how the criteria is started
+ */
+void ScriptedInstance::DoStartTimedAchievement(AchievementCriteriaTypes criteriaType, uint32 uiTimedCriteriaMiscId)
+{
+    Map::PlayerList const& lPlayers = instance->GetPlayers();
+
+    if (!lPlayers.isEmpty())
+    {
+        for(Map::PlayerList::const_iterator itr = lPlayers.begin(); itr != lPlayers.end(); ++itr)
+        {
+            if (Player* pPlayer = itr->getSource())
+                pPlayer->StartTimedAchievementCriteria(criteriaType, uiTimedCriteriaMiscId);
+        }
+    }
+    else
+        debug_log("SD2: DoStartTimedAchievement attempt start achievements but no players in map.");
 }

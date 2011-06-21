@@ -760,7 +760,7 @@ void npc_doctorAI::UpdateAI(const uint32 diff)
                 //303, this flag appear to be required for client side item->spell to work (TARGET_SINGLE_FRIEND)
                 Patient->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PVP_ATTACKABLE);
 
-                Patients.push_back(Patient->GetGUID());
+                Patients.push_back(Patient->GetObjectGuid());
 
                 npc_injured_patientAI* pPatientAI = dynamic_cast<npc_injured_patientAI*>(Patient->AI());
 
@@ -1274,7 +1274,7 @@ bool GossipHello_npc_rogue_trainer(Player* pPlayer, Creature* pCreature)
         {
             pPlayer->PrepareGossipMenu(pCreature,50195);
             pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "<Take the letter>", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF);
-            pPlayer->SEND_GOSSIP_MENU(5996, pCreature->GetGUID());
+            pPlayer->SEND_GOSSIP_MENU(5996, pCreature->GetObjectGuid());
             return true;
         }
     return false;
@@ -1621,7 +1621,6 @@ enum
 #define GOSSIP_LOST_THE_MASTERS_KEY      "I've lost my key to the Karazhan."
 #define GOSSIP_LOST_VIOLET_HOLD_KEY      "I've lost my key to the Violet Hold."
 
-
 bool GossipHello_npc_locksmith(Player* pPlayer, Creature* pCreature)
 {
 
@@ -1764,7 +1763,7 @@ struct MANGOS_DLL_DECL npc_mirror_imageAI : public ScriptedAI
       if (m_creature->Attack(pWho, true))
         {
             if (owner)
-                 m_creature->CastSpell(m_creature, SPELL_CLONE_THREAT, true, NULL, NULL, owner->GetGUID());
+                 m_creature->CastSpell(m_creature, SPELL_CLONE_THREAT, true, NULL, NULL, owner->GetObjectGuid());
             m_creature->clearUnitState(UNIT_STAT_FOLLOW);
             m_creature->SetInCombatWith(pWho);
             pWho->SetInCombatWith(m_creature);
@@ -1798,10 +1797,10 @@ struct MANGOS_DLL_DECL npc_mirror_imageAI : public ScriptedAI
             m_creature->ForcedDespawn();
 
         if (owner && !m_creature->HasAura(SPELL_CLONE_CASTER))
-            m_creature->CastSpell(m_creature, SPELL_CLONE_CASTER, true, NULL, NULL, owner->GetGUID());
+            m_creature->CastSpell(m_creature, SPELL_CLONE_CASTER, true, NULL, NULL, owner->GetObjectGuid());
 
         if (owner && !m_creature->HasAura(SPELL_CLONE_CASTER_1))
-            m_creature->CastSpell(m_creature, SPELL_CLONE_CASTER_1, true, NULL, NULL, owner->GetGUID());
+            m_creature->CastSpell(m_creature, SPELL_CLONE_CASTER_1, true, NULL, NULL, owner->GetObjectGuid());
 
         if (owner && owner->HasAura(SPELL_FROSTSHIELD) && !m_creature->HasAura(SPELL_FROSTSHIELD))
             m_creature->CastSpell(m_creature, SPELL_FROSTSHIELD, false);

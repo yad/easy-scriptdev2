@@ -657,15 +657,15 @@ struct MANGOS_DLL_DECL npc_sinclariAI : public ScriptedAI
     }
 }
 
-    
+
     void SetEvent()
     {
-     
+
         m_uiNextPortal_Timer = 5000;
-     
+
         if (m_pInstance){
             m_pInstance->SetData(TYPE_EVENT, IN_PROGRESS);
-            m_pInstance->DoUseDoorOrButton(m_pInstance->GetData64(DATA_SEAL_DOOR));
+            m_pInstance->DoUseDoorOrButton(GO_DOOR_SEAL);
         }
     }
     void EventEscort()
@@ -826,14 +826,8 @@ struct MANGOS_DLL_DECL npc_sinclariAI : public ScriptedAI
 
             return;
         }
-        
-        
     }
 };
-
-#define GOSSIP_ITEM_START_EVENT   "Activate the crystals when we get in trouble, right."
-#define GOSSIP_ITEM_TELE_IN   "I need to go in!"
-
 
 bool GossipHello_npc_sinclari(Player* pPlayer, Creature* pCreature)
 {
@@ -842,7 +836,7 @@ bool GossipHello_npc_sinclari(Player* pPlayer, Creature* pCreature)
         if (m_pInstance->GetData(TYPE_EVENT) == NOT_STARTED || m_pInstance->GetData(TYPE_EVENT) == FAIL)
         {
             pPlayer->ADD_GOSSIP_ITEM_ID(GOSSIP_ICON_CHAT, GOSSIP_ITEM_INTRO, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+1);
-            pPlayer->SEND_GOSSIP_MENU(GOSSIP_TEXT_ID_INTRO, pCreature->GetGUID());
+            pPlayer->SEND_GOSSIP_MENU(GOSSIP_TEXT_ID_INTRO, pCreature->GetObjectGuid());
         }
     }
     return true;
@@ -858,7 +852,7 @@ bool GossipSelect_npc_sinclari(Player* pPlayer, Creature* pCreature, uint32 uiSe
             {
                 pPlayer->PlayerTalkClass->ClearMenus();
                 pPlayer->ADD_GOSSIP_ITEM_ID(GOSSIP_ICON_CHAT, GOSSIP_ITEM_START, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+2);
-                pPlayer->SEND_GOSSIP_MENU(GOSSIP_TEXT_ID_START, pCreature->GetGUID());
+                pPlayer->SEND_GOSSIP_MENU(GOSSIP_TEXT_ID_START, pCreature->GetObjectGuid());
             }
         }
         else
@@ -874,7 +868,7 @@ bool GossipSelect_npc_sinclari(Player* pPlayer, Creature* pCreature, uint32 uiSe
             if (m_pInstance->GetData(TYPE_EVENT) == NOT_STARTED || m_pInstance->GetData(TYPE_EVENT) == FAIL)
             {
 
-                if (Creature* pSinclari = (pCreature->GetMap()->GetCreature( m_pInstance->GetData64(DATA_SINCLARI))))
+                if (Creature* pSinclari = (m_pInstance->GetSingleCreatureFromStorage(NPC_SINCLARI)))
 
                     ((npc_sinclariAI*)pSinclari->AI())->EventEscort();
             }
@@ -892,7 +886,7 @@ struct MANGOS_DLL_DECL npc_door_sealAI : public ScriptedAI
 {
     npc_door_sealAI(Creature* pCreature) : ScriptedAI(pCreature)
     {
-        m_pInstance = (ScriptedInstance*)pCreature->GetInstanceData();   
+        m_pInstance = (ScriptedInstance*)pCreature->GetInstanceData();
         Reset();
     }
 
@@ -957,8 +951,7 @@ struct MANGOS_DLL_DECL npc_azure_saboteurAI : public ScriptedAI
     uint8 m_uiBossID;
     uint8 m_bIsRegular;
     uint32 m_uiBossType;
-    uint64 m_uiBossGUID;
-    uint64 m_uiDoorGUID;
+    uint32 m_uiDoorGUID;
 
     void AttackStart(Unit* pWho)
     {
@@ -984,33 +977,27 @@ struct MANGOS_DLL_DECL npc_azure_saboteurAI : public ScriptedAI
             {
                 case 6: // Lavanthor
                     m_uiBossType = TYPE_LAVANTHOR;
-                    m_uiBossGUID = m_pInstance->GetData64(DATA_LAVANTHOR);
-                    m_uiDoorGUID = m_pInstance->GetData64(DATA_LAVANTHOR_DOOR);
+                    m_uiDoorGUID = GO_DOOR_LAVANTHOR;
                     break;
                 case 7: // Zuramat
                     m_uiBossType = TYPE_ZURAMAT;
-                    m_uiBossGUID = m_pInstance->GetData64(DATA_ZURAMAT);
-                    m_uiDoorGUID = m_pInstance->GetData64(DATA_ZURAMAT_DOOR);
+                    m_uiDoorGUID = GO_DOOR_ZURAMAT;
                     break;
                 case 3: // Moragg
                     m_uiBossType = TYPE_MORAGG;
-                    m_uiBossGUID = m_pInstance->GetData64(DATA_MORAGG);
-                    m_uiDoorGUID = m_pInstance->GetData64(DATA_MORAGG_DOOR);
+                    m_uiDoorGUID = GO_DOOR_MORAGG;
                     break;
                 case 2: // Erekem
                     m_uiBossType = TYPE_EREKEM;
-                    m_uiBossGUID = m_pInstance->GetData64(DATA_EREKEM);
-                    m_uiDoorGUID = m_pInstance->GetData64(DATA_EREKEM_DOOR);
+                    m_uiDoorGUID = GO_DOOR_EREKEM;
                     break;
                 case 4: // Ichoron
                     m_uiBossType = TYPE_ICHORON;
-                    m_uiBossGUID = m_pInstance->GetData64(DATA_ICHORON);
-                    m_uiDoorGUID = m_pInstance->GetData64(DATA_ICHORON_DOOR);
+                    m_uiDoorGUID = GO_DOOR_ICHORON;
                     break;
                 case 5: // Xevozz
                     m_uiBossType = TYPE_XEVOZZ;
-                    m_uiBossGUID = m_pInstance->GetData64(DATA_XEVOZZ);
-                    m_uiDoorGUID = m_pInstance->GetData64(DATA_XEVOZZ_DOOR);
+                    m_uiDoorGUID = GO_DOOR_XEVOZZ;
                     break;
                 case 0: // No boss
                     m_uiBossType = 0;
@@ -1040,23 +1027,28 @@ struct MANGOS_DLL_DECL npc_azure_saboteurAI : public ScriptedAI
         if (m_bIsActiving)
             if (m_uiDisruption_Timer < uiDiff)
             {
-                if (m_uiDisruptionCounter < 3) {
+                if (m_uiDisruptionCounter < 3) 
+                {
                     DoCast(m_creature, SPELL_SHIELD_DISRUPTION);
-                ++m_uiDisruptionsCount;
-                m_pInstance->SetData(TYPE_DISRUPTIONS, m_uiDisruptionsCount);}
+                    ++m_uiDisruptionsCount;
+                    m_pInstance->SetData(TYPE_DISRUPTIONS, m_uiDisruptionsCount);
+                }
                 else if (m_uiDisruptionCounter == 3)
                 {
                     m_pInstance->DoUseDoorOrButton(m_uiDoorGUID);
-                    if (m_uiBossType == TYPE_EREKEM) {
-                        m_pInstance->DoUseDoorOrButton(m_pInstance->GetData64(DATA_EREKEM_DOOR_L));
-                        m_pInstance->DoUseDoorOrButton(m_pInstance->GetData64(DATA_EREKEM_DOOR_R));
-                        }
-                }
-                else {
-                    m_creature->DealDamage(m_creature, m_creature->GetHealth(), NULL, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
-                    if (m_pInstance->GetData(TYPE_LASTBOSS_ID) != 0) m_pInstance->SetData(m_pInstance->GetData(TYPE_LASTBOSS_ID), SPECIAL);
-                    m_bIsActiving = false;
+                    if (m_uiBossType == TYPE_EREKEM) 
+                    {
+                        m_pInstance->DoUseDoorOrButton(GO_DOOR_EREKEM_RIGHT);
+                        m_pInstance->DoUseDoorOrButton(GO_DOOR_EREKEM_LEFT);
                     }
+                }
+                else 
+                {
+                    m_creature->DealDamage(m_creature, m_creature->GetHealth(), NULL, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
+                    if (m_pInstance->GetData(TYPE_LASTBOSS_ID) != 0)
+                        m_pInstance->SetData(m_pInstance->GetData(TYPE_LASTBOSS_ID), SPECIAL);
+                    m_bIsActiving = false;
+                }
 
                 ++m_uiDisruptionCounter;
                 m_uiDisruption_Timer = 1000;

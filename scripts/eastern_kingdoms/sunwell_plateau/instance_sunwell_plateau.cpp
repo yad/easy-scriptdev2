@@ -174,7 +174,7 @@ void instance_sunwell_plateau::SetData(uint32 uiType, uint32 uiData)
 void instance_sunwell_plateau::SetData64(uint32 uiType, uint64 uiData)
 {
     if (uiType == DATA_PLAYER_SPECTRAL_REALM)
-        SpectralRealmList.push_back(uiData);
+        SpectralRealmList.push_back(ObjectGuid(uiData));
 }
 
 uint32 instance_sunwell_plateau::GetData(uint32 uiType)
@@ -229,7 +229,7 @@ void instance_sunwell_plateau::EjectPlayers()
 
         if (plr && !plr->HasAura(SPELL_SPECTRAL_REALM))
         {
-            SpectralRealmList.remove(plr->GetGUID());
+            SpectralRealmList.remove(plr->GetObjectGuid());
             EjectPlayer(plr);
         }
     }
