@@ -17,41 +17,41 @@ UPDATE `creature_template` SET `scale` = 4 WHERE `entry` = 25091;
 UPDATE `creature_template` SET `scale` = 4 WHERE `entry` = 25092;
 
 DELETE FROM `creature` WHERE `id`=25092;
-INSERT INTO `creature` (`guid`,`id`,`map`,`spawnMask`,`phaseMask`,`modelid`,`equipment_id`,`position_x`,`position_y`,`position_z`,`orientation`,`spawntimesecs`,`spawndist`,`currentwaypoint`,`curhealth`,`curmana`,`DeathState`,`MovementType`) VALUES
-(100708, 25092, 530, 1, 1, 0, 0, 13272.2, -7144.51, 4.93783, 3.72311, 300, 0, 0, 1, 0, 0, 0),
-(4456494, 25092, 530, 1, 1, 0, 0, 13261.8, -7144.76, 29.6207, 3.73767, 25, 0, 0, 1, 0, 0, 0),
-(4456493, 25092, 530, 1, 1, 0, 0, 13313.5, -7149.11, 23.029, 0.326681, 25, 0, 0, 1, 0, 0, 0),
-(4456491, 25092, 530, 1, 1, 0, 0, 13263.9, -7144.98, 18.0722, 2.95227, 25, 0, 0, 1, 0, 0, 0),
-(4456492, 25092, 530, 1, 1, 0, 0, 13271.3, -7146.79, 19.1243, 5.98391, 25, 0, 0, 1, 0, 0, 0),
-(4456490, 25092, 530, 1, 1, 0, 0, 13289.9, -7151.84, 20.5758, 2.77005, 25, 0, 0, 1, 0, 0, 0),
-(4456489, 25092, 530, 1, 1, 0, 0, 13300.4, -7149.66, 3.98094, 1.67521, 25, 0, 0, 1, 0, 0, 0),
-(4456488, 25092, 530, 1, 1, 0, 0, 13305.6, -7147.99, 19.165, 2.99467, 25, 0, 0, 1, 0, 0, 0),
-(4456487, 25092, 530, 1, 1, 0, 0, 13331.7, -7150.1, 25.3583, 3.09835, 25, 0, 0, 1, 0, 0, 0),
-(4456486, 25092, 530, 1, 1, 0, 0, 13348.8, -7151.36, 29.4228, 3.06536, 25, 0, 0, 1, 0, 0, 0);
+INSERT INTO `creature` (`id`,`map`,`spawnMask`,`phaseMask`,`modelid`,`equipment_id`,`position_x`,`position_y`,`position_z`,`orientation`,`spawntimesecs`,`spawndist`,`currentwaypoint`,`curhealth`,`curmana`,`DeathState`,`MovementType`) VALUES
+(25092, 530, 1, 1, 0, 0, 13272.2, -7144.51, 4.93783, 3.72311, 300, 0, 0, 1, 0, 0, 0),
+(25092, 530, 1, 1, 0, 0, 13261.8, -7144.76, 29.6207, 3.73767, 25, 0, 0, 1, 0, 0, 0),
+(25092, 530, 1, 1, 0, 0, 13313.5, -7149.11, 23.029, 0.326681, 25, 0, 0, 1, 0, 0, 0),
+(25092, 530, 1, 1, 0, 0, 13263.9, -7144.98, 18.0722, 2.95227, 25, 0, 0, 1, 0, 0, 0),
+(25092, 530, 1, 1, 0, 0, 13271.3, -7146.79, 19.1243, 5.98391, 25, 0, 0, 1, 0, 0, 0),
+(25092, 530, 1, 1, 0, 0, 13289.9, -7151.84, 20.5758, 2.77005, 25, 0, 0, 1, 0, 0, 0),
+(25092, 530, 1, 1, 0, 0, 13300.4, -7149.66, 3.98094, 1.67521, 25, 0, 0, 1, 0, 0, 0),
+(25092, 530, 1, 1, 0, 0, 13305.6, -7147.99, 19.165, 2.99467, 25, 0, 0, 1, 0, 0, 0),
+(25092, 530, 1, 1, 0, 0, 13331.7, -7150.1, 25.3583, 3.09835, 25, 0, 0, 1, 0, 0, 0),
+(25092, 530, 1, 1, 0, 0, 13348.8, -7151.36, 29.4228, 3.06536, 25, 0, 0, 1, 0, 0, 0);
 
 DELETE FROM `creature` WHERE `id`=25090;
-INSERT INTO `creature` (`guid`,`id`,`map`,`spawnMask`,`phaseMask`,`modelid`,`equipment_id`,`position_x`,`position_y`,`position_z`,`orientation`,`spawntimesecs`,`spawndist`,`currentwaypoint`,`curhealth`,`curmana`,`DeathState`,`MovementType`) VALUES
-(100709, 25090, 530, 1, 1, 0, 0, 13200.6, -7048.38, 3.82285, 3.17961, 300, 0, 0, 1, 0, 0, 0),
-(4456485, 25090, 530, 1, 1, 0, 0, 13252.6, -7054.9, 22.4681, 3.5688, 25, 0, 0, 1, 0, 0, 0),
-(4456484, 25090, 530, 1, 1, 0, 0, 13229.6, -7052.88, 4.3433, 2.60276, 25, 0, 0, 1, 0, 0, 0),
-(4456482, 25090, 530, 1, 1, 0, 0, 13213.4, -7053.09, 18.7827, 1.69955, 25, 0, 0, 1, 0, 0, 0),
-(4456481, 25090, 530, 1, 1, 0, 0, 13226.3, -7052.35, 17.7073, 2.66795, 25, 0, 0, 1, 0, 0, 0),
-(4456480, 25090, 530, 1, 1, 0, 0, 13256.7, -7056.42, 23.4799, 6.09779, 25, 0, 0, 1, 0, 0, 0),
-(4456479, 25090, 530, 1, 1, 0, 0, 13241, -7054.83, 19.4747, 3.12191, 25, 0, 0, 1, 0, 0, 0),
-(4456478, 25090, 530, 1, 1, 0, 0, 13272, -7058.13, 27.1397, 2.9664, 25, 0, 0, 1, 0, 0, 0);
+INSERT INTO `creature` (`id`,`map`,`spawnMask`,`phaseMask`,`modelid`,`equipment_id`,`position_x`,`position_y`,`position_z`,`orientation`,`spawntimesecs`,`spawndist`,`currentwaypoint`,`curhealth`,`curmana`,`DeathState`,`MovementType`) VALUES
+(25090, 530, 1, 1, 0, 0, 13200.6, -7048.38, 3.82285, 3.17961, 300, 0, 0, 1, 0, 0, 0),
+(25090, 530, 1, 1, 0, 0, 13252.6, -7054.9, 22.4681, 3.5688, 25, 0, 0, 1, 0, 0, 0),
+(25090, 530, 1, 1, 0, 0, 13229.6, -7052.88, 4.3433, 2.60276, 25, 0, 0, 1, 0, 0, 0),
+(25090, 530, 1, 1, 0, 0, 13213.4, -7053.09, 18.7827, 1.69955, 25, 0, 0, 1, 0, 0, 0),
+(25090, 530, 1, 1, 0, 0, 13226.3, -7052.35, 17.7073, 2.66795, 25, 0, 0, 1, 0, 0, 0),
+(25090, 530, 1, 1, 0, 0, 13256.7, -7056.42, 23.4799, 6.09779, 25, 0, 0, 1, 0, 0, 0),
+(25090, 530, 1, 1, 0, 0, 13241, -7054.83, 19.4747, 3.12191, 25, 0, 0, 1, 0, 0, 0),
+(25090, 530, 1, 1, 0, 0, 13272, -7058.13, 27.1397, 2.9664, 25, 0, 0, 1, 0, 0, 0);
 
 DELETE FROM `creature` WHERE `id`=25091;
-INSERT INTO `creature` (`guid`,`id`,`map`,`spawnMask`,`phaseMask`,`modelid`,`equipment_id`,`position_x`,`position_y`,`position_z`,`orientation`,`spawntimesecs`,`spawndist`,`currentwaypoint`,`curhealth`,`curmana`,`DeathState`,`MovementType`) VALUES
-(100710, 25091, 530, 1, 1, 0, 0, 13317.5, -6988.85, 4.13809, 3.11521, 300, 0, 0, 1, 0, 0, 0),
-(4456470, 25091, 530, 1, 1, 0, 0, 13328.7, -6993.48, 11.8975, 1.60531, 25, 0, 0, 1, 0, 0, 0),
-(4456469, 25091, 530, 1, 1, 0, 0, 13346, -6993.5, 3.21209, 1.40346, 25, 0, 0, 1, 0, 0, 0),
-(4456477, 25091, 530, 1, 1, 0, 0, 13323, -6989.96, 18.1137, 5.29668, 25, 0, 0, 1, 0, 0, 0),
-(4456476, 25091, 530, 1, 1, 0, 0, 13309.5, -6987.26, 16.2246, 4.39818, 25, 0, 0, 1, 0, 0, 0),
-(4456475, 25091, 530, 1, 1, 0, 0, 13354.3, -6990.59, 19.2655, 1.4121, 25, 0, 0, 1, 0, 0, 0),
-(4456474, 25091, 530, 1, 1, 0, 0, 13360.6, -6991.35, 20.7843, 6.2588, 25, 0, 0, 1, 0, 0, 0),
-(4456473, 25091, 530, 1, 1, 0, 0, 13339.9, -6989.69, 17.719, 6.27843, 25, 0, 0, 1, 0, 0, 0),
-(4456472, 25091, 530, 1, 1, 0, 0, 13379.1, -6991.55, 25.1392, 3.19418, 25, 0, 0, 1, 0, 0, 0),
-(4456471, 25091, 530, 1, 1, 0, 0, 13328.7, -6993.48, 11.8975, 1.60531, 25, 0, 0, 1, 0, 0, 0);
+INSERT INTO `creature` (`id`,`map`,`spawnMask`,`phaseMask`,`modelid`,`equipment_id`,`position_x`,`position_y`,`position_z`,`orientation`,`spawntimesecs`,`spawndist`,`currentwaypoint`,`curhealth`,`curmana`,`DeathState`,`MovementType`) VALUES
+(25091, 530, 1, 1, 0, 0, 13317.5, -6988.85, 4.13809, 3.11521, 300, 0, 0, 1, 0, 0, 0),
+(25091, 530, 1, 1, 0, 0, 13328.7, -6993.48, 11.8975, 1.60531, 25, 0, 0, 1, 0, 0, 0),
+(25091, 530, 1, 1, 0, 0, 13346, -6993.5, 3.21209, 1.40346, 25, 0, 0, 1, 0, 0, 0),
+(25091, 530, 1, 1, 0, 0, 13323, -6989.96, 18.1137, 5.29668, 25, 0, 0, 1, 0, 0, 0),
+(25091, 530, 1, 1, 0, 0, 13309.5, -6987.26, 16.2246, 4.39818, 25, 0, 0, 1, 0, 0, 0),
+(25091, 530, 1, 1, 0, 0, 13354.3, -6990.59, 19.2655, 1.4121, 25, 0, 0, 1, 0, 0, 0),
+(25091, 530, 1, 1, 0, 0, 13360.6, -6991.35, 20.7843, 6.2588, 25, 0, 0, 1, 0, 0, 0),
+(25091, 530, 1, 1, 0, 0, 13339.9, -6989.69, 17.719, 6.27843, 25, 0, 0, 1, 0, 0, 0),
+(25091, 530, 1, 1, 0, 0, 13379.1, -6991.55, 25.1392, 3.19418, 25, 0, 0, 1, 0, 0, 0),
+(25091, 530, 1, 1, 0, 0, 13328.7, -6993.48, 11.8975, 1.60531, 25, 0, 0, 1, 0, 0, 0);
 
 -- EventAI -- one additional has been made to YTDB acid  a despawn  so quest graphics and effects reset for next player  at the moment its 2 mins to despawn and 30 secs to respawn (credit triggers are invis) quest might take longer then 2 mins 
 UPDATE `creature_template` SET `AIName` = 'EventAI', `ScriptName` = '' WHERE `entry` = '25090';
@@ -267,8 +267,8 @@ INSERT INTO creature_ai_texts (entry, content_default, type, comment) VALUES
 -- aldaron the reckless loc fix Blood elf starting area fix
 -- --------------------------------------------------------
 DELETE FROM `creature` WHERE `id`=16294;
-INSERT INTO `creature` (`guid`,`id`,`map`,`spawnMask`,`phaseMask`,`modelid`,`equipment_id`,`position_x`,`position_y`,`position_z`,`orientation`,`spawntimesecs`,`spawndist`,`currentwaypoint`,`curhealth`,`curmana`,`DeathState`,`MovementType`) VALUES
-(67521, 16294, 530, 1, 1, 0, 0, 8747.7, -6116.85, 68.5645, 5.28401, 300, 0, 0, 148, 825, 0, 0);
+INSERT INTO `creature` (`id`,`map`,`spawnMask`,`phaseMask`,`modelid`,`equipment_id`,`position_x`,`position_y`,`position_z`,`orientation`,`spawntimesecs`,`spawndist`,`currentwaypoint`,`curhealth`,`curmana`,`DeathState`,`MovementType`) VALUES
+(16294, 530, 1, 1, 0, 0, 8747.7, -6116.85, 68.5645, 5.28401, 300, 0, 0, 148, 825, 0, 0);
 
 -- -------------------------------------------------
 -- Support for quest A Necessary Distraction (10637)
@@ -278,17 +278,17 @@ INSERT INTO `creature` (`guid`,`id`,`map`,`spawnMask`,`phaseMask`,`modelid`,`equ
 -- UPDATE `creature_template` SET `AIName` = 'EventAI', `ScriptName` = '' WHERE `entry` = 21506;
 -- UPDATE `creature_template` SET `modelid_2` = 17287 WHERE `entry` = 21506; -- this isnt correct display yet
 
---DELETE FROM creature_ai_scripts WHERE creature_id=21506;
---INSERT INTO creature_ai_scripts VALUES
---(2150601,21506,8,0,100,1,37834,-1,0,0,1,-21506,0,0,21,6,0,0,16,21892,37834,6,'Azaloth  - Yell and Start Combat Movements'),
---(2150602,21506,3,0,100,0,0,0,0,0,0,28,0,37833,0,0,0,0,0,0,0,0,'Azaloth  - Yell and Start Combat Movements'),
---(2150603,21506,0,0,100,1,4000,4000,8000,8000,11,40504,1,0,0,0,0,0,0,0,0,0,'Azaloth - Cast Cleave'),
---(2150604,21506,0,0,100,1,3000,3000,17000,17000,11,11443,1,1,0,0,0,0,0,0,0,0,'Azaloth Cast Cripple'),
---(2150605,21506,0,0,100,1,10000,12000,33000,33000,11,38741,4,3,0,0,0,0,0,0,0,0,'Azaloth - Cast Rain of Fire'),
---(2150606,21506,0,0,100,1,6000,6000,14000,14000,11,38750,1,3,0,0,0,0,0,0,0,0,'Azaloth - Cast War Stomp');
+-- DELETE FROM creature_ai_scripts WHERE creature_id=21506;
+-- INSERT INTO creature_ai_scripts VALUES
+-- (2150601,21506,8,0,100,1,37834,-1,0,0,1,-21506,0,0,21,6,0,0,16,21892,37834,6,'Azaloth  - Yell and Start Combat Movements'),
+-- (2150602,21506,3,0,100,0,0,0,0,0,0,28,0,37833,0,0,0,0,0,0,0,0,'Azaloth  - Yell and Start Combat Movements'),
+-- (2150603,21506,0,0,100,1,4000,4000,8000,8000,11,40504,1,0,0,0,0,0,0,0,0,0,'Azaloth - Cast Cleave'),
+-- (2150604,21506,0,0,100,1,3000,3000,17000,17000,11,11443,1,1,0,0,0,0,0,0,0,0,'Azaloth Cast Cripple'),
+-- (2150605,21506,0,0,100,1,10000,12000,33000,33000,11,38741,4,3,0,0,0,0,0,0,0,0,'Azaloth - Cast Rain of Fire'),
+-- (2150606,21506,0,0,100,1,6000,6000,14000,14000,11,38750,1,3,0,0,0,0,0,0,0,0,'Azaloth - Cast War Stomp');
 
---DELETE FROM creature_ai_texts WHERE entry=-21506;
---INSERT INTO creature_ai_texts (entry,content_default,type,comment) VALUES
---(-21506,'Illidan\s lapdogs! You will pay for my imprisonment with your lives!',1,'Azaloth yell1');
+-- DELETE FROM creature_ai_texts WHERE entry=-21506;
+-- INSERT INTO creature_ai_texts (entry,content_default,type,comment) VALUES
+-- (-21506,'Illidan\s lapdogs! You will pay for my imprisonment with your lives!',1,'Azaloth yell1');
 
 -- not finished with this

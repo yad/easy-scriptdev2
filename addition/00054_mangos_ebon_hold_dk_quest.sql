@@ -143,8 +143,8 @@ REPLACE INTO `spell_script_target` (`entry`,`type`,`targetEntry`) VALUES (51859,
 DELETE FROM `creature_addon` WHERE `guid` IN (SELECT guid FROM `creature` WHERE `id` IN (28511,28525,28542,28543,28544));
 UPDATE `npc_spellclick_spells` SET `quest_start` = 0, `quest_start_active` = 0 WHERE `npc_entry` = 29501;
 
---- hack fix paired with core commit for spell support to when this is reverted core support needs fixed
---UPDATE `quest_template` SET `ReqSpellCast1` = 51858, `ReqSpellCast2` = 51858, `ReqSpellCast3` = 51858, `ReqSpellCast4` = 51858 WHERE `entry` = 12641;
+-- hack fix paired with core commit for spell support to when this is reverted core support needs fixed
+-- UPDATE `quest_template` SET `ReqSpellCast1` = 51858, `ReqSpellCast2` = 51858, `ReqSpellCast3` = 51858, `ReqSpellCast4` = 51858 WHERE `entry` = 12641;
 UPDATE `quest_template` SET `ReqSpellCast1` = 0, `ReqSpellCast2` = 0, `ReqSpellCast3` = 0, `ReqSpellCast4` = 0 WHERE `entry` = 12641;
 
 

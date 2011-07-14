@@ -465,7 +465,7 @@ struct MANGOS_DLL_DECL npc_companion_helperAI : public ScriptedAI
     {
         if (Unit* pUnit = m_creature->GetMap()->GetUnit(m_creature->GetCreatorGuid()))
         {
-            m_creature->RemoveSplineFlag(SPLINEFLAG_WALKMODE);
+			m_creature->SetWalk(false);
             m_creature->GetMotionMaster()->MoveFollow(pUnit, 0.0f, m_creature->GetAngle(pUnit));
         }
     }
