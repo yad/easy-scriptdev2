@@ -46,6 +46,8 @@ DELETE FROM scripted_areatrigger WHERE entry IN (3958, 3960);
 INSERT INTO scripted_areatrigger VALUES
 (3958, 'at_zulgurub'),
 (3960, 'at_zulgurub');
+DELETE FROM scripted_areatrigger WHERE entry=3626;
+INSERT INTO scripted_areatrigger VALUES (3626, 'at_vaelastrasz');
 
 
 /* BATTLEGROUNDS */
@@ -141,7 +143,16 @@ UPDATE creature_template SET ScriptName='npc_locksmith' WHERE entry IN (29665,29
 -- UPDATE creature_template SET ScriptName='npc_innkeeper' WHERE npcflag=npcflag|65536;
 
 /* SPELL */
-UPDATE creature_template SET ScriptName='spell_dummy_npc' WHERE entry IN (16880,1200,26616,26643,16518,25793,25758,25752,25792,25753,26421,26841,27808,27122,28068,12298,12296,24918,17157,17326,17654,16847,18879,26270,26268,30146,25084,25085,32149,22105,29330,29338,29329,28465,28600,29327,29319,28053,28054,28093);
+UPDATE creature_template SET ScriptName='spell_dummy_npc' WHERE entry IN (
+-- eastern kingdoms
+1200,
+-- kalimdor
+12296,12298,
+-- outland
+16880,16518,16847,17157,17326,17654,18879,22105,24918,25084,25085,
+-- northrend
+25752,25753,25758,25792,25793,26268,26270,26421,26616,26643,26841,27122,27808,28053,28054,28068,28093,28465,28600,29319,29327,29329,29330,29338,30146,32149);
+
 UPDATE gameobject_template SET ScriptName='spell_dummy_go' WHERE entry IN (181616,186949);
 
 /*  */
@@ -304,6 +315,7 @@ UPDATE creature_template SET ScriptName='npc_lokhtos_darkbargainer' WHERE entry=
 UPDATE creature_template SET ScriptName='npc_kharan_mighthammer' WHERE entry=9021;
 UPDATE creature_template SET ScriptName='npc_rocknot' WHERE entry=9503;
 UPDATE gameobject_template SET ScriptName='go_shadowforge_brazier' WHERE entry IN (174744, 174745);
+UPDATE gameobject_template SET ScriptName='go_relic_coffer_door' WHERE entry IN (174554, 174555, 174556, 174557, 174558, 174559, 174560, 174561, 174562, 174563, 174564, 174566);
 
 /* BLACKROCK SPIRE */
 UPDATE instance_template SET ScriptName='instance_blackrock_spire' WHERE map=229;
@@ -504,6 +516,7 @@ UPDATE creature_template SET ScriptName='npc_torastrasza' WHERE entry=26949;
 
 /* DRAK'THARON KEEP */
 UPDATE creature_template SET ScriptName='boss_novos' WHERE entry=26631;
+UPDATE creature_template SET ScriptName='npc_crystal_channel_target' WHERE entry=26712;
 UPDATE creature_template SET ScriptName='boss_tharonja' WHERE entry=26632;
 UPDATE creature_template SET ScriptName='boss_trollgore' WHERE entry=26630;
 UPDATE instance_template SET ScriptName='instance_draktharon_keep' WHERE map=600;
